@@ -527,17 +527,20 @@ const T={
   es:{dl_modal_title:'Elegir versión',dl_modal_desc:'Elige la versión de Free Fire adecuada:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'¿No sabes la arquitectura? Prueba v7a primero.',nav_home:'Inicio',nav_products:'Productos',nav_features:'Características',nav_testi:'Testimonios',nav_downloads:'Descargas',nav_discord:'Discord',hero_line1:'Mejora',hero_line2:'Tu puntería',hero_line3:'Sin Límites',hero_desc:'Inyector de nueva generación con precisión de 0.01ms.',get_started:'Empezar',learn_more:'Aprender más',product_heading:'Planes X!T',product_sub:'Elige tu plan.',basic_name:'ESP',basic_feat1:'1 dispositivo',basic_feat2:'Ver enemigos a través de paredes',basic_feat3:'Actualizado con cada OBB',basic_feat4:'Soporte 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 dispositivo',premium_feat2:'Facilita los headshots',premium_feat3:'Actualizaciones en tiempo real',premium_feat4:'Soporte prioritario 24/7',per_day:'/día',buy_now:'Comprar',popular:'POPULAR',features_title:'Por qué X!T?',feat1_title:'Respuesta instantánea',feat1_desc:'Latencia ultra baja.',feat2_title:'Anti-Baneo',feat2_desc:'Seguridad multicapa.',feat3_title:'Alta precisión',feat3_desc:'Calibración precisa.',testi_title:'Lo que dicen',faq_title:'Preguntas frecuentes',faq_q1:'Cómo activar?',faq_a1:'Después del pago, recibirás un código por WhatsApp.',faq_q2:'Funciona en todos los juegos?',faq_a2:'No, esto es específicamente para Free Fire.',payment_title:'QRIS Allpay',product_label:'Producto',total_label:'Total',wa_confirm:'Enviar comprobante WhatsApp',manual_verify:'Verificación manual.',download_title:'Descargar Free Fire',download_desc:'Obtén el último apk de FF.',download_button:'Descargar Ahora',discord_title:'Únete a Discord',discord_desc:'Actualizaciones, soporte y comunidad exclusiva.',discord_button:'Únete a Discord',visitor_label:'Espectadores',visitor_live:'EN VIVO'}
 };
 let currentLang='id';
-function applyLanguage(lang){
+function applyLanguage(lang, runTypewriter){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k=el.getAttribute('data-i18n');
     if(T[lang]&&T[lang][k])el.textContent=T[lang][k];
   });
+  // Set data-text untuk semua elemen glitch (termasuk hero headline)
   document.querySelectorAll('.glitch[data-i18n]').forEach(el=>el.setAttribute('data-text',el.textContent));
   const names={id:'Indonesia',en:'English',fr:'Français',vi:'Tiếng Việt',es:'Español'};
   document.getElementById('currentLang').textContent=names[lang];
   document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
   currentLang=lang;localStorage.setItem('pref-lang',lang);
   renderDynamicContent();
+  // Jalankan typewriter setelah bahasa diterapkan
+  if(runTypewriter) setTimeout(runHeroTypewriter, 50);
 }
 
 /* ==============================================================
@@ -671,6 +674,8 @@ function renderDynamicContent(){
   renderTestimonials();
   renderFaq();
   attachCursorHovers();
+  // Reset flag agar card/elemen baru bisa diobserve scroll animation ulang
+  document.querySelectorAll('[data-aos]').forEach(el=>{ el._scrollAnimBound=false; });
   if(typeof initScrollAnim==='function') initScrollAnim();
 }
 
@@ -725,20 +730,7 @@ function initMagneticBtns(){
   });
 }
 
-/* ==============================================================
-   COUNTER ANIMATION
-   ============================================================== */
-(function(){
-  function animCounter(el,finalText,dur){
-    const hasDot=finalText.includes('.'),suffix=finalText.replace(/[\d.]/g,''),num=parseFloat(finalText),start=performance.now();
-    function step(now){const p=Math.min((now-start)/dur,1),ease=1-Math.pow(1-p,4);el.textContent=(hasDot?(num*ease).toFixed(2):Math.round(num*ease))+suffix;if(p<1)requestAnimationFrame(step);else el.textContent=finalText;}
-    requestAnimationFrame(step);
-  }
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting){const el=e.target,f=el.getAttribute('data-final');if(f){animCounter(el,f,1800);obs.unobserve(el);}}});
-  },{threshold:.5});
-  ['cnt1','cnt2','cnt3'].forEach(id=>{const el=document.getElementById(id);if(el){el.setAttribute('data-final',el.textContent.trim());obs.observe(el);}});
-})();
+/* COUNTER ANIMATION: handled by Odometer below (with glitch effect) */
 
 /* ==============================================================
    INTERSECTION OBSERVER - NAV
@@ -817,6 +809,25 @@ function initMagneticBtns(){
 })();
 
 /* ==============================================================
+   SCROLL ANIMATION (global, dipanggil dari renderDynamicContent)
+   ============================================================== */
+function initScrollAnim(){
+  const els = document.querySelectorAll('[data-aos]');
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('aos-animate');
+      } else {
+        e.target.classList.remove('aos-animate');
+      }
+    });
+  },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>{
+    if(!el._scrollAnimBound){ el._scrollAnimBound=true; obs.observe(el); }
+  });
+}
+
+/* ==============================================================
    INIT
    ============================================================== */
 window.addEventListener('DOMContentLoaded',()=>{
@@ -826,7 +837,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click',()=>ld.classList.remove('show'));
   document.querySelectorAll('.lang-option').forEach(o=>o.addEventListener('click',()=>{applyLanguage(o.dataset.lang);ld.classList.remove('show');}));
   document.querySelectorAll('.theme-dot').forEach(d=>d.addEventListener('click',()=>setTheme(d.dataset.theme)));
-  applyLanguage(localStorage.getItem('pref-lang')||'id');
+  applyLanguage(localStorage.getItem('pref-lang')||'id', true);
   
   const dlModal=document.getElementById('downloadModal');
   document.getElementById('openDownloadModal').addEventListener('click',()=>dlModal.classList.add('show'));
@@ -856,21 +867,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
 
   // Scroll animation - bidirectional (up & down), no AOS.init conflict
-  function initScrollAnim(){
-    const els = document.querySelectorAll('[data-aos]');
-    const obs = new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          e.target.classList.add('aos-animate');
-        } else {
-          e.target.classList.remove('aos-animate');
-        }
-      });
-    },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
-    els.forEach(el=>{
-      if(!el._scrollAnimBound){ el._scrollAnimBound=true; obs.observe(el); }
-    });
-  }
   initScrollAnim();
   initTilt();
   initMagneticBtns();
@@ -990,45 +986,50 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
   })();
 
-  /* ============================================================
-     TYPEWRITER HERO HEADLINE
-     (dijalankan setelah applyLanguage agar teks sudah benar)
-  ============================================================ */
-  (function(){
-    // Ambil teks SETELAH applyLanguage mengisi konten
-    const lines=[
-      document.querySelector('[data-i18n="hero_line1"]'),
-      document.querySelector('[data-i18n="hero_line2"]'),
-      document.querySelector('[data-i18n="hero_line3"]')
-    ];
-    if(!lines[0]) return;
-    let typewriterDone=false;
-    const originals=lines.map(el=>el?el.textContent.trim():'');
-    lines.forEach(el=>{if(el) el.textContent='';});
-
-    function typeLine(idx){
-      if(idx>=lines.length){ typewriterDone=true; return; }
-      const el=lines[idx]; if(!el) return typeLine(idx+1);
-      const txt=originals[idx]; let i=0;
-      el.textContent='';
-      function tick(){
-        if(i<=txt.length){
-          el.textContent=txt.slice(0,i)+(i<txt.length?'|':'');
-          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt.slice(0,i));
-          i++; setTimeout(tick,52);
-        } else {
-          el.textContent=txt;
-          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt);
-          setTimeout(()=>typeLine(idx+1),180);
-        }
-      }
-      setTimeout(tick, idx===0?300:0);
-    }
-
-    // Pastikan applyLanguage sudah selesai (sinkron), lalu jalankan typewriter
-    setTimeout(typeLine, 0, 0);
-  })();
-
 });
+
+/* ==============================================================
+   TYPEWRITER HERO HEADLINE (global, dipanggil dari applyLanguage)
+   ============================================================== */
+function runHeroTypewriter(){
+  var lines=[
+    document.querySelector('[data-i18n="hero_line1"]'),
+    document.querySelector('[data-i18n="hero_line2"]'),
+    document.querySelector('[data-i18n="hero_line3"]')
+  ];
+  if(!lines[0]) return;
+  var originals=lines.map(function(el){return el?el.textContent.trim():'';});
+  lines.forEach(function(el,i){
+    if(!el) return;
+    el.textContent='';
+    if(el.classList.contains('glitch')) el.setAttribute('data-text','');
+  });
+  function typeLine(idx){
+    if(idx>=lines.length){
+      lines.forEach(function(el){
+        if(el && el.classList.contains('glitch')) el.setAttribute('data-text',el.textContent);
+      });
+      return;
+    }
+    var el=lines[idx]; if(!el){typeLine(idx+1);return;}
+    var txt=originals[idx], i=0;
+    el.textContent='';
+    if(el.classList.contains('glitch')) el.setAttribute('data-text','');
+    function tick(){
+      if(i<txt.length){
+        var partial=txt.slice(0,i+1);
+        el.textContent=partial+'|';
+        if(el.classList.contains('glitch')) el.setAttribute('data-text',partial);
+        i++; setTimeout(tick,52);
+      } else {
+        el.textContent=txt;
+        if(el.classList.contains('glitch')) el.setAttribute('data-text',txt);
+        setTimeout(function(){typeLine(idx+1);},180);
+      }
+    }
+    setTimeout(tick, idx===0?350:80);
+  }
+  typeLine(0);
+}
 
 })();
