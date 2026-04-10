@@ -751,21 +751,36 @@ function attachBuyListeners(){
 
 function initTilt(){
   document.querySelectorAll('.product-card').forEach(card=>{
+    if(card._tiltBound) return; // guard: jangan attach ulang
+    card._tiltBound = true;
+
     // Desktop - mouse
     card.addEventListener('mousemove',e=>{
       const r=card.getBoundingClientRect(),cx=r.width/2,cy=r.height/2;
-      card.style.transform=`perspective(1000px) rotateX(${(e.clientY-r.top-cy)/cy*-8}deg) rotateY(${(e.clientX-r.left-cx)/cx*8}deg) translateY(-8px)`;
+      // Matikan transition saat bergerak agar tilt langsung/smooth
+      card.style.transition='none';
+      card.style.transform=`perspective(1000px) rotateX(${(e.clientY-r.top-cy)/cy*-10}deg) rotateY(${(e.clientX-r.left-cx)/cx*10}deg) translateY(-10px) scale(1.02)`;
     });
-    card.addEventListener('mouseleave',()=>card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0)');
+    card.addEventListener('mouseenter',()=>{
+      card.style.transition='none';
+    });
+    card.addEventListener('mouseleave',()=>{
+      // Kembalikan transition smooth saat lepas
+      card.style.transition='transform .5s cubic-bezier(.23,1,.32,1)';
+      card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
+      setTimeout(()=>{ card.style.transition=''; }, 500);
+    });
+
     // Mobile - touch
     card.addEventListener('touchmove',e=>{
       e.preventDefault();
       const t=e.touches[0],r=card.getBoundingClientRect(),cx=r.width/2,cy=r.height/2;
-      card.style.transform=`perspective(1000px) rotateX(${(t.clientY-r.top-cy)/cy*-6}deg) rotateY(${(t.clientX-r.left-cx)/cx*6}deg) translateY(-6px)`;
+      card.style.transition='none';
+      card.style.transform=`perspective(1000px) rotateX(${(t.clientY-r.top-cy)/cy*-7}deg) rotateY(${(t.clientX-r.left-cx)/cx*7}deg) translateY(-7px) scale(1.02)`;
     },{passive:false});
     card.addEventListener('touchend',()=>{
       card.style.transition='transform .5s cubic-bezier(.23,1,.32,1)';
-      card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+      card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
       setTimeout(()=>card.style.transition='',500);
     });
   });
