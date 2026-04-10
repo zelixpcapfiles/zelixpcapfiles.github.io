@@ -791,9 +791,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     card.addEventListener('touchend',()=>setTimeout(()=>card.classList.remove('touch-active'),600),{passive:true});
   });
 
-  AOS.init({duration:800, once:true, offset:80});
-
-  // Bidirectional scroll animation - works both scroll down & up
+  // Scroll animation - bidirectional (up & down), no AOS.init conflict
   function initScrollAnim(){
     const els = document.querySelectorAll('[data-aos]');
     const obs = new IntersectionObserver(entries=>{
