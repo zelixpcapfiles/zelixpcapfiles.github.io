@@ -4,9 +4,7 @@
 /* ==============================================================
    PERFORMANCE DETECTION
    ============================================================== */
-const isLowEnd = (navigator.hardwareConcurrency || 4) <= 4
-              || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-              || window.innerWidth <= 768;
+const isLowEnd = (navigator.hardwareConcurrency || 4) <= 2;
 
 /* ==============================================================
    THEME SYSTEM
@@ -781,4 +779,3 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 })();
-/*felix*/
