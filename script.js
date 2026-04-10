@@ -1089,4 +1089,202 @@ function runHeroTypewriter(){
   typeLine(0);
 }
 
+/* ==============================================================
+   ELECTRIC PORTAL — DISCORD REDIRECT ANIMATION
+   ============================================================== */
+(function(){
+  var DISCORD_URL = 'https://discord.gg/sJ3M77ChQH';
+  var portal      = document.getElementById('electric-portal');
+  var pCanvas     = document.getElementById('portal-canvas');
+  var crackCanvas = document.getElementById('portal-crack');
+  var flash       = document.getElementById('portal-flash');
+  var core        = document.getElementById('portal-core');
+  var portalText  = document.getElementById('portal-text');
+  if(!portal||!pCanvas) return;
+
+  var pCtx   = pCanvas.getContext('2d');
+  var crackCtx = crackCanvas.getContext('2d');
+
+  function resizePortal(){
+    pCanvas.width = crackCanvas.width = window.innerWidth;
+    pCanvas.height = crackCanvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizePortal, {passive:true});
+
+  /* ---- Lightning bolt helper (sama seperti loading screen) ---- */
+  function drawPortalBolt(ctx, x1, y1, x2, y2, rough, alpha, depth){
+    if(depth===0||alpha<0.04) return;
+    var mx=(x1+x2)/2+(Math.random()-.5)*rough;
+    var my=(y1+y2)/2+(Math.random()-.5)*rough*.4;
+    ctx.strokeStyle='rgba(88,101,242,'+alpha+')';
+    ctx.lineWidth=depth*1.6; ctx.shadowColor='rgba(88,101,242,.95)'; ctx.shadowBlur=depth*14;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx,my);  ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.strokeStyle='rgba(165,180,252,'+(alpha*.5)+')'; ctx.lineWidth=depth*.45; ctx.shadowBlur=0;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx,my);  ctx.lineTo(x2,y2); ctx.stroke();
+    if(Math.random()<.4&&depth>1) drawPortalBolt(ctx,mx,my,mx+(Math.random()-.5)*180,my+Math.random()*120,rough*.55,alpha*.4,depth-1);
+    drawPortalBolt(ctx,x1,y1,mx,my,rough*.55,alpha*.75,depth-1);
+    drawPortalBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.75,depth-1);
+  }
+
+  /* ---- Crack pattern dari pusat layar ---- */
+  function drawPortalCracks(prog){
+    var w=crackCanvas.width, h=crackCanvas.height, cx=w/2, cy=h/2;
+    crackCtx.clearRect(0,0,w,h);
+    var n=Math.floor(prog*18)+4;
+    crackCtx.lineCap='round';
+    for(var ci=0;ci<n;ci++){
+      var seed=ci*113.7;
+      var x=cx+Math.cos(seed*.31%6.28)*(seed%90);
+      var y=cy+Math.sin(seed*.19%6.28)*(seed%70);
+      var len=(120+(seed%280))*prog;
+      var alpha=Math.min(1,prog*2.2);
+      var width=1.2+(ci%3)*.9;
+      var ang=(seed%360)*Math.PI/180;
+      // Warna Discord ungu untuk crack
+      crackCtx.strokeStyle='rgba(88,101,242,'+alpha*.95+')';
+      crackCtx.lineWidth=width+1.4;
+      crackCtx.shadowColor='rgba(88,101,242,.9)'; crackCtx.shadowBlur=14*prog;
+      crackCtx.beginPath(); crackCtx.moveTo(x,y);
+      var segs=4+(ci%5);
+      for(var s=0;s<segs;s++){
+        ang+=(Math.random()-.5)*.9;
+        x+=Math.cos(ang)*(len/segs); y+=Math.sin(ang)*(len/segs);
+        crackCtx.lineTo(x,y);
+        if(s===Math.floor(segs/2)&&prog>.3){
+          var bx=x,by=y,ba=ang+(Math.random()>.5?.9:-.9),bl=(len/segs)*(.35+Math.random()*.45);
+          crackCtx.moveTo(bx,by); crackCtx.lineTo(bx+Math.cos(ba)*bl,by+Math.sin(ba)*bl);
+          crackCtx.moveTo(x,y);
+        }
+      }
+      crackCtx.stroke();
+      // Highlight putih tipis
+      crackCtx.strokeStyle='rgba(165,180,252,'+alpha*.3+')'; crackCtx.lineWidth=width*.3; crackCtx.shadowBlur=0; crackCtx.stroke();
+    }
+  }
+
+  /* ---- Storm bolt loop selama portal terbuka ---- */
+  var stormRaf=null, stormActive=false;
+  var stormBolts=[];
+  function spawnStormBolt(){
+    var w=pCanvas.width, h=pCanvas.height;
+    stormBolts.push({
+      x:w*(.1+Math.random()*.8), tx:(w/2)+(Math.random()-.5)*220,
+      ty:h*(.25+Math.random()*.5),
+      alpha:(.7+Math.random()*.6), decay:(.04+Math.random()*.06),
+      depth:(isLowEnd?4:6), rough:(80+Math.random()*130)
+    });
+  }
+  function stormTick(){
+    if(!stormActive) return;
+    pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
+    // Ambient glow Discord ungu di tengah
+    var cx=pCanvas.width/2, cy=pCanvas.height/2;
+    var grd=pCtx.createRadialGradient(cx,cy,0,cx,cy,pCanvas.width*.55);
+    grd.addColorStop(0,'rgba(88,101,242,0.10)');
+    grd.addColorStop(.5,'rgba(88,101,242,0.04)');
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+    pCtx.fillStyle=grd; pCtx.fillRect(0,0,pCanvas.width,pCanvas.height);
+    if(Math.random()<.55) spawnStormBolt();
+    for(var i=stormBolts.length-1;i>=0;i--){
+      var b=stormBolts[i];
+      if(b.alpha>.03){
+        drawPortalBolt(pCtx,b.x,-8,b.tx,b.ty,b.rough,Math.min(b.alpha,1),b.depth);
+        b.alpha-=b.decay;
+      } else stormBolts.splice(i,1);
+    }
+    stormRaf=requestAnimationFrame(stormTick);
+  }
+
+  /* ---- Typing status text ---- */
+  var statusMessages=['INITIALIZING PORTAL...','CHARGING ENERGY...','TEARING REALITY...','OPENING RIFT...','CONNECTING TO DISCORD...'];
+  var statusIdx=0, statusTimer=null;
+  function cycleStatus(){
+    portalText.textContent=statusMessages[statusIdx%statusMessages.length];
+    statusIdx++;
+    statusTimer=setTimeout(cycleStatus, 480);
+  }
+
+  /* ---- Main portal sequence ---- */
+  function runPortal(url){
+    resizePortal();
+    portal.style.display='flex';
+    portal.style.animation='none';
+    portal.style.opacity='1';
+    core.style.animation='portalOpen .55s cubic-bezier(.23,1,.32,1) both';
+    crackCanvas.style.opacity='0';
+    flash.style.opacity='0';
+    stormBolts=[];
+    stormActive=true;
+    stormTick();
+    statusIdx=0; cycleStatus();
+
+    // Fase 1: Kilat awal menyambar dari atas ~300ms
+    for(var i=0;i<3;i++){
+      (function(delay){
+        setTimeout(function(){
+          var w=pCanvas.width;
+          stormBolts.push({
+            x:w*(.2+Math.random()*.6), tx:w/2+(Math.random()-.5)*80,
+            ty:pCanvas.height*.38,
+            alpha:1.4, decay:.028, depth:isLowEnd?6:8, rough:160
+          });
+        }, delay);
+      })(i*120);
+    }
+
+    // Fase 2: Flash + crack mulai muncul
+    setTimeout(function(){
+      flash.style.transition='opacity .05s'; flash.style.opacity='.7';
+      setTimeout(function(){ flash.style.opacity='0'; }, 70);
+      crackCanvas.style.opacity='1';
+      var cp=0;
+      var crackIv=setInterval(function(){
+        cp=Math.min(cp+.025,1);
+        drawPortalCracks(cp);
+        if(cp>=1) clearInterval(crackIv);
+      }, 18);
+    }, 600);
+
+    // Fase 3: Super bolt dari pusat + flash keras
+    setTimeout(function(){
+      var w=pCanvas.width, h=pCanvas.height;
+      stormBolts.push({x:w/2,tx:w/2,ty:h*.4,alpha:2,decay:.018,depth:isLowEnd?8:11,rough:200});
+      flash.style.transition='opacity .04s'; flash.style.opacity='1';
+      setTimeout(function(){ flash.style.opacity='0'; }, 55);
+    }, 1050);
+
+    // Fase 4: Shatter + redirect
+    setTimeout(function(){
+      clearTimeout(statusTimer);
+      portalText.textContent='PORTAL OPENED!';
+      stormActive=false;
+      if(stormRaf){ cancelAnimationFrame(stormRaf); stormRaf=null; }
+      flash.style.transition='opacity .05s'; flash.style.opacity='.9';
+      setTimeout(function(){ flash.style.opacity='0'; }, 80);
+      portal.style.animation='portalShatter .5s cubic-bezier(.55,0,1,.45) both';
+      setTimeout(function(){
+        portal.style.display='none';
+        portal.style.animation='';
+        crackCtx.clearRect(0,0,crackCanvas.width,crackCanvas.height);
+        pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
+        stormBolts=[];
+        window.open(url,'_blank','noopener,noreferrer');
+      }, 480);
+    }, 1550);
+  }
+
+  /* ---- Intercept discord button click ---- */
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn=document.getElementById('discordBtn');
+    if(!btn) return;
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      runPortal(DISCORD_URL);
+    });
+  });
+
+})();
+
 })();
