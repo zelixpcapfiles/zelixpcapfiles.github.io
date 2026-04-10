@@ -624,11 +624,23 @@ function attachBuyListeners(){
 
 function initTilt(){
   document.querySelectorAll('.product-card').forEach(card=>{
+    // Desktop - mouse
     card.addEventListener('mousemove',e=>{
       const r=card.getBoundingClientRect(),cx=r.width/2,cy=r.height/2;
       card.style.transform=`perspective(1000px) rotateX(${(e.clientY-r.top-cy)/cy*-8}deg) rotateY(${(e.clientX-r.left-cx)/cx*8}deg) translateY(-8px)`;
     });
     card.addEventListener('mouseleave',()=>card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0)');
+    // Mobile - touch
+    card.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      const t=e.touches[0],r=card.getBoundingClientRect(),cx=r.width/2,cy=r.height/2;
+      card.style.transform=`perspective(1000px) rotateX(${(t.clientY-r.top-cy)/cy*-6}deg) rotateY(${(t.clientX-r.left-cx)/cx*6}deg) translateY(-6px)`;
+    },{passive:false});
+    card.addEventListener('touchend',()=>{
+      card.style.transition='transform .5s cubic-bezier(.23,1,.32,1)';
+      card.style.transform='perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+      setTimeout(()=>card.style.transition='',500);
+    });
   });
 }
 function initMagneticBtns(){
@@ -772,8 +784,14 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
   });
   
+  // Touch hologram effect for mobile
+  document.querySelectorAll('.product-card').forEach(card=>{
+    card.addEventListener('touchstart',()=>card.classList.add('touch-active'),{passive:true});
+    card.addEventListener('touchend',()=>setTimeout(()=>card.classList.remove('touch-active'),600),{passive:true});
+  });
+
   AOS.init({duration:isLowEnd?600:1000,once:isLowEnd,mirror:false});
-  if(!isLowEnd)initTilt();
+  initTilt();
   initMagneticBtns();
   attachCursorHovers();
 });
