@@ -607,6 +607,7 @@ function renderDynamicContent(){
   renderTestimonials();
   renderFaq();
   attachCursorHovers();
+  if(typeof initScrollAnim==='function') initScrollAnim();
 }
 
 function attachBuyListeners(){
@@ -790,11 +791,11 @@ window.addEventListener('DOMContentLoaded',()=>{
     card.addEventListener('touchend',()=>setTimeout(()=>card.classList.remove('touch-active'),600),{passive:true});
   });
 
-  AOS.init({duration:800, once:false, mirror:true, offset:80});
+  AOS.init({duration:800, once:true, offset:80});
 
-  // Custom bidirectional scroll animation (scroll up & down)
-  (function(){
-    const animated = document.querySelectorAll('[data-aos]');
+  // Bidirectional scroll animation - works both scroll down & up
+  function initScrollAnim(){
+    const els = document.querySelectorAll('[data-aos]');
     const obs = new IntersectionObserver(entries=>{
       entries.forEach(e=>{
         if(e.isIntersecting){
@@ -803,9 +804,12 @@ window.addEventListener('DOMContentLoaded',()=>{
           e.target.classList.remove('aos-animate');
         }
       });
-    },{threshold:0.12});
-    animated.forEach(el=>obs.observe(el));
-  })();
+    },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+    els.forEach(el=>{
+      if(!el._scrollAnimBound){ el._scrollAnimBound=true; obs.observe(el); }
+    });
+  }
+  initScrollAnim();
   initTilt();
   initMagneticBtns();
   attachCursorHovers();
