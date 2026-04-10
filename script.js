@@ -791,6 +791,21 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
 
   AOS.init({duration:800, once:false, mirror:true, offset:80});
+
+  // Custom bidirectional scroll animation (scroll up & down)
+  (function(){
+    const animated = document.querySelectorAll('[data-aos]');
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('aos-animate');
+        } else {
+          e.target.classList.remove('aos-animate');
+        }
+      });
+    },{threshold:0.12});
+    animated.forEach(el=>obs.observe(el));
+  })();
   initTilt();
   initMagneticBtns();
   attachCursorHovers();
