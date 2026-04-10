@@ -529,17 +529,74 @@ const T={
   es:{dl_modal_title:'Elegir versión',dl_modal_desc:'Elige la versión de Free Fire adecuada:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'¿No sabes la arquitectura? Prueba v7a primero.',nav_home:'Inicio',nav_products:'Productos',nav_features:'Características',nav_testi:'Testimonios',nav_downloads:'Descargas',nav_discord:'Discord',hero_line1:'Mejora',hero_line2:'Tu puntería',hero_line3:'Sin Límites',hero_desc:'Inyector de nueva generación con precisión de 0.01ms.',get_started:'Empezar',learn_more:'Aprender más',product_heading:'Planes X!T',product_sub:'Elige tu plan.',basic_name:'ESP',basic_feat1:'1 dispositivo',basic_feat2:'Ver enemigos a través de paredes',basic_feat3:'Actualizado con cada OBB',basic_feat4:'Soporte 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 dispositivo',premium_feat2:'Facilita los headshots',premium_feat3:'Actualizaciones en tiempo real',premium_feat4:'Soporte prioritario 24/7',per_day:'/día',buy_now:'Comprar',popular:'POPULAR',features_title:'Por qué X!T?',feat1_title:'Respuesta instantánea',feat1_desc:'Latencia ultra baja.',feat2_title:'Anti-Baneo',feat2_desc:'Seguridad multicapa.',feat3_title:'Alta precisión',feat3_desc:'Calibración precisa.',testi_title:'Lo que dicen',faq_title:'Preguntas frecuentes',faq_q1:'Cómo activar?',faq_a1:'Después del pago, recibirás un código por WhatsApp.',faq_q2:'Funciona en todos los juegos?',faq_a2:'No, esto es específicamente para Free Fire.',payment_title:'QRIS Allpay',product_label:'Producto',total_label:'Total',wa_confirm:'Enviar comprobante WhatsApp',manual_verify:'Verificación manual.',download_title:'Descargar Free Fire',download_desc:'Obtén el último apk de FF.',download_button:'Descargar Ahora',discord_title:'Únete a Discord',discord_desc:'Actualizaciones, soporte y comunidad exclusiva.',discord_button:'Únete a Discord',visitor_label:'Espectadores',visitor_live:'EN VIVO'}
 };
 let currentLang='id';
+
+/* --- GLITCH + SCRAMBLE TRANSITION --- */
+const SCRAMBLE_CHARS='!<>-_\\/[]{}—=+*^?#@$%&ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+function scrambleText(el, finalText, duration, delay){
+  setTimeout(function(){
+    // Fase 1: Glitch flash via CSS animation
+    el.classList.add('lang-scrambling');
+    el.style.transform='translateX('+(Math.random()*8-4)+'px) skewX('+(Math.random()*4-2)+'deg)';
+    el.style.filter='hue-rotate('+Math.floor(Math.random()*360)+'deg) brightness(2)';
+    el.style.opacity='0.5';
+
+    // Setelah glitch flash (~120ms), mulai fase scramble
+    setTimeout(function(){
+      el.classList.remove('lang-scrambling');
+      el.style.transform='';
+      el.style.filter='';
+      el.style.opacity='1';
+
+      var start=performance.now();
+      var rafId;
+      function tick(now){
+        var p=Math.min((now-start)/duration,1);
+        // Easing: karakter settle dari kiri ke kanan
+        var settled=Math.floor(p*finalText.length);
+        var result='';
+        for(var i=0;i<finalText.length;i++){
+          if(i<settled){
+            result+=finalText[i];
+          } else if(finalText[i]===' '){
+            result+=' ';
+          } else {
+            result+=SCRAMBLE_CHARS[Math.floor(Math.random()*SCRAMBLE_CHARS.length)];
+          }
+        }
+        el.textContent=result;
+        if(el.classList.contains('glitch')) el.setAttribute('data-text', result);
+        if(p<1){
+          rafId=requestAnimationFrame(tick);
+        } else {
+          el.textContent=finalText;
+          if(el.classList.contains('glitch')) el.setAttribute('data-text', finalText);
+        }
+      }
+      rafId=requestAnimationFrame(tick);
+    }, 130);
+  }, delay||0);
+}
+
 function applyLanguage(lang){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n');
-    if(T[lang]&&T[lang][k])el.textContent=T[lang][k];
-  });
-  document.querySelectorAll('.glitch[data-i18n]').forEach(el=>el.setAttribute('data-text',el.textContent));
   const names={id:'Indonesia',en:'English',fr:'Français',vi:'Tiếng Việt',es:'Español'};
   document.getElementById('currentLang').textContent=names[lang];
   document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
-  currentLang=lang;localStorage.setItem('pref-lang',lang);
-  renderDynamicContent();
+  currentLang=lang; localStorage.setItem('pref-lang',lang);
+
+  // Kumpulkan semua elemen yang teksnya berubah, lalu scramble dengan stagger
+  var delay=0;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const k=el.getAttribute('data-i18n');
+    if(!T[lang]||!T[lang][k]) return;
+    const newText=T[lang][k];
+    if(el.textContent.trim()===newText) return; // skip kalau sama
+    scrambleText(el, newText, 400, delay);
+    delay+=20; // stagger antar elemen
+  });
+
+  // Re-render dynamic content setelah semua animasi selesai
+  var totalDur=delay+550;
+  setTimeout(function(){ renderDynamicContent(); }, totalDur);
 }
 
 /* ==============================================================
