@@ -790,7 +790,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     card.addEventListener('touchend',()=>setTimeout(()=>card.classList.remove('touch-active'),600),{passive:true});
   });
 
-  AOS.init({duration:isLowEnd?600:1000,once:isLowEnd,mirror:false});
+  AOS.init({duration:800, once:false, mirror:true, offset:80});
   initTilt();
   initMagneticBtns();
   attachCursorHovers();
