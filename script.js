@@ -377,8 +377,14 @@ resetIdleTimer();
   let pct=0;
   /* --- SOUND ENGINE (Web Audio API) --- */
   const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  // Resume AudioContext on first user interaction (browser autoplay policy)
+  function resumeAudio(){ if(audioCtx.state==='suspended') audioCtx.resume(); }
+  document.addEventListener('click', resumeAudio, {once:true});
+  document.addEventListener('touchstart', resumeAudio, {once:true, passive:true});
+
   function playSparkSound(){
     try{
+      if(audioCtx.state==='suspended') return;
       const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.08,audioCtx.sampleRate);
       const d=buf.getChannelData(0);
       for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2)*0.18;
@@ -413,15 +419,22 @@ resetIdleTimer();
   let glitchActive=false;
   function glitchPercent(real){
     if(glitchActive) return;
-    if(Math.random()>0.06) return;
+    if(Math.random()>0.20) return; // 20% chance per tick
     glitchActive=true;
     let ticks=0;
     const iv=setInterval(()=>{
       lsPerc.textContent=Math.floor(Math.random()*100)+'%';
       lsPerc.style.color='var(--primary-light)';
+      lsPerc.style.textShadow='0 0 8px var(--primary-light)';
       ticks++;
-      if(ticks>3){ clearInterval(iv); lsPerc.textContent=Math.floor(real)+'%'; lsPerc.style.color=''; glitchActive=false; }
-    },60);
+      if(ticks>4){
+        clearInterval(iv);
+        lsPerc.textContent=Math.floor(real)+'%';
+        lsPerc.style.color='';
+        lsPerc.style.textShadow='';
+        glitchActive=false;
+      }
+    },55);
   }
 
   function updateBar(p){
@@ -932,45 +945,13 @@ window.addEventListener('DOMContentLoaded',()=>{
   })();
 
   /* ============================================================
-     TYPEWRITER HERO HEADLINE
-  ============================================================ */
-  (function(){
-    const lines=[
-      document.querySelector('[data-i18n="hero_line1"]'),
-      document.querySelector('[data-i18n="hero_line2"]'),
-      document.querySelector('[data-i18n="hero_line3"]')
-    ];
-    if(!lines[0]) return;
-    const originals=lines.map(el=>el?el.textContent:'');
-    lines.forEach(el=>{if(el)el.textContent='';});
-    function typeLine(idx){
-      if(idx>=lines.length) return;
-      const el=lines[idx]; if(!el) return typeLine(idx+1);
-      const txt=originals[idx]; let i=0;
-      el.textContent='';
-      function tick(){
-        if(i<=txt.length){
-          el.textContent=txt.slice(0,i)+(i<txt.length?'|':'');
-          if(el.getAttribute('data-text')) el.setAttribute('data-text',el.textContent.replace('|',''));
-          i++; setTimeout(tick,55);
-        } else {
-          el.textContent=txt;
-          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt);
-          setTimeout(()=>typeLine(idx+1),200);
-        }
-      }
-      setTimeout(tick, idx===0?400:0);
-    }
-    typeLine(0);
-  })();
-
-  /* ============================================================
      ODOMETER / SLOT MACHINE COUNTERS
   ============================================================ */
   (function(){
     function odometer(el, finalText, dur){
       const suffix=finalText.replace(/[\d.]/g,'');
       const num=parseFloat(finalText);
+      if(isNaN(num)) return;
       const hasDot=finalText.includes('.');
       const start=performance.now();
       let lastGlitch=0;
@@ -978,11 +959,9 @@ window.addEventListener('DOMContentLoaded',()=>{
         const p=Math.min((now-start)/dur,1);
         const ease=1-Math.pow(1-p,4);
         const current=num*ease;
-        // Slot machine glitch: random digit flash
         if(now-lastGlitch>80 && Math.random()>0.6 && p<0.95){
           lastGlitch=now;
-          const fake=(Math.random()*num).toFixed(hasDot?2:0)+suffix;
-          el.textContent=fake;
+          el.textContent=(Math.random()*num).toFixed(hasDot?2:0)+suffix;
           el.style.opacity='0.5';
           setTimeout(()=>{el.style.opacity='1';},60);
         } else {
@@ -997,15 +976,57 @@ window.addEventListener('DOMContentLoaded',()=>{
     const obs=new IntersectionObserver(entries=>{
       entries.forEach(e=>{
         if(e.isIntersecting){
-          const el=e.target, f=el.getAttribute('data-final');
+          const el=e.target;
+          // Baca data-final dari HTML attribute (sudah ada di HTML)
+          const f=el.getAttribute('data-final');
           if(f){ odometer(el,f,2000); obs.unobserve(el); }
         }
       });
     },{threshold:0.5});
     ['cnt1','cnt2','cnt3'].forEach(id=>{
       const el=document.getElementById(id);
-      if(el){ el.setAttribute('data-final',el.textContent.trim()); obs.observe(el); }
+      // Hanya observe, jangan overwrite data-final yang sudah ada di HTML
+      if(el && el.getAttribute('data-final')) obs.observe(el);
     });
+  })();
+
+  /* ============================================================
+     TYPEWRITER HERO HEADLINE
+     (dijalankan setelah applyLanguage agar teks sudah benar)
+  ============================================================ */
+  (function(){
+    // Ambil teks SETELAH applyLanguage mengisi konten
+    const lines=[
+      document.querySelector('[data-i18n="hero_line1"]'),
+      document.querySelector('[data-i18n="hero_line2"]'),
+      document.querySelector('[data-i18n="hero_line3"]')
+    ];
+    if(!lines[0]) return;
+    let typewriterDone=false;
+    const originals=lines.map(el=>el?el.textContent.trim():'');
+    lines.forEach(el=>{if(el) el.textContent='';});
+
+    function typeLine(idx){
+      if(idx>=lines.length){ typewriterDone=true; return; }
+      const el=lines[idx]; if(!el) return typeLine(idx+1);
+      const txt=originals[idx]; let i=0;
+      el.textContent='';
+      function tick(){
+        if(i<=txt.length){
+          el.textContent=txt.slice(0,i)+(i<txt.length?'|':'');
+          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt.slice(0,i));
+          i++; setTimeout(tick,52);
+        } else {
+          el.textContent=txt;
+          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt);
+          setTimeout(()=>typeLine(idx+1),180);
+        }
+      }
+      setTimeout(tick, idx===0?300:0);
+    }
+
+    // Pastikan applyLanguage sudah selesai (sinkron), lalu jalankan typewriter
+    setTimeout(typeLine, 0, 0);
   })();
 
 });
