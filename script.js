@@ -375,11 +375,62 @@ resetIdleTimer();
 
   const statusMsgs=['Initializing...','Loading assets...','Charging power...','Calibrating aim...','Bypassing firewall...','Almost ready...'];
   let pct=0;
+  /* --- SOUND ENGINE (Web Audio API) --- */
+  const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  function playSparkSound(){
+    try{
+      const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.08,audioCtx.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2)*0.18;
+      const src=audioCtx.createBufferSource();
+      const gain=audioCtx.createGain();
+      const filter=audioCtx.createBiquadFilter();
+      filter.type='bandpass'; filter.frequency.value=3200+Math.random()*1800; filter.Q.value=0.6;
+      src.buffer=buf;
+      src.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.22,audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.08);
+      src.start();
+    }catch(e){}
+  }
+  let lastSoundPct=0;
+
+  /* --- TYPING EFFECT --- */
+  let currentMsg='', typingTimer=null;
+  function typeMsg(msg){
+    if(msg===currentMsg) return;
+    currentMsg=msg;
+    clearTimeout(typingTimer);
+    lsStat.textContent='';
+    let i=0;
+    function typeChar(){
+      if(i<=msg.length){ lsStat.textContent=msg.slice(0,i)+(i<msg.length?'█':''); i++; typingTimer=setTimeout(typeChar,38); }
+    }
+    typeChar();
+  }
+
+  /* --- GLITCH COUNTER --- */
+  let glitchActive=false;
+  function glitchPercent(real){
+    if(glitchActive) return;
+    if(Math.random()>0.06) return;
+    glitchActive=true;
+    let ticks=0;
+    const iv=setInterval(()=>{
+      lsPerc.textContent=Math.floor(Math.random()*100)+'%';
+      lsPerc.style.color='var(--primary-light)';
+      ticks++;
+      if(ticks>3){ clearInterval(iv); lsPerc.textContent=Math.floor(real)+'%'; lsPerc.style.color=''; glitchActive=false; }
+    },60);
+  }
+
   function updateBar(p){
     lsBar.style.width=p+'%';
-    lsPerc.textContent=Math.floor(p)+'%';
-    lsStat.textContent=statusMsgs[Math.min(Math.floor(p/20),statusMsgs.length-1)];
+    if(!glitchActive) lsPerc.textContent=Math.floor(p)+'%';
+    glitchPercent(p);
+    typeMsg(statusMsgs[Math.min(Math.floor(p/20),statusMsgs.length-1)]);
     spawnSparks();
+    if(p-lastSoundPct>3){ lastSoundPct=p; playSparkSound(); }
   }
   const loadIv=setInterval(()=>{
     const spd=pct<70?(Math.random()*3.2+1):(Math.random()*1.3+.3);
@@ -811,6 +862,152 @@ window.addEventListener('DOMContentLoaded',()=>{
   initTilt();
   initMagneticBtns();
   attachCursorHovers();
+
+  /* ============================================================
+     PARTICLE CURSOR TRAIL
+  ============================================================ */
+  (function(){
+    const canvas=document.createElement('canvas');
+    canvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9996;';
+    document.body.appendChild(canvas);
+    const ctx=canvas.getContext('2d');
+    let W=canvas.width=window.innerWidth, H=canvas.height=window.innerHeight;
+    window.addEventListener('resize',()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;},{passive:true});
+    const particles=[];
+    function spawnParticle(x,y){
+      const c=getThemeColors();
+      for(let i=0;i<3;i++){
+        particles.push({
+          x,y,
+          vx:(Math.random()-0.5)*2.5, vy:(Math.random()-0.5)*2.5-1,
+          r:Math.random()*3+1, life:1,
+          decay:Math.random()*0.04+0.03,
+          col:Math.random()>0.5?c.rgb:c.lRgb
+        });
+      }
+    }
+    document.addEventListener('mousemove',e=>spawnParticle(e.clientX,e.clientY),{passive:true});
+    document.addEventListener('touchmove',e=>{
+      const t=e.touches[0]; spawnParticle(t.clientX,t.clientY);
+    },{passive:true});
+    (function loop(){
+      ctx.clearRect(0,0,W,H);
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i];
+        p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.life-=p.decay;
+        if(p.life<=0){particles.splice(i,1);continue;}
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${p.col},${p.life*0.7})`;
+        ctx.shadowColor=`rgba(${p.col},${p.life})`;ctx.shadowBlur=8;
+        ctx.fill();
+      }
+      ctx.shadowBlur=0;
+      requestAnimationFrame(loop);
+    })();
+  })();
+
+  /* ============================================================
+     SCROLL PROGRESS BAR
+  ============================================================ */
+  (function(){
+    const bar=document.createElement('div');
+    bar.style.cssText='position:fixed;top:0;left:0;height:3px;width:0%;z-index:9999;transition:width .1s linear;pointer-events:none;';
+    bar.style.background='linear-gradient(90deg,var(--primary),var(--primary-light))';
+    bar.style.boxShadow='0 0 8px var(--primary)';
+    document.body.appendChild(bar);
+    window.addEventListener('scroll',()=>{
+      const pct=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+      bar.style.width=Math.min(pct,100)+'%';
+    },{passive:true});
+  })();
+
+  /* ============================================================
+     FLOATING ONLINE BADGE
+  ============================================================ */
+  (function(){
+    const badge=document.createElement('div');
+    badge.innerHTML='<span class="vpulse" style="width:7px;height:7px;margin:0 5px 0 0;display:inline-block;vertical-align:middle;background:#22c55e;border-radius:50%;position:relative;"></span>SERVER ONLINE';
+    badge.style.cssText='position:fixed;bottom:24px;right:18px;z-index:997;background:rgba(12,12,20,.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:60px;padding:8px 16px;font-size:.72rem;font-weight:700;color:#22c55e;letter-spacing:.12em;box-shadow:0 0 18px rgba(34,197,94,.25),0 4px 24px rgba(0,0,0,.5);animation:badgeBounce 3s ease-in-out infinite;pointer-events:none;';
+    document.body.appendChild(badge);
+  })();
+
+  /* ============================================================
+     TYPEWRITER HERO HEADLINE
+  ============================================================ */
+  (function(){
+    const lines=[
+      document.querySelector('[data-i18n="hero_line1"]'),
+      document.querySelector('[data-i18n="hero_line2"]'),
+      document.querySelector('[data-i18n="hero_line3"]')
+    ];
+    if(!lines[0]) return;
+    const originals=lines.map(el=>el?el.textContent:'');
+    lines.forEach(el=>{if(el)el.textContent='';});
+    function typeLine(idx){
+      if(idx>=lines.length) return;
+      const el=lines[idx]; if(!el) return typeLine(idx+1);
+      const txt=originals[idx]; let i=0;
+      el.textContent='';
+      function tick(){
+        if(i<=txt.length){
+          el.textContent=txt.slice(0,i)+(i<txt.length?'|':'');
+          if(el.getAttribute('data-text')) el.setAttribute('data-text',el.textContent.replace('|',''));
+          i++; setTimeout(tick,55);
+        } else {
+          el.textContent=txt;
+          if(el.getAttribute('data-text')) el.setAttribute('data-text',txt);
+          setTimeout(()=>typeLine(idx+1),200);
+        }
+      }
+      setTimeout(tick, idx===0?400:0);
+    }
+    typeLine(0);
+  })();
+
+  /* ============================================================
+     ODOMETER / SLOT MACHINE COUNTERS
+  ============================================================ */
+  (function(){
+    function odometer(el, finalText, dur){
+      const suffix=finalText.replace(/[\d.]/g,'');
+      const num=parseFloat(finalText);
+      const hasDot=finalText.includes('.');
+      const start=performance.now();
+      let lastGlitch=0;
+      function step(now){
+        const p=Math.min((now-start)/dur,1);
+        const ease=1-Math.pow(1-p,4);
+        const current=num*ease;
+        // Slot machine glitch: random digit flash
+        if(now-lastGlitch>80 && Math.random()>0.6 && p<0.95){
+          lastGlitch=now;
+          const fake=(Math.random()*num).toFixed(hasDot?2:0)+suffix;
+          el.textContent=fake;
+          el.style.opacity='0.5';
+          setTimeout(()=>{el.style.opacity='1';},60);
+        } else {
+          el.textContent=(hasDot?current.toFixed(2):Math.round(current))+suffix;
+          el.style.opacity='1';
+        }
+        if(p<1) requestAnimationFrame(step);
+        else { el.textContent=finalText; el.style.opacity='1'; }
+      }
+      requestAnimationFrame(step);
+    }
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el=e.target, f=el.getAttribute('data-final');
+          if(f){ odometer(el,f,2000); obs.unobserve(el); }
+        }
+      });
+    },{threshold:0.5});
+    ['cnt1','cnt2','cnt3'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){ el.setAttribute('data-final',el.textContent.trim()); obs.observe(el); }
+    });
+  })();
+
 });
 
 })();
