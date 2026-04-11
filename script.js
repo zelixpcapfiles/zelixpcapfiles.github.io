@@ -65,7 +65,7 @@ updateLoadingScreenTheme();
   let devOpen=false;
   setInterval(()=>{
     if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      if(!devOpen){devOpen=true;alert('Matikan Mode desktop / inspeksi.');}
+      if(!devOpen){devOpen=true;alert('Matikan Mode desktop / inspeksi / pop up blocker.');}
     } else devOpen=false;
   },1500);
   document.addEventListener('selectstart',e=>e.preventDefault());
