@@ -244,7 +244,7 @@ resetIdleTimer();
     const mx=(x1+x2)/2+(Math.random()-.5)*rough;
     const my=(y1+y2)/2+(Math.random()-.5)*rough*.35;
     ctx.strokeStyle=`rgba(${col},${alpha})`;
-    ctx.lineWidth=depth*1.8; ctx.shadowColor=`rgba(${col},.95)`; ctx.shadowBlur=depth*7;
+    ctx.lineWidth=depth*1.4; ctx.shadowColor=`rgba(${col},.6)`; ctx.shadowBlur=depth*4;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(mx,my);ctx.stroke();
     ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(x2,y2);ctx.stroke();
     ctx.strokeStyle=`rgba(255,255,255,${alpha*.45})`; ctx.lineWidth=depth*.5; ctx.shadowBlur=0;
@@ -255,9 +255,9 @@ resetIdleTimer();
     lsBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.76,depth-1);
   }
 
-  const MAX_BOLTS  = isLowEnd ? 1 : 2;
+  const MAX_BOLTS  = 1;
   const MAX_ARCS   = 0;
-  const SPAWN_MS   = isLowEnd ? 533 : 233;
+  const SPAWN_MS   = isLowEnd ? 1200 : 700;
   const stormBolts = [];
   const stormArcs  = [];
   let stormFlash   = 0;
@@ -273,13 +273,13 @@ resetIdleTimer();
     const ty = h * (.18 + Math.random() * .58);
     stormBolts.push({
       x, tx, ty,
-      alpha: isSuper ? 1.1 : (.5 + Math.random() * .5),
-      decay: isSuper ? .03 : (.055 + Math.random() * .07),
-      depth: isSuper ? (isLowEnd ? 4 : 6) : (isLowEnd ? 3 : 4),
-      rough: isSuper ? 160 : (50 + Math.random() * 80),
+      alpha: isSuper ? 0.45 : (.2 + Math.random() * .2),
+      decay: isSuper ? .07 : (.12 + Math.random() * .08),
+      depth: isSuper ? (isLowEnd ? 2 : 3) : (isLowEnd ? 1 : 2),
+      rough: isSuper ? 80 : (30 + Math.random() * 40),
       isSuper
     });
-    if(isSuper) stormFlash = Math.min(stormFlash + .35, 1);
+    if(isSuper) stormFlash = Math.min(stormFlash + .1, 0.3);
   }
 
   function spawnArc(){
@@ -299,7 +299,7 @@ resetIdleTimer();
   function drawStormFrame(t){
     sCtx.clearRect(0,0,stormC.width,stormC.height);
     const c = getThemeColors();
-    const glowAlpha = (.015 + Math.sin(t*.0008)*.009) + stormFlash * .033;
+    const glowAlpha = (.006 + Math.sin(t*.0008)*.004) + stormFlash * .012;
     const grd = sCtx.createRadialGradient(
       stormC.width*.5, stormC.height*.42, 0,
       stormC.width*.5, stormC.height*.42, stormC.width * .62
@@ -334,16 +334,15 @@ resetIdleTimer();
     if(!stormRunning) return;
     if(t - stormLastSpawn > SPAWN_MS){
       stormLastSpawn = t;
-      const isSuper = Math.random() < .04;
-      if(Math.random() < .33) spawnBolt(isSuper);
-      if(!isLowEnd && Math.random() < .02) spawnArc();
+      const isSuper = Math.random() < .02;
+      if(Math.random() < .18) spawnBolt(isSuper);
+      if(!isLowEnd && Math.random() < .01) spawnArc();
     }
     drawStormFrame(t);
     stormAnimId = requestAnimationFrame(stormTick);
   }
 
-  spawnBolt(true);
-  setTimeout(()=>spawnBolt(false),280);
+  spawnBolt(false);
   stormAnimId = requestAnimationFrame(stormTick);
 
   const sparks = [];
