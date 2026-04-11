@@ -65,7 +65,7 @@ updateLoadingScreenTheme();
   let devOpen=false;
   setInterval(()=>{
     if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      if(!devOpen){devOpen=true;alert('Matikan mode desktop / jangan inspeksi.');}
+      if(!devOpen){devOpen=true;alert('Developer tools detected.');}
     } else devOpen=false;
   },1500);
   document.addEventListener('selectstart',e=>e.preventDefault());
@@ -255,9 +255,9 @@ resetIdleTimer();
     lsBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.76,depth-1);
   }
 
-  const MAX_BOLTS  = isLowEnd ? 3 : 7;
-  const MAX_ARCS   = isLowEnd ? 0 : 3;
-  const SPAWN_MS   = isLowEnd ? 220 : 80;
+  const MAX_BOLTS  = isLowEnd ? 2 : 4;
+  const MAX_ARCS   = isLowEnd ? 0 : 1;
+  const SPAWN_MS   = isLowEnd ? 320 : 140;
   const stormBolts = [];
   const stormArcs  = [];
   let stormFlash   = 0;
@@ -273,13 +273,13 @@ resetIdleTimer();
     const ty = h * (.18 + Math.random() * .58);
     stormBolts.push({
       x, tx, ty,
-      alpha: isSuper ? 1.5 : (.6 + Math.random() * .75),
-      decay: isSuper ? .02 : (.042 + Math.random() * .068),
-      depth: isSuper ? (isLowEnd ? 6 : 9) : (isLowEnd ? 4 : 6),
-      rough: isSuper ? 240 : (70 + Math.random() * 120),
+      alpha: isSuper ? 1.1 : (.5 + Math.random() * .5),
+      decay: isSuper ? .03 : (.055 + Math.random() * .07),
+      depth: isSuper ? (isLowEnd ? 4 : 6) : (isLowEnd ? 3 : 4),
+      rough: isSuper ? 160 : (50 + Math.random() * 80),
       isSuper
     });
-    if(isSuper) stormFlash = Math.min(stormFlash + .6, 1);
+    if(isSuper) stormFlash = Math.min(stormFlash + .35, 1);
   }
 
   function spawnArc(){
@@ -289,10 +289,10 @@ resetIdleTimer();
     stormArcs.push({
       x1:-10, y1:y+(Math.random()-.5)*70,
       x2:stormC.width+10, y2:y+(Math.random()-.5)*70,
-      alpha:.3+Math.random()*.35,
-      decay:.022+Math.random()*.038,
-      depth:isLowEnd?4:6,
-      rough:55+Math.random()*100
+      alpha:.2+Math.random()*.2,
+      decay:.03+Math.random()*.04,
+      depth:isLowEnd?3:4,
+      rough:40+Math.random()*.65
     });
   }
 
@@ -334,17 +334,16 @@ resetIdleTimer();
     if(!stormRunning) return;
     if(t - stormLastSpawn > SPAWN_MS){
       stormLastSpawn = t;
-      const isSuper = Math.random() < .11;
-      if(Math.random() < .80) spawnBolt(isSuper);
-      if(!isLowEnd && Math.random() < .05) spawnArc();
+      const isSuper = Math.random() < .07;
+      if(Math.random() < .55) spawnBolt(isSuper);
+      if(!isLowEnd && Math.random() < .03) spawnArc();
     }
     drawStormFrame(t);
     stormAnimId = requestAnimationFrame(stormTick);
   }
 
   spawnBolt(true);
-  setTimeout(()=>spawnBolt(false),180);
-  setTimeout(()=>spawnBolt(false),380);
+  setTimeout(()=>spawnBolt(false),280);
   stormAnimId = requestAnimationFrame(stormTick);
 
   const sparks = [];
@@ -1399,10 +1398,10 @@ function runHeroTypewriter(){
       x:   w*(.08+Math.random()*.84),
       tx:  w/2 + (Math.random()-.5)*240,
       ty:  h*(.22+Math.random()*.48),
-      alpha: .6+Math.random()*.8,
-      decay: .038+Math.random()*.055,
-      depth: isLowEnd?4:6,
-      rough: 70+Math.random()*130
+      alpha: .45+Math.random()*.55,
+      decay: .055+Math.random()*.065,
+      depth: isLowEnd?3:4,
+      rough: 50+Math.random()*90
     });
   }
 
@@ -1415,7 +1414,7 @@ function runHeroTypewriter(){
     grd.addColorStop(.5,'rgba('+c.rgb+',.04)');
     grd.addColorStop(1,'rgba(0,0,0,0)');
     sCtx.fillStyle=grd; sCtx.fillRect(0,0,stormC.width,stormC.height);
-    if(Math.random()<.55) spawnBolt();
+    if(Math.random()<.32) spawnBolt();
     for(var i=stormBolts.length-1;i>=0;i--){
       var b=stormBolts[i];
       if(b.alpha>.03){ dlBolt(sCtx,b.x,-8,b.tx,b.ty,b.rough,Math.min(b.alpha,1),b.depth); b.alpha-=b.decay; }
@@ -1526,8 +1525,8 @@ function runHeroTypewriter(){
 
     // Kick off background lightning storm
     stormActive=true;
-    // Burst 3 bolts immediately for drama
-    spawnBolt(); spawnBolt(); spawnBolt();
+    // Burst 2 bolts immediately
+    spawnBolt(); spawnBolt();
     stormTick();
 
     filenameEl.textContent = filename||'';
@@ -1541,8 +1540,8 @@ function runHeroTypewriter(){
       doFlash(.45);
       statusEl.textContent = T[lang]?.dl_anim_phase2 || 'Processing Download...';
       // Extra bolts mid-animation
-      for(var i=0;i<3;i++){
-        (function(d){ setTimeout(function(){ spawnBolt(); spawnBolt(); },d); })(i*110);
+      for(var i=0;i<2;i++){
+        (function(d){ setTimeout(function(){ spawnBolt(); },d); })(i*140);
       }
       animateBar(80, 1500, function(){
 
