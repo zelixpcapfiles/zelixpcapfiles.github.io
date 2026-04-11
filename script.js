@@ -522,11 +522,11 @@ resetIdleTimer();
    TRANSLATIONS
    ============================================================== */
 const T={
-  id:{dl_modal_title:'Pilih Versi',dl_modal_desc:'Pilih versi Free Fire yang sesuai dengan perangkatmu:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'Tidak tahu arsitektur perangkatmu? Coba v7a dulu, jika tidak bisa gunakan v8a.',nav_home:'Beranda',nav_products:'Produk',nav_features:'Fitur',nav_testi:'Testimoni',nav_downloads:'Unduh',nav_discord:'Discord',hero_line1:'Tingkatkan',hero_line2:'Bidikanmu',hero_line3:'Tanpa Batas',hero_desc:'Injector next-gen dengan akurasi 0.01ms. Performa maksimal untuk gaming kompetitif.',get_started:'Mulai Sekarang',learn_more:'Pelajari',stat_response:'Respons',stat_stability:'Stabilitas',stat_support:'Dukungan',pill_ai:'Berbasis AI',pill_latency:'Latensi Rendah',pill_anticheat:'Anti-Cheat',pill_cloud:'Cloud Sync',server_online:'SERVER ONLINE',product_heading:'Paket X!T',product_sub:'Pilih paket yang sesuai dengan gaya bermainmu.',basic_name:'ESP',basic_feat1:'1 perangkat',basic_feat2:'Melihat musuh dari balik tembok',basic_feat3:'Update setiap pergantian OBB',basic_feat4:'Support 12 jam',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 perangkat',premium_feat2:'Mempermudah Headshot',premium_feat3:'Update real-time',premium_feat4:'Support 24/7 prioritas',per_day:'/hari',buy_now:'Beli Sekarang',popular:'POPULER',features_title:'Kenapa X!T?',feat1_title:'Respons Instan',feat1_desc:'Latensi ultra rendah dengan algoritma proprietary.',feat2_title:'Anti-Banned',feat2_desc:'Sistem keamanan berlapis, 100% aman digunakan.',feat3_title:'Akurasi Tinggi',feat3_desc:'Kalibrasi presisi hingga 0.01 untuk setiap gerakan.',testi_title:'Apa Kata Mereka',testi1:'"X!T gila! Aim jadi jauh lebih presisi."<br>— Rizky, Pro Player',testi2:'"Murah tapi kualitas premium. Recommended!"<br>— Sinta, Streamer',testi3:'"Support cepat, injector paling stabil."<br>— Bayu, Gamer',faq_title:'Pertanyaan Umum',faq_q1:'Bagaimana cara aktivasi?',faq_a1:'Setelah pembayaran, kamu akan mendapat kode aktivasi via WhatsApp.',faq_q2:'Apakah bisa untuk semua game?',faq_a2:'Tidak, ini khusus game Free Fire.',payment_title:'QRIS Allpay',product_label:'Produk',total_label:'Total',wa_confirm:'Kirim Bukti via WhatsApp',manual_verify:'Admin akan verifikasi manual.',download_title:'Unduh Free Fire',download_desc:'Dapatkan apk FF terbaru langsung dari Website ini.',download_button:'Download Sekarang',discord_title:'Gabung Discord',discord_desc:'Dapatkan update terbaru, bantuan langsung, dan komunitas eksklusif.',discord_button:'Join Discord',visitor_label:'Penonton',visitor_live:'LIVE'},
-  en:{dl_modal_title:'Choose Version',dl_modal_desc:'Choose the Free Fire version that matches your device:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:"Don't know your device architecture? Try v7a first, if it doesn't work use v8a.",nav_home:'Home',nav_products:'Products',nav_features:'Features',nav_testi:'Testimonials',nav_downloads:'Downloads',nav_discord:'Discord',hero_line1:'Enhance',hero_line2:'Your Aim',hero_line3:'Without Limits',hero_desc:'Next-gen injector with 0.01ms accuracy. Maximum performance for competitive gaming.',get_started:'Get Started',learn_more:'Learn More',stat_response:'Response',stat_stability:'Stability',stat_support:'Support',pill_ai:'AI-Powered',pill_latency:'Low Latency',pill_anticheat:'Anti-Cheat',pill_cloud:'Cloud Sync',server_online:'SERVER ONLINE',product_heading:'X!T Plans',product_sub:'Choose the plan that fits your playstyle.',basic_name:'ESP',basic_feat1:'1 device',basic_feat2:'See enemies through walls',basic_feat3:'Updated with every OBB change',basic_feat4:'12h support',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 device',premium_feat2:'Makes headshots easier',premium_feat3:'Real-time updates',premium_feat4:'24/7 priority support',per_day:'/day',buy_now:'Buy Now',popular:'POPULAR',features_title:'Why X!T?',feat1_title:'Instant Response',feat1_desc:'Ultra low latency with proprietary algorithm.',feat2_title:'Anti-Ban',feat2_desc:'Multi-layer security, 100% safe to use.',feat3_title:'High Accuracy',feat3_desc:'Precision calibration up to 0.01 for every movement.',testi_title:'What They Say',testi1:'"X!T is insane! My aim became way more precise."<br>— Rizky, Pro Player',testi2:'"Affordable but premium quality. Highly recommended!"<br>— Sinta, Streamer',testi3:'"Fast support, most stable injector out there."<br>— Bayu, Gamer',faq_title:'FAQ',faq_q1:'How to activate?',faq_a1:'After payment, you will receive an activation code via WhatsApp.',faq_q2:'Does it work for all games?',faq_a2:'No, this is specifically for Free Fire.',payment_title:'QRIS Allpay',product_label:'Product',total_label:'Total',wa_confirm:'Send Proof via WhatsApp',manual_verify:'Admin will verify manually.',download_title:'Download Free Fire',download_desc:'Get the latest FF apk directly from this website.',download_button:'Download Now',discord_title:'Join Discord',discord_desc:'Get the latest updates, direct support, and an exclusive community.',discord_button:'Join Discord',visitor_label:'Viewers',visitor_live:'LIVE'},
-  fr:{dl_modal_title:'Choisir la version',dl_modal_desc:'Choisissez la version de Free Fire adaptée:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:"Essayez v7a d'abord, sinon utilisez v8a.",nav_home:'Accueil',nav_products:'Produits',nav_features:'Fonctionnalités',nav_testi:'Témoignages',nav_downloads:'Téléchargements',nav_discord:'Discord',hero_line1:'Améliorez',hero_line2:'Votre visée',hero_line3:'Sans Limites',hero_desc:'Injecteur nouvelle génération avec une précision de 0,01 ms.',get_started:'Commencer',learn_more:'En savoir plus',stat_response:'Réponse',stat_stability:'Stabilité',stat_support:'Support',pill_ai:'Propulsé par IA',pill_latency:'Faible Latence',pill_anticheat:'Anti-Triche',pill_cloud:'Sync Cloud',server_online:'SERVEUR EN LIGNE',product_heading:'Plans X!T',product_sub:'Choisissez le forfait adapté.',basic_name:'ESP',basic_feat1:'1 appareil',basic_feat2:'Voir les ennemis à travers les murs',basic_feat3:'Mis à jour chaque OBB',basic_feat4:'Support 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 appareil',premium_feat2:'Facilite les tirs à la tête',premium_feat3:'Mises à jour en temps réel',premium_feat4:'Support prioritaire 24/7',per_day:'/jour',buy_now:'Acheter',popular:'POPULAIRE',features_title:'Pourquoi X!T?',feat1_title:'Réponse instantanée',feat1_desc:'Latence ultra faible.',feat2_title:'Anti-Bannissement',feat2_desc:'Sécurité multicouche.',feat3_title:'Haute précision',feat3_desc:'Calibration précise.',testi_title:"Ce qu'ils disent",testi1:'"X!T est incroyable! Ma visée est bien plus précise."<br>— Rizky, Pro Player',testi2:'"Pas cher mais qualité premium. Je recommande!"<br>— Sinta, Streamer',testi3:'"Support rapide, injecteur le plus stable."<br>— Bayu, Gamer',faq_title:'Questions fréquentes',faq_q1:'Comment activer?',faq_a1:'Après paiement, vous recevrez un code via WhatsApp.',faq_q2:'Fonctionne pour tous les jeux?',faq_a2:"Non, c'est spécifique à Free Fire.",payment_title:'QRIS Allpay',product_label:'Produit',total_label:'Total',wa_confirm:'Envoyer preuve WhatsApp',manual_verify:'Vérification manuelle.',download_title:'Telecharger Free Fire',download_desc:'Obtenez le dernier apk FF directement sur ce site.',download_button:'Télécharger',discord_title:'Rejoindre Discord',discord_desc:'Mises à jour, assistance et communauté exclusive.',discord_button:'Rejoindre Discord',visitor_label:'Spectateurs',visitor_live:'EN DIRECT'},
-  vi:{dl_modal_title:'Chọn phiên bản',dl_modal_desc:'Chọn phiên bản Free Fire phù hợp:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'Không biết kiến trúc? Thử v7a trước.',nav_home:'Trang chủ',nav_products:'Sản phẩm',nav_features:'Tính năng',nav_testi:'Đánh giá',nav_downloads:'Tải xuống',nav_discord:'Discord',hero_line1:'Tăng cường',hero_line2:'Độ nhắm của bạn',hero_line3:'Không giới hạn',hero_desc:'Kim phun thế hệ mới với độ chính xác 0,01ms.',get_started:'Bắt đầu',learn_more:'Tìm hiểu',stat_response:'Phản hồi',stat_stability:'Ổn định',stat_support:'Hỗ trợ',pill_ai:'Hỗ trợ AI',pill_latency:'Độ Trễ Thấp',pill_anticheat:'Chống Gian Lận',pill_cloud:'Đồng Bộ Đám Mây',server_online:'MÁY CHỦ TRỰC TUYẾN',product_heading:'Các kế hoạch X!T',product_sub:'Chọn gói phù hợp.',basic_name:'ESP',basic_feat1:'1 thiết bị',basic_feat2:'Nhìn xuyên tường',basic_feat3:'Cập nhật sau mỗi OBB',basic_feat4:'Hỗ trợ 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 thiết bị',premium_feat2:'Dễ headshot hơn',premium_feat3:'Cập nhật thời gian thực',premium_feat4:'Hỗ trợ ưu tiên 24/7',per_day:'/ngày',buy_now:'Mua ngay',popular:'PHỔ BIẾN',features_title:'Tại sao chọn X!T?',feat1_title:'Phản hồi tức thì',feat1_desc:'Độ trễ cực thấp.',feat2_title:'Chống cấm',feat2_desc:'Bảo mật đa lớp.',feat3_title:'Độ chính xác cao',feat3_desc:'Hiệu chuẩn chính xác.',testi_title:'Khách hàng nói gì',testi1:'"X!T điên rồ! Độ chính xác của tôi tăng vọt."<br>— Rizky, Pro Player',testi2:'"Rẻ mà chất lượng cao cấp. Rất đáng mua!"<br>— Sinta, Streamer',testi3:'"Hỗ trợ nhanh, injector ổn định nhất."<br>— Bayu, Gamer',faq_title:'Câu hỏi thường gặp',faq_q1:'Cách kích hoạt?',faq_a1:'Sau khi thanh toán, bạn sẽ nhận mã qua WhatsApp.',faq_q2:'Có hoạt động với mọi game?',faq_a2:'Không, dành riêng cho Free Fire.',payment_title:'QRIS Allpay',product_label:'Sản phẩm',total_label:'Tổng',wa_confirm:'Gửi bằng chứng WhatsApp',manual_verify:'Xác minh thủ công.',download_title:'Tải Free Fire',download_desc:'Nhận bản apk FF mới nhất.',download_button:'Tải ngay',discord_title:'Tham gia Discord',discord_desc:'Cập nhật, hỗ trợ và cộng đồng độc quyền.',discord_button:'Tham gia Discord',visitor_label:'Người xem',visitor_live:'TRỰC TIẾP'},
-  es:{dl_modal_title:'Elegir versión',dl_modal_desc:'Elige la versión de Free Fire adecuada:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'¿No sabes la arquitectura? Prueba v7a primero.',nav_home:'Inicio',nav_products:'Productos',nav_features:'Características',nav_testi:'Testimonios',nav_downloads:'Descargas',nav_discord:'Discord',hero_line1:'Mejora',hero_line2:'Tu puntería',hero_line3:'Sin Límites',hero_desc:'Inyector de nueva generación con precisión de 0.01ms.',get_started:'Empezar',learn_more:'Aprender más',stat_response:'Respuesta',stat_stability:'Estabilidad',stat_support:'Soporte',pill_ai:'Potenciado por IA',pill_latency:'Baja Latencia',pill_anticheat:'Anti-Trampa',pill_cloud:'Sync en Nube',server_online:'SERVIDOR EN LÍNEA',product_heading:'Planes X!T',product_sub:'Elige tu plan.',basic_name:'ESP',basic_feat1:'1 dispositivo',basic_feat2:'Ver enemigos a través de paredes',basic_feat3:'Actualizado con cada OBB',basic_feat4:'Soporte 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 dispositivo',premium_feat2:'Facilita los headshots',premium_feat3:'Actualizaciones en tiempo real',premium_feat4:'Soporte prioritario 24/7',per_day:'/día',buy_now:'Comprar',popular:'POPULAR',features_title:'Por qué X!T?',feat1_title:'Respuesta instantánea',feat1_desc:'Latencia ultra baja.',feat2_title:'Anti-Baneo',feat2_desc:'Seguridad multicapa.',feat3_title:'Alta precisión',feat3_desc:'Calibración precisa.',testi_title:'Lo que dicen',testi1:'"¡X!T es increíble! Mi puntería mejoró muchísimo."<br>— Rizky, Pro Player',testi2:'"Barato pero calidad premium. ¡Muy recomendado!"<br>— Sinta, Streamer',testi3:'"Soporte rápido, el injector más estable."<br>— Bayu, Gamer',faq_title:'Preguntas frecuentes',faq_q1:'Cómo activar?',faq_a1:'Después del pago, recibirás un código por WhatsApp.',faq_q2:'Funciona en todos los juegos?',faq_a2:'No, esto es específicamente para Free Fire.',payment_title:'QRIS Allpay',product_label:'Producto',total_label:'Total',wa_confirm:'Enviar comprobante WhatsApp',manual_verify:'Verificación manual.',download_title:'Descargar Free Fire',download_desc:'Obtén el último apk de FF.',download_button:'Descargar Ahora',discord_title:'Únete a Discord',discord_desc:'Actualizaciones, soporte y comunidad exclusiva.',discord_button:'Únete a Discord',visitor_label:'Espectadores',visitor_live:'EN VIVO'}
+  id:{dl_modal_title:'Pilih Versi',dl_modal_desc:'Pilih versi Free Fire yang sesuai dengan perangkatmu:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'Tidak tahu arsitektur perangkatmu? Coba v7a dulu, jika tidak bisa gunakan v8a.',nav_home:'Beranda',nav_products:'Produk',nav_features:'Fitur',nav_testi:'Testimoni',nav_downloads:'Unduh',nav_discord:'Discord',hero_line1:'Tingkatkan',hero_line2:'Bidikanmu',hero_line3:'Tanpa Batas',hero_desc:'Injector next-gen dengan akurasi 0.01ms. Performa maksimal untuk gaming kompetitif.',get_started:'Mulai Sekarang',learn_more:'Pelajari',stat_response:'Respons',stat_stability:'Stabilitas',stat_support:'Dukungan',pill_ai:'Berbasis AI',pill_latency:'Latensi Rendah',pill_anticheat:'Anti-Cheat',pill_cloud:'Cloud Sync',server_online:'SERVER ONLINE',dl_anim_phase1:'Mempersiapkan...',dl_anim_phase2:'Memproses Unduhan...',dl_anim_phase3:'Menyelesaikan...',dl_anim_done:'Unduhan Selesai!',product_heading:'Paket X!T',product_sub:'Pilih paket yang sesuai dengan gaya bermainmu.',basic_name:'ESP',basic_feat1:'1 perangkat',basic_feat2:'Melihat musuh dari balik tembok',basic_feat3:'Update setiap pergantian OBB',basic_feat4:'Support 12 jam',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 perangkat',premium_feat2:'Mempermudah Headshot',premium_feat3:'Update real-time',premium_feat4:'Support 24/7 prioritas',per_day:'/hari',buy_now:'Beli Sekarang',popular:'POPULER',features_title:'Kenapa X!T?',feat1_title:'Respons Instan',feat1_desc:'Latensi ultra rendah dengan algoritma proprietary.',feat2_title:'Anti-Banned',feat2_desc:'Sistem keamanan berlapis, 100% aman digunakan.',feat3_title:'Akurasi Tinggi',feat3_desc:'Kalibrasi presisi hingga 0.01 untuk setiap gerakan.',testi_title:'Apa Kata Mereka',testi1:'"X!T gila! Aim jadi jauh lebih presisi."<br>— Rizky, Pro Player',testi2:'"Murah tapi kualitas premium. Recommended!"<br>— Sinta, Streamer',testi3:'"Support cepat, injector paling stabil."<br>— Bayu, Gamer',faq_title:'Pertanyaan Umum',faq_q1:'Bagaimana cara aktivasi?',faq_a1:'Setelah pembayaran, kamu akan mendapat kode aktivasi via WhatsApp.',faq_q2:'Apakah bisa untuk semua game?',faq_a2:'Tidak, ini khusus game Free Fire.',payment_title:'QRIS Allpay',product_label:'Produk',total_label:'Total',wa_confirm:'Kirim Bukti via WhatsApp',manual_verify:'Admin akan verifikasi manual.',download_title:'Unduh Free Fire',download_desc:'Dapatkan apk FF terbaru langsung dari Website ini.',download_button:'Download Sekarang',discord_title:'Gabung Discord',discord_desc:'Dapatkan update terbaru, bantuan langsung, dan komunitas eksklusif.',discord_button:'Join Discord',visitor_label:'Penonton',visitor_live:'LIVE'},
+  en:{dl_modal_title:'Choose Version',dl_modal_desc:'Choose the Free Fire version that matches your device:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:"Don't know your device architecture? Try v7a first, if it doesn't work use v8a.",nav_home:'Home',nav_products:'Products',nav_features:'Features',nav_testi:'Testimonials',nav_downloads:'Downloads',nav_discord:'Discord',hero_line1:'Enhance',hero_line2:'Your Aim',hero_line3:'Without Limits',hero_desc:'Next-gen injector with 0.01ms accuracy. Maximum performance for competitive gaming.',get_started:'Get Started',learn_more:'Learn More',stat_response:'Response',stat_stability:'Stability',stat_support:'Support',pill_ai:'AI-Powered',pill_latency:'Low Latency',pill_anticheat:'Anti-Cheat',pill_cloud:'Cloud Sync',server_online:'SERVER ONLINE',dl_anim_phase1:'Preparing...',dl_anim_phase2:'Processing Download...',dl_anim_phase3:'Finalizing...',dl_anim_done:'Download Complete!',product_heading:'X!T Plans',product_sub:'Choose the plan that fits your playstyle.',basic_name:'ESP',basic_feat1:'1 device',basic_feat2:'See enemies through walls',basic_feat3:'Updated with every OBB change',basic_feat4:'12h support',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 device',premium_feat2:'Makes headshots easier',premium_feat3:'Real-time updates',premium_feat4:'24/7 priority support',per_day:'/day',buy_now:'Buy Now',popular:'POPULAR',features_title:'Why X!T?',feat1_title:'Instant Response',feat1_desc:'Ultra low latency with proprietary algorithm.',feat2_title:'Anti-Ban',feat2_desc:'Multi-layer security, 100% safe to use.',feat3_title:'High Accuracy',feat3_desc:'Precision calibration up to 0.01 for every movement.',testi_title:'What They Say',testi1:'"X!T is insane! My aim became way more precise."<br>— Rizky, Pro Player',testi2:'"Affordable but premium quality. Highly recommended!"<br>— Sinta, Streamer',testi3:'"Fast support, most stable injector out there."<br>— Bayu, Gamer',faq_title:'FAQ',faq_q1:'How to activate?',faq_a1:'After payment, you will receive an activation code via WhatsApp.',faq_q2:'Does it work for all games?',faq_a2:'No, this is specifically for Free Fire.',payment_title:'QRIS Allpay',product_label:'Product',total_label:'Total',wa_confirm:'Send Proof via WhatsApp',manual_verify:'Admin will verify manually.',download_title:'Download Free Fire',download_desc:'Get the latest FF apk directly from this website.',download_button:'Download Now',discord_title:'Join Discord',discord_desc:'Get the latest updates, direct support, and an exclusive community.',discord_button:'Join Discord',visitor_label:'Viewers',visitor_live:'LIVE'},
+  fr:{dl_modal_title:'Choisir la version',dl_modal_desc:'Choisissez la version de Free Fire adaptée:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:"Essayez v7a d'abord, sinon utilisez v8a.",nav_home:'Accueil',nav_products:'Produits',nav_features:'Fonctionnalités',nav_testi:'Témoignages',nav_downloads:'Téléchargements',nav_discord:'Discord',hero_line1:'Améliorez',hero_line2:'Votre visée',hero_line3:'Sans Limites',hero_desc:'Injecteur nouvelle génération avec une précision de 0,01 ms.',get_started:'Commencer',learn_more:'En savoir plus',stat_response:'Réponse',stat_stability:'Stabilité',stat_support:'Support',pill_ai:'Propulsé par IA',pill_latency:'Faible Latence',pill_anticheat:'Anti-Triche',pill_cloud:'Sync Cloud',server_online:'SERVEUR EN LIGNE',dl_anim_phase1:'Préparation...',dl_anim_phase2:'Traitement...',dl_anim_phase3:'Finalisation...',dl_anim_done:'Téléchargement Terminé!',product_heading:'Plans X!T',product_sub:'Choisissez le forfait adapté.',basic_name:'ESP',basic_feat1:'1 appareil',basic_feat2:'Voir les ennemis à travers les murs',basic_feat3:'Mis à jour chaque OBB',basic_feat4:'Support 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 appareil',premium_feat2:'Facilite les tirs à la tête',premium_feat3:'Mises à jour en temps réel',premium_feat4:'Support prioritaire 24/7',per_day:'/jour',buy_now:'Acheter',popular:'POPULAIRE',features_title:'Pourquoi X!T?',feat1_title:'Réponse instantanée',feat1_desc:'Latence ultra faible.',feat2_title:'Anti-Bannissement',feat2_desc:'Sécurité multicouche.',feat3_title:'Haute précision',feat3_desc:'Calibration précise.',testi_title:"Ce qu'ils disent",testi1:'"X!T est incroyable! Ma visée est bien plus précise."<br>— Rizky, Pro Player',testi2:'"Pas cher mais qualité premium. Je recommande!"<br>— Sinta, Streamer',testi3:'"Support rapide, injecteur le plus stable."<br>— Bayu, Gamer',faq_title:'Questions fréquentes',faq_q1:'Comment activer?',faq_a1:'Après paiement, vous recevrez un code via WhatsApp.',faq_q2:'Fonctionne pour tous les jeux?',faq_a2:"Non, c'est spécifique à Free Fire.",payment_title:'QRIS Allpay',product_label:'Produit',total_label:'Total',wa_confirm:'Envoyer preuve WhatsApp',manual_verify:'Vérification manuelle.',download_title:'Telecharger Free Fire',download_desc:'Obtenez le dernier apk FF directement sur ce site.',download_button:'Télécharger',discord_title:'Rejoindre Discord',discord_desc:'Mises à jour, assistance et communauté exclusive.',discord_button:'Rejoindre Discord',visitor_label:'Spectateurs',visitor_live:'EN DIRECT'},
+  vi:{dl_modal_title:'Chọn phiên bản',dl_modal_desc:'Chọn phiên bản Free Fire phù hợp:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'Không biết kiến trúc? Thử v7a trước.',nav_home:'Trang chủ',nav_products:'Sản phẩm',nav_features:'Tính năng',nav_testi:'Đánh giá',nav_downloads:'Tải xuống',nav_discord:'Discord',hero_line1:'Tăng cường',hero_line2:'Độ nhắm của bạn',hero_line3:'Không giới hạn',hero_desc:'Kim phun thế hệ mới với độ chính xác 0,01ms.',get_started:'Bắt đầu',learn_more:'Tìm hiểu',stat_response:'Phản hồi',stat_stability:'Ổn định',stat_support:'Hỗ trợ',pill_ai:'Hỗ trợ AI',pill_latency:'Độ Trễ Thấp',pill_anticheat:'Chống Gian Lận',pill_cloud:'Đồng Bộ Đám Mây',server_online:'MÁY CHỦ TRỰC TUYẾN',dl_anim_phase1:'Đang chuẩn bị...',dl_anim_phase2:'Đang xử lý...',dl_anim_phase3:'Hoàn thiện...',dl_anim_done:'Tải Xuống Hoàn Tất!',product_heading:'Các kế hoạch X!T',product_sub:'Chọn gói phù hợp.',basic_name:'ESP',basic_feat1:'1 thiết bị',basic_feat2:'Nhìn xuyên tường',basic_feat3:'Cập nhật sau mỗi OBB',basic_feat4:'Hỗ trợ 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 thiết bị',premium_feat2:'Dễ headshot hơn',premium_feat3:'Cập nhật thời gian thực',premium_feat4:'Hỗ trợ ưu tiên 24/7',per_day:'/ngày',buy_now:'Mua ngay',popular:'PHỔ BIẾN',features_title:'Tại sao chọn X!T?',feat1_title:'Phản hồi tức thì',feat1_desc:'Độ trễ cực thấp.',feat2_title:'Chống cấm',feat2_desc:'Bảo mật đa lớp.',feat3_title:'Độ chính xác cao',feat3_desc:'Hiệu chuẩn chính xác.',testi_title:'Khách hàng nói gì',testi1:'"X!T điên rồ! Độ chính xác của tôi tăng vọt."<br>— Rizky, Pro Player',testi2:'"Rẻ mà chất lượng cao cấp. Rất đáng mua!"<br>— Sinta, Streamer',testi3:'"Hỗ trợ nhanh, injector ổn định nhất."<br>— Bayu, Gamer',faq_title:'Câu hỏi thường gặp',faq_q1:'Cách kích hoạt?',faq_a1:'Sau khi thanh toán, bạn sẽ nhận mã qua WhatsApp.',faq_q2:'Có hoạt động với mọi game?',faq_a2:'Không, dành riêng cho Free Fire.',payment_title:'QRIS Allpay',product_label:'Sản phẩm',total_label:'Tổng',wa_confirm:'Gửi bằng chứng WhatsApp',manual_verify:'Xác minh thủ công.',download_title:'Tải Free Fire',download_desc:'Nhận bản apk FF mới nhất.',download_button:'Tải ngay',discord_title:'Tham gia Discord',discord_desc:'Cập nhật, hỗ trợ và cộng đồng độc quyền.',discord_button:'Tham gia Discord',visitor_label:'Người xem',visitor_live:'TRỰC TIẾP'},
+  es:{dl_modal_title:'Elegir versión',dl_modal_desc:'Elige la versión de Free Fire adecuada:',dl_ff:'Free Fire',dl_ffmax:'Free Fire MAX',dl_v7a:'ARM v7a (32-bit)',dl_v8a:'ARM v8a (64-bit)',dl_hint:'¿No sabes la arquitectura? Prueba v7a primero.',nav_home:'Inicio',nav_products:'Productos',nav_features:'Características',nav_testi:'Testimonios',nav_downloads:'Descargas',nav_discord:'Discord',hero_line1:'Mejora',hero_line2:'Tu puntería',hero_line3:'Sin Límites',hero_desc:'Inyector de nueva generación con precisión de 0.01ms.',get_started:'Empezar',learn_more:'Aprender más',stat_response:'Respuesta',stat_stability:'Estabilidad',stat_support:'Soporte',pill_ai:'Potenciado por IA',pill_latency:'Baja Latencia',pill_anticheat:'Anti-Trampa',pill_cloud:'Sync en Nube',server_online:'SERVIDOR EN LÍNEA',dl_anim_phase1:'Preparando...',dl_anim_phase2:'Procesando...',dl_anim_phase3:'Finalizando...',dl_anim_done:'¡Descarga Completa!',product_heading:'Planes X!T',product_sub:'Elige tu plan.',basic_name:'ESP',basic_feat1:'1 dispositivo',basic_feat2:'Ver enemigos a través de paredes',basic_feat3:'Actualizado con cada OBB',basic_feat4:'Soporte 12h',premium_name:'AIMBOT EXTERNAL',premium_feat1:'1 dispositivo',premium_feat2:'Facilita los headshots',premium_feat3:'Actualizaciones en tiempo real',premium_feat4:'Soporte prioritario 24/7',per_day:'/día',buy_now:'Comprar',popular:'POPULAR',features_title:'Por qué X!T?',feat1_title:'Respuesta instantánea',feat1_desc:'Latencia ultra baja.',feat2_title:'Anti-Baneo',feat2_desc:'Seguridad multicapa.',feat3_title:'Alta precisión',feat3_desc:'Calibración precisa.',testi_title:'Lo que dicen',testi1:'"¡X!T es increíble! Mi puntería mejoró muchísimo."<br>— Rizky, Pro Player',testi2:'"Barato pero calidad premium. ¡Muy recomendado!"<br>— Sinta, Streamer',testi3:'"Soporte rápido, el injector más estable."<br>— Bayu, Gamer',faq_title:'Preguntas frecuentes',faq_q1:'Cómo activar?',faq_a1:'Después del pago, recibirás un código por WhatsApp.',faq_q2:'Funciona en todos los juegos?',faq_a2:'No, esto es específicamente para Free Fire.',payment_title:'QRIS Allpay',product_label:'Producto',total_label:'Total',wa_confirm:'Enviar comprobante WhatsApp',manual_verify:'Verificación manual.',download_title:'Descargar Free Fire',download_desc:'Obtén el último apk de FF.',download_button:'Descargar Ahora',discord_title:'Únete a Discord',discord_desc:'Actualizaciones, soporte y comunidad exclusiva.',discord_button:'Únete a Discord',visitor_label:'Espectadores',visitor_live:'EN VIVO'}
 };
 let currentLang='id';
 
@@ -1321,6 +1321,308 @@ function runHeroTypewriter(){
       e.preventDefault();
       runPortal(DISCORD_URL);
     });
+  });
+
+})();
+
+/* ==============================================================
+   DOWNLOAD ANIMATION ENGINE
+   ============================================================== */
+(function(){
+
+  /* --- DOM refs --- */
+  var overlay    = document.getElementById('dl-anim-overlay');
+  var stormC     = document.getElementById('dl-storm-canvas');
+  var confettiC  = document.getElementById('dl-confetti-canvas');
+  var flash      = document.getElementById('dl-flash');
+  var barFill    = document.getElementById('dl-bar-fill');
+  var percentEl  = document.getElementById('dl-percent');
+  var statusEl   = document.getElementById('dl-status-text');
+  var filenameEl = document.getElementById('dl-filename');
+  var checkWrap  = document.getElementById('dl-check-wrap');
+  var successMsg = document.getElementById('dl-success-msg');
+  var iconCombo  = document.getElementById('dl-icon-combo');
+
+  if(!overlay) return;
+
+  var sCtx = stormC.getContext('2d');
+  var cCtx = confettiC.getContext('2d');
+
+  /* --- Sync theme CSS vars to overlay --- */
+  function syncTheme(){
+    var c = getThemeColors();
+    overlay.style.setProperty('--dl-primary',      c.primary);
+    overlay.style.setProperty('--dl-primary-light', c.light);
+    overlay.style.setProperty('--dl-primary-dark',  c.dark);
+    overlay.style.setProperty('--dl-primary-rgb',   c.rgb);
+  }
+
+  /* --- Resize canvases --- */
+  function resizeDL(){
+    stormC.width   = confettiC.width   = window.innerWidth;
+    stormC.height  = confettiC.height  = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeDL, {passive:true});
+
+  /* --- Lightning bolt helper --- */
+  function dlBolt(ctx, x1, y1, x2, y2, rough, alpha, depth){
+    if(depth===0 || alpha<0.04) return;
+    var c  = getThemeColors();
+    var mx = (x1+x2)/2 + (Math.random()-.5)*rough;
+    var my = (y1+y2)/2 + (Math.random()-.5)*rough*.35;
+    ctx.strokeStyle = 'rgba('+c.rgb+','+alpha+')';
+    ctx.lineWidth   = depth*1.8;
+    ctx.shadowColor = 'rgba('+c.rgb+',.95)';
+    ctx.shadowBlur  = depth*12;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,'+(alpha*.45)+')';
+    ctx.lineWidth   = depth*.5; ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(x2,y2); ctx.stroke();
+    if(Math.random()<.4&&depth>1) dlBolt(ctx,mx,my,mx+(Math.random()-.5)*180,my+Math.random()*130,rough*.55,alpha*.42,depth-1);
+    dlBolt(ctx,x1,y1,mx,my,rough*.55,alpha*.76,depth-1);
+    dlBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.76,depth-1);
+  }
+
+  /* --- Storm state --- */
+  var stormBolts  = [];
+  var stormRaf    = null;
+  var stormActive = false;
+
+  function spawnBolt(){
+    var w=stormC.width, h=stormC.height;
+    stormBolts.push({
+      x:   w*(.08+Math.random()*.84),
+      tx:  w/2 + (Math.random()-.5)*240,
+      ty:  h*(.22+Math.random()*.48),
+      alpha: .6+Math.random()*.8,
+      decay: .038+Math.random()*.055,
+      depth: isLowEnd?4:6,
+      rough: 70+Math.random()*130
+    });
+  }
+
+  function stormTick(){
+    if(!stormActive) return;
+    sCtx.clearRect(0,0,stormC.width,stormC.height);
+    var c=getThemeColors(), cx=stormC.width/2, cy=stormC.height/2;
+    var grd=sCtx.createRadialGradient(cx,cy*.9,0,cx,cy*.9,stormC.width*.55);
+    grd.addColorStop(0,'rgba('+c.rgb+',.09)');
+    grd.addColorStop(.5,'rgba('+c.rgb+',.04)');
+    grd.addColorStop(1,'rgba(0,0,0,0)');
+    sCtx.fillStyle=grd; sCtx.fillRect(0,0,stormC.width,stormC.height);
+    if(Math.random()<.55) spawnBolt();
+    for(var i=stormBolts.length-1;i>=0;i--){
+      var b=stormBolts[i];
+      if(b.alpha>.03){ dlBolt(sCtx,b.x,-8,b.tx,b.ty,b.rough,Math.min(b.alpha,1),b.depth); b.alpha-=b.decay; }
+      else stormBolts.splice(i,1);
+    }
+    stormRaf=requestAnimationFrame(stormTick);
+  }
+
+  /* --- Confetti state --- */
+  var confettiPieces  = [];
+  var confettiRaf     = null;
+  var CONFETTI_COLORS = ['#f97316','#fb7185','#facc15','#34d399','#60a5fa','#a78bfa','#ffffff'];
+
+  function spawnConfetti(){
+    var w=confettiC.width;
+    for(var i=0;i<(isLowEnd?60:130);i++){
+      confettiPieces.push({
+        x:     Math.random()*w,
+        y:    -10 - Math.random()*200,
+        vx:    (Math.random()-.5)*4.5,
+        vy:    1.8+Math.random()*5,
+        rot:   Math.random()*360,
+        vr:    (Math.random()-.5)*9,
+        w:     6+Math.random()*10,
+        h:     4+Math.random()*6,
+        color: CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)],
+        alpha: 1,
+        decay: .005+Math.random()*.007,
+        shape: Math.random()>.5?'rect':'circle'
+      });
+    }
+  }
+
+  function confettiTick(){
+    cCtx.clearRect(0,0,confettiC.width,confettiC.height);
+    var alive=false;
+    confettiPieces.forEach(function(p){
+      p.x+=p.vx; p.y+=p.vy; p.vy+=.12; p.rot+=p.vr; p.alpha-=p.decay;
+      if(p.alpha<=0) return;
+      alive=true;
+      cCtx.save();
+      cCtx.globalAlpha=Math.max(0,p.alpha);
+      cCtx.translate(p.x,p.y);
+      cCtx.rotate(p.rot*Math.PI/180);
+      cCtx.fillStyle=p.color;
+      cCtx.shadowColor=p.color; cCtx.shadowBlur=6;
+      if(p.shape==='circle'){
+        cCtx.beginPath(); cCtx.arc(0,0,p.w/2,0,Math.PI*2); cCtx.fill();
+      } else {
+        cCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      }
+      cCtx.restore();
+    });
+    if(alive) confettiRaf=requestAnimationFrame(confettiTick);
+    else { confettiC.style.opacity='0'; confettiPieces=[]; }
+  }
+
+  /* --- Progress bar animation --- */
+  var animRaf    = null;
+  var currentPct = 0;
+
+  function animateBar(to, duration, onDone){
+    var from  = currentPct;
+    var start = performance.now();
+    function step(now){
+      var p    = Math.min((now-start)/duration,1);
+      var ease = 1-Math.pow(1-p,3);
+      currentPct = from + (to-from)*ease;
+      barFill.style.width      = currentPct+'%';
+      percentEl.textContent    = Math.round(currentPct)+'%';
+      if(p<1){ animRaf=requestAnimationFrame(step); }
+      else    { currentPct=to; if(onDone) onDone(); }
+    }
+    if(animRaf) cancelAnimationFrame(animRaf);
+    animRaf=requestAnimationFrame(step);
+  }
+
+  /* --- Flash helper --- */
+  function doFlash(alpha, dur){
+    flash.style.transition='opacity .04s';
+    flash.style.opacity=String(alpha);
+    setTimeout(function(){ flash.style.opacity='0'; }, dur||60);
+  }
+
+  /* --- Full reset helper --- */
+  function resetOverlay(){
+    stormBolts=[]; confettiPieces=[]; currentPct=0;
+    barFill.style.width='0%';
+    percentEl.textContent='0%';
+    statusEl.textContent='';
+    filenameEl.textContent='';
+    checkWrap.classList.remove('show');
+    successMsg.classList.remove('show');
+    successMsg.textContent='';
+    confettiC.style.opacity='0';
+    iconCombo.style.opacity='1';
+    iconCombo.style.transition='';
+    flash.style.opacity='0';
+  }
+
+  /* --- Main animation sequence --- */
+  function runDownloadAnim(url, filename){
+    resizeDL(); syncTheme(); resetOverlay();
+
+    // Show overlay with fade-in
+    overlay.classList.add('show');
+    overlay.style.animation='dlOverlayIn .35s ease both';
+
+    // Kick off background lightning storm
+    stormActive=true;
+    // Burst 3 bolts immediately for drama
+    spawnBolt(); spawnBolt(); spawnBolt();
+    stormTick();
+
+    filenameEl.textContent = filename||'';
+    var lang = currentLang;
+
+    /* ── Phase 1 : 0 → 40%  (Mempersiapkan) ── */
+    statusEl.textContent = T[lang]?.dl_anim_phase1 || 'Preparing...';
+    animateBar(40, 1200, function(){
+
+      /* ── Phase 2 : 40 → 80%  (Memproses) ── */
+      doFlash(.45);
+      statusEl.textContent = T[lang]?.dl_anim_phase2 || 'Processing Download...';
+      // Extra bolts mid-animation
+      for(var i=0;i<3;i++){
+        (function(d){ setTimeout(function(){ spawnBolt(); spawnBolt(); },d); })(i*110);
+      }
+      animateBar(80, 1500, function(){
+
+        /* ── Phase 3 : 80 → 100%  (Menyelesaikan) ── */
+        doFlash(.55);
+        statusEl.textContent = T[lang]?.dl_anim_phase3 || 'Finalizing...';
+        animateBar(100, 800, function(){
+
+          /* ── COMPLETE ── */
+          doFlash(1, 80);
+
+          // Stop storm
+          stormActive=false;
+          if(stormRaf){ cancelAnimationFrame(stormRaf); stormRaf=null; }
+          sCtx.clearRect(0,0,stormC.width,stormC.height);
+
+          setTimeout(function(){
+            // Swap icon → checkmark
+            iconCombo.style.transition='opacity .25s';
+            iconCombo.style.opacity='0';
+            setTimeout(function(){
+              checkWrap.classList.add('show');
+            }, 200);
+
+            // Confetti burst
+            confettiC.style.opacity='1';
+            spawnConfetti();
+            if(confettiRaf) cancelAnimationFrame(confettiRaf);
+            confettiRaf=requestAnimationFrame(confettiTick);
+
+            // Success message
+            setTimeout(function(){
+              successMsg.textContent = T[lang]?.dl_anim_done || 'Download Complete!';
+              successMsg.classList.add('show');
+              statusEl.textContent='';
+            }, 280);
+
+            // Trigger real file download
+            setTimeout(function(){
+              var a=document.createElement('a');
+              a.href=url; a.download='';
+              a.style.display='none';
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(function(){ document.body.removeChild(a); },300);
+            }, 400);
+
+            // Close overlay after ~2.2s
+            setTimeout(function(){
+              overlay.style.animation='dlOverlayShrink .55s cubic-bezier(.55,0,1,.45) both';
+              setTimeout(function(){
+                overlay.classList.remove('show');
+                overlay.style.animation='';
+                stormBolts=[];
+                confettiPieces=[];
+                sCtx.clearRect(0,0,stormC.width,stormC.height);
+                cCtx.clearRect(0,0,confettiC.width,confettiC.height);
+              }, 540);
+            }, 2200);
+
+          }, 110);
+        });
+      });
+    });
+  }
+
+  /* --- Intercept download-option-btn clicks --- */
+  document.addEventListener('click', function(e){
+    var btn=e.target.closest('.download-option-btn');
+    if(!btn) return;
+    var url=btn.getAttribute('href');
+    if(!url) return;
+    e.preventDefault();
+
+    // Close the download modal first
+    var dlModal=document.getElementById('downloadModal');
+    if(dlModal) dlModal.classList.remove('show');
+
+    // Extract filename from URL
+    var parts=url.split('/');
+    var fname=parts[parts.length-1]||'FreeFire.zip';
+
+    setTimeout(function(){ runDownloadAnim(url, fname); }, 180);
   });
 
 })();
