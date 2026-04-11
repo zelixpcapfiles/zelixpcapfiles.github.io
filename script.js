@@ -481,12 +481,12 @@ resetIdleTimer();
     stormRunning=false;
     if(stormAnimId){cancelAnimationFrame(stormAnimId);stormAnimId=null;}
     const w=window.innerWidth,h=window.innerHeight,cx=w/2,cy=h/2;
-    let a=1.4;
+    let a=1.2;
     const strikeIv=setInterval(()=>{
       sCtx.clearRect(0,0,w,h);
-      if(a>0){lsBolt(sCtx,cx,-20,cx+(Math.random()-.5)*60,cy*.6,100,Math.min(a,1),isLowEnd?7:9);a-=.05;}
+      if(a>0){lsBolt(sCtx,cx,-20,cx+(Math.random()-.5)*60,cy*.6,80,Math.min(a,1),isLowEnd?3:4);a-=.12;}
       else clearInterval(strikeIv);
-    },16);
+    },32);
     setTimeout(()=>{
       lsFlash.style.transition='opacity .06s';lsFlash.style.opacity='1';
       setTimeout(()=>lsFlash.style.opacity='0',75);
