@@ -1610,9 +1610,9 @@ function runHeroTypewriter(){
   document.addEventListener('click', function(e){
     var btn=e.target.closest('.download-option-btn');
     if(!btn) return;
+    e.preventDefault();
     var url=btn.getAttribute('href');
     if(!url) return;
-    e.preventDefault();
 
     // Close the download modal first
     var dlModal=document.getElementById('downloadModal');
