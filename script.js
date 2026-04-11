@@ -244,20 +244,20 @@ resetIdleTimer();
     const mx=(x1+x2)/2+(Math.random()-.5)*rough;
     const my=(y1+y2)/2+(Math.random()-.5)*rough*.35;
     ctx.strokeStyle=`rgba(${col},${alpha})`;
-    ctx.lineWidth=depth*1.8; ctx.shadowColor=`rgba(${col},.95)`; ctx.shadowBlur=depth*12;
+    ctx.lineWidth=depth*1.8; ctx.shadowColor=`rgba(${col},.95)`; ctx.shadowBlur=depth*7;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(mx,my);ctx.stroke();
     ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(x2,y2);ctx.stroke();
     ctx.strokeStyle=`rgba(255,255,255,${alpha*.45})`; ctx.lineWidth=depth*.5; ctx.shadowBlur=0;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(mx,my);ctx.stroke();
     ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(x2,y2);ctx.stroke();
-    if(Math.random()<.4&&depth>1)lsBolt(ctx,mx,my,mx+(Math.random()-.5)*200,my+Math.random()*140,rough*.55,alpha*.42,depth-1);
+    if(Math.random()<.24&&depth>1)lsBolt(ctx,mx,my,mx+(Math.random()-.5)*200,my+Math.random()*140,rough*.55,alpha*.42,depth-1);
     lsBolt(ctx,x1,y1,mx,my,rough*.55,alpha*.76,depth-1);
     lsBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.76,depth-1);
   }
 
-  const MAX_BOLTS  = isLowEnd ? 2 : 4;
-  const MAX_ARCS   = isLowEnd ? 0 : 1;
-  const SPAWN_MS   = isLowEnd ? 320 : 140;
+  const MAX_BOLTS  = isLowEnd ? 1 : 2;
+  const MAX_ARCS   = 0;
+  const SPAWN_MS   = isLowEnd ? 533 : 233;
   const stormBolts = [];
   const stormArcs  = [];
   let stormFlash   = 0;
@@ -299,7 +299,7 @@ resetIdleTimer();
   function drawStormFrame(t){
     sCtx.clearRect(0,0,stormC.width,stormC.height);
     const c = getThemeColors();
-    const glowAlpha = (.025 + Math.sin(t*.0008)*.015) + stormFlash * .055;
+    const glowAlpha = (.015 + Math.sin(t*.0008)*.009) + stormFlash * .033;
     const grd = sCtx.createRadialGradient(
       stormC.width*.5, stormC.height*.42, 0,
       stormC.width*.5, stormC.height*.42, stormC.width * .62
@@ -312,7 +312,7 @@ resetIdleTimer();
     if(stormFlash > .01){
       sCtx.fillStyle = `rgba(${c.rgb},${(stormFlash*.1).toFixed(3)})`;
       sCtx.fillRect(0,0,stormC.width,stormC.height);
-      stormFlash *= .88;
+      stormFlash *= .75;
     }
     for(let i=stormArcs.length-1;i>=0;i--){
       const a=stormArcs[i];
@@ -334,9 +334,9 @@ resetIdleTimer();
     if(!stormRunning) return;
     if(t - stormLastSpawn > SPAWN_MS){
       stormLastSpawn = t;
-      const isSuper = Math.random() < .07;
-      if(Math.random() < .55) spawnBolt(isSuper);
-      if(!isLowEnd && Math.random() < .03) spawnArc();
+      const isSuper = Math.random() < .04;
+      if(Math.random() < .33) spawnBolt(isSuper);
+      if(!isLowEnd && Math.random() < .02) spawnArc();
     }
     drawStormFrame(t);
     stormAnimId = requestAnimationFrame(stormTick);
