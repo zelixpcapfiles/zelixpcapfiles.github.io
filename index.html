@@ -426,9 +426,13 @@
     .footer a { color:#cbbff0;text-decoration:none; }
 
     /* ========== MODAL ========== */
-    .modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);align-items:center;justify-content:center;z-index:2000; }
+    .modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);align-items:center;justify-content:center;z-index:2000;opacity:0;transition:opacity .28s ease; }
     .modal.show { display:flex; }
-    .modal-card { background:#1a1a28;max-width:450px;width:90%;border-radius:48px;padding:36px;box-shadow:0 50px 80px -20px black;border:1px solid var(--border);backdrop-filter:blur(16px); }
+    .modal.modal-visible { opacity:1; }
+    .modal-card { background:#1a1a28;max-width:450px;width:90%;border-radius:48px;padding:36px;box-shadow:0 50px 80px -20px black;border:1px solid var(--border);backdrop-filter:blur(16px);transform:translateY(-32px);opacity:0;transition:transform .35s cubic-bezier(.23,1,.32,1), opacity .35s ease; }
+    .modal.modal-visible .modal-card { transform:translateY(0);opacity:1; }
+    .modal.modal-hiding .modal-card { transform:translateY(-24px);opacity:0;transition:transform .25s cubic-bezier(.55,0,1,.45), opacity .22s ease; }
+    .modal.modal-hiding { opacity:0;transition:opacity .28s ease .05s; }
 
     /* ===== QRIS ELECTRIC BORDER ===== */
     .qris-card {
