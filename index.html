@@ -623,24 +623,13 @@
     display: flex; align-items: center; justify-content: center;
     width: 80px; height: 80px;
   }
-  #dl-icon-fire {
-    font-size: 3.4rem; color: #f97316;
-    filter: drop-shadow(0 0 14px #f97316) drop-shadow(0 0 30px #ea580c);
-    animation: dlFirePulse 1.4s ease-in-out infinite alternate;
-    position: absolute; left: 50%; top: 50%;
-    transform: translate(-68%, -52%);
-  }
   #dl-icon-bolt {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
     filter: drop-shadow(0 0 10px var(--dl-primary)) drop-shadow(0 0 22px var(--dl-primary));
     animation: dlBoltFlicker 1.9s ease-in-out infinite;
     position: absolute; left: 50%; top: 50%;
-    transform: translate(-18%, -38%);
+    transform: translate(-50%, -50%);
     color: var(--dl-primary);
-  }
-  @keyframes dlFirePulse {
-    from { transform: translate(-68%, -52%) scale(.93); filter: drop-shadow(0 0 10px #f97316); }
-    to   { transform: translate(-68%, -52%) scale(1.1);  filter: drop-shadow(0 0 24px #f97316) drop-shadow(0 0 40px #fb923c); }
   }
   @keyframes dlBoltFlicker {
     0%,85%,100% { opacity:1; }
@@ -785,7 +774,6 @@
         </svg>
         <!-- Icon combo: fire + bolt -->
         <div id="dl-icon-combo">
-          <i class="fas fa-fire"  id="dl-icon-fire"></i>
           <i class="fas fa-bolt"  id="dl-icon-bolt"></i>
         </div>
         <!-- Checkmark (phase 3) -->
