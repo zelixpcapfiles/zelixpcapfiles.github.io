@@ -21,6 +21,7 @@
       --primary-light: #fb7185;
       --primary-dark: #be123c;
       --primary-soft: rgba(225,29,72,0.15);
+      --primary-rgb: 225,29,72;
       --bg-dark: #0b0b0f;
       --text: #ffffff;
       --text-secondary: #b0b0c0;
@@ -28,11 +29,11 @@
       --surface-glass: rgba(20,20,30,0.6);
       --card-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
     }
-    body[data-theme="purple"] { --primary:#7c3aed; --primary-light:#a78bfa; --primary-dark:#5b21b6; --primary-soft:rgba(124,58,237,0.15); }
-    body[data-theme="blue"]   { --primary:#2563eb; --primary-light:#60a5fa; --primary-dark:#1e40af; --primary-soft:rgba(37,99,235,0.15); }
-    body[data-theme="green"]  { --primary:#059669; --primary-light:#34d399; --primary-dark:#065f46; --primary-soft:rgba(5,150,105,0.15); }
-    body[data-theme="rose"]   { --primary:#e11d48; --primary-light:#fb7185; --primary-dark:#be123c; --primary-soft:rgba(225,29,72,0.15); }
-    body[data-theme="orange"] { --primary:#ea580c; --primary-light:#f97316; --primary-dark:#c2410c; --primary-soft:rgba(234,88,12,0.15); }
+    body[data-theme="purple"] { --primary:#7c3aed; --primary-light:#a78bfa; --primary-dark:#5b21b6; --primary-soft:rgba(124,58,237,0.15); --primary-rgb:124,58,237; }
+    body[data-theme="blue"]   { --primary:#2563eb; --primary-light:#60a5fa; --primary-dark:#1e40af; --primary-soft:rgba(37,99,235,0.15);  --primary-rgb:37,99,235; }
+    body[data-theme="green"]  { --primary:#059669; --primary-light:#34d399; --primary-dark:#065f46; --primary-soft:rgba(5,150,105,0.15);   --primary-rgb:5,150,105; }
+    body[data-theme="rose"]   { --primary:#e11d48; --primary-light:#fb7185; --primary-dark:#be123c; --primary-soft:rgba(225,29,72,0.15);   --primary-rgb:225,29,72; }
+    body[data-theme="orange"] { --primary:#ea580c; --primary-light:#f97316; --primary-dark:#c2410c; --primary-soft:rgba(234,88,12,0.15);   --primary-rgb:234,88,12; }
 
     html { cursor: none; }
     body {
@@ -304,15 +305,84 @@
     .section-subtitle { text-align:center;color:var(--text-secondary);max-width:600px;margin:0 auto 50px; }
     .product-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:40px;max-width:1100px;margin:0 auto; }
     .product-card { background:var(--surface-glass);backdrop-filter:blur(12px);border-radius:48px;padding:40px 32px;box-shadow:var(--card-shadow);border:1px solid rgba(255,255,255,.08);transition:box-shadow .3s, border-color .3s, opacity .3s;transform-style:preserve-3d;position:relative;will-change:transform; }
+
+    /* ===== ELECTRIC GLOW BORDER ===== */
+    .product-card::before {
+      content:'';
+      position:absolute;
+      inset:-2px;
+      border-radius:50px;
+      z-index:0;
+      pointer-events:none;
+      background: conic-gradient(
+        from var(--elec-angle, 0deg),
+        transparent 0deg,
+        var(--primary) 30deg,
+        var(--primary-light) 80deg,
+        rgba(255,255,255,0.9) 120deg,
+        var(--primary-light) 160deg,
+        var(--primary) 200deg,
+        transparent 240deg,
+        transparent 360deg
+      );
+      animation: electricSpin 2.4s linear infinite;
+      opacity: 0.9;
+    }
+    .product-card::after {
+      content:'';
+      position:absolute;
+      inset:2px;
+      border-radius:46px;
+      background:var(--bg-dark);
+      z-index:1;
+      pointer-events:none;
+    }
+    /* Re-layer content above pseudo-elements */
+    .product-card > * { position:relative; z-index:2; }
+    .product-badge { z-index:5 !important; }
+
+    @keyframes electricSpin {
+      from { --elec-angle: 0deg; }
+      to   { --elec-angle: 360deg; }
+    }
+    @property --elec-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* Outer ambient glow — mengikuti warna theme */
+    .product-card {
+      box-shadow:
+        var(--card-shadow),
+        0 0 18px 2px rgba(var(--primary-rgb, 225,29,72), 0.25),
+        0 0 38px 4px rgba(var(--primary-rgb, 225,29,72), 0.12);
+    }
+    /* Spark flicker on the border */
+    .product-card::before {
+      filter: blur(0.5px);
+      animation: electricSpin 2.4s linear infinite, electricFlicker 1.8s ease-in-out infinite;
+    }
+    @keyframes electricFlicker {
+      0%,100% { opacity:0.9; filter:blur(0.5px) brightness(1); }
+      15%      { opacity:0.6; filter:blur(1px)   brightness(0.7); }
+      30%      { opacity:1;   filter:blur(0px)   brightness(1.8) drop-shadow(0 0 6px var(--primary)); }
+      50%      { opacity:0.85;filter:blur(0.8px) brightness(1.1); }
+      72%      { opacity:0.4; filter:blur(1.5px) brightness(0.5); }
+      75%      { opacity:1;   filter:blur(0px)   brightness(2) drop-shadow(0 0 10px var(--primary-light)); }
+      90%      { opacity:0.8; filter:blur(0.5px) brightness(1); }
+    }
     .product-card-inner { border-radius:46px;overflow:hidden;position:relative; }
-    .product-card::before { content:'';position:absolute;inset:-1px;border-radius:48px;opacity:0;z-index:0;pointer-events:none;background:linear-gradient(125deg,rgba(255,0,128,0) 0%,rgba(255,220,50,.10) 18%,rgba(0,255,180,.10) 36%,rgba(0,160,255,.10) 54%,rgba(160,0,255,.10) 72%,rgba(255,0,128,0) 90%);background-size:250% 250%;transition:opacity .4s; }
-    .product-card::after  { content:'';position:absolute;inset:-1px;border-radius:48px;opacity:0;z-index:0;pointer-events:none;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%);background-size:250% 250%;transition:opacity .3s; }
-    .product-card:hover::before,.product-card.touch-active::before { opacity:1;animation:holo-pan 3s linear infinite; }
-    .product-card:hover::after,.product-card.touch-active::after   { opacity:1;animation:holo-shine 1.6s linear infinite; }
-    @keyframes holo-pan   { 0%{background-position:0% 0%;}100%{background-position:250% 250%;} }
-    @keyframes holo-shine { 0%{background-position:-100% 0%;}100%{background-position:300% 0%;} }
-    .product-card:hover { border-color:var(--primary-light);box-shadow:0 35px 60px -15px var(--primary),0 0 0 1px var(--primary-soft); }
-    .product-card > * { position:relative;z-index:2; }
+    .product-card:hover {
+      box-shadow:
+        0 35px 60px -15px var(--primary),
+        0 0 28px 4px rgba(var(--primary-rgb, 225,29,72), 0.45),
+        0 0 60px 8px rgba(var(--primary-rgb, 225,29,72), 0.2);
+    }
+    .product-card:hover::before {
+      animation: electricSpin 1.2s linear infinite, electricFlicker 0.9s ease-in-out infinite;
+      opacity: 1;
+    }
     .product-badge { position:absolute;top:24px;right:24px;background:var(--primary);color:white;padding:6px 18px;border-radius:60px;font-weight:600;font-size:.9rem;z-index:5; }
     .product-icon  { font-size:3.5rem;color:var(--primary);margin-bottom:24px; }
     .product-name  { font-size:2.2rem;font-weight:800;margin-bottom:8px; }
@@ -613,10 +683,10 @@
             <div class="magnetic-wrap"><a href="#features" class="btn btn-outline mag-btn"><span data-i18n="learn_more">Pelajari</span> <i class="fas fa-arrow-right"></i></a></div>
           </div>
           <div class="tech-stack">
-            <span class="tech-pill">AI-Powered</span>
-            <span class="tech-pill">Low Latency</span>
-            <span class="tech-pill">Anti-Cheat</span>
-            <span class="tech-pill">Cloud Sync</span>
+            <span class="tech-pill" data-i18n="pill_ai">AI-Powered</span>
+            <span class="tech-pill" data-i18n="pill_latency">Low Latency</span>
+            <span class="tech-pill" data-i18n="pill_anticheat">Anti-Cheat</span>
+            <span class="tech-pill" data-i18n="pill_cloud">Cloud Sync</span>
           </div>
         </div>
         <div data-aos="fade-left" data-aos-duration="1200">
