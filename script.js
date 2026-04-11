@@ -744,7 +744,8 @@ function attachBuyListeners(){
       document.getElementById('modalProductName').textContent=p;
       document.getElementById('modalPrice').textContent='Rp'+price.toLocaleString('id');
       document.getElementById('whatsappLink').href='https://wa.me/6289677648795?text=Halo%20saya%20mau%20konfirmasi%20pembelian%20'+encodeURIComponent(p)+'%20sebesar%20Rp'+price;
-      document.getElementById('paymentModal').classList.add('show');
+      const pm=document.getElementById('paymentModal');
+      pm.classList.add('show'); void pm.offsetWidth; pm.classList.add('modal-visible');
     });
   });
 }
@@ -917,14 +918,26 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.theme-dot').forEach(d=>d.addEventListener('click',()=>setTheme(d.dataset.theme)));
   applyLanguage(localStorage.getItem('pref-lang')||'id');
   
+  // Modal animation helpers
+  function openModal(modal){
+    modal.classList.add('show');
+    void modal.offsetWidth;
+    modal.classList.add('modal-visible');
+  }
+  function closeModal(modal){
+    modal.classList.add('modal-hiding');
+    modal.classList.remove('modal-visible');
+    setTimeout(()=>{ modal.classList.remove('show','modal-hiding'); }, 320);
+  }
+
   const dlModal=document.getElementById('downloadModal');
-  document.getElementById('openDownloadModal').addEventListener('click',()=>dlModal.classList.add('show'));
-  document.querySelector('.close-download-modal').addEventListener('click',()=>dlModal.classList.remove('show'));
-  dlModal.addEventListener('click',e=>{if(e.target===dlModal)dlModal.classList.remove('show');});
-  
+  document.getElementById('openDownloadModal').addEventListener('click',()=>openModal(dlModal));
+  document.querySelector('.close-download-modal').addEventListener('click',()=>closeModal(dlModal));
+  dlModal.addEventListener('click',e=>{if(e.target===dlModal)closeModal(dlModal);});
+
   const payModal=document.getElementById('paymentModal');
-  document.querySelector('.close-modal').addEventListener('click',()=>payModal.classList.remove('show'));
-  payModal.addEventListener('click',e=>{if(e.target===payModal)payModal.classList.remove('show');});
+  document.querySelector('.close-modal').addEventListener('click',()=>closeModal(payModal));
+  payModal.addEventListener('click',e=>{if(e.target===payModal)closeModal(payModal);});
   
   // Download handled by runDownloadAnim (see DOWNLOAD ANIMATION ENGINE below)
   
@@ -1604,9 +1617,13 @@ function runHeroTypewriter(){
     var url=btn.getAttribute('href');
     if(!url) return;
 
-    // Close the download modal first
+    // Close the download modal first (with animation)
     var dlModal=document.getElementById('downloadModal');
-    if(dlModal) dlModal.classList.remove('show');
+    if(dlModal && dlModal.classList.contains('show')){
+      dlModal.classList.add('modal-hiding');
+      dlModal.classList.remove('modal-visible');
+      setTimeout(function(){ dlModal.classList.remove('show','modal-hiding'); }, 320);
+    }
 
     // Extract filename from URL
     var parts=url.split('/');
