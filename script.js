@@ -244,20 +244,20 @@ resetIdleTimer();
     const mx=(x1+x2)/2+(Math.random()-.5)*rough;
     const my=(y1+y2)/2+(Math.random()-.5)*rough*.35;
     ctx.strokeStyle=`rgba(${col},${alpha})`;
-    ctx.lineWidth=depth*1.4; ctx.shadowColor=`rgba(${col},.6)`; ctx.shadowBlur=depth*4;
+    ctx.lineWidth=depth*1.8; ctx.shadowColor=`rgba(${col},.95)`; ctx.shadowBlur=depth*12;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(mx,my);ctx.stroke();
     ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(x2,y2);ctx.stroke();
     ctx.strokeStyle=`rgba(255,255,255,${alpha*.45})`; ctx.lineWidth=depth*.5; ctx.shadowBlur=0;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(mx,my);ctx.stroke();
     ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(x2,y2);ctx.stroke();
-    if(Math.random()<.24&&depth>1)lsBolt(ctx,mx,my,mx+(Math.random()-.5)*200,my+Math.random()*140,rough*.55,alpha*.42,depth-1);
+    if(Math.random()<.4&&depth>1)lsBolt(ctx,mx,my,mx+(Math.random()-.5)*200,my+Math.random()*140,rough*.55,alpha*.42,depth-1);
     lsBolt(ctx,x1,y1,mx,my,rough*.55,alpha*.76,depth-1);
     lsBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.76,depth-1);
   }
 
-  const MAX_BOLTS  = 1;
-  const MAX_ARCS   = 0;
-  const SPAWN_MS   = isLowEnd ? 1200 : 700;
+  const MAX_BOLTS  = isLowEnd ? 2 : 4;
+  const MAX_ARCS   = isLowEnd ? 0 : 1;
+  const SPAWN_MS   = isLowEnd ? 320 : 140;
   const stormBolts = [];
   const stormArcs  = [];
   let stormFlash   = 0;
@@ -273,13 +273,13 @@ resetIdleTimer();
     const ty = h * (.18 + Math.random() * .58);
     stormBolts.push({
       x, tx, ty,
-      alpha: isSuper ? 0.45 : (.2 + Math.random() * .2),
-      decay: isSuper ? .07 : (.12 + Math.random() * .08),
-      depth: isSuper ? (isLowEnd ? 2 : 3) : (isLowEnd ? 1 : 2),
-      rough: isSuper ? 80 : (30 + Math.random() * 40),
+      alpha: isSuper ? 1.1 : (.5 + Math.random() * .5),
+      decay: isSuper ? .03 : (.055 + Math.random() * .07),
+      depth: isSuper ? (isLowEnd ? 4 : 6) : (isLowEnd ? 3 : 4),
+      rough: isSuper ? 160 : (50 + Math.random() * 80),
       isSuper
     });
-    if(isSuper) stormFlash = Math.min(stormFlash + .1, 0.3);
+    if(isSuper) stormFlash = Math.min(stormFlash + .35, 1);
   }
 
   function spawnArc(){
@@ -299,7 +299,7 @@ resetIdleTimer();
   function drawStormFrame(t){
     sCtx.clearRect(0,0,stormC.width,stormC.height);
     const c = getThemeColors();
-    const glowAlpha = (.006 + Math.sin(t*.0008)*.004) + stormFlash * .012;
+    const glowAlpha = (.025 + Math.sin(t*.0008)*.015) + stormFlash * .055;
     const grd = sCtx.createRadialGradient(
       stormC.width*.5, stormC.height*.42, 0,
       stormC.width*.5, stormC.height*.42, stormC.width * .62
@@ -312,7 +312,7 @@ resetIdleTimer();
     if(stormFlash > .01){
       sCtx.fillStyle = `rgba(${c.rgb},${(stormFlash*.1).toFixed(3)})`;
       sCtx.fillRect(0,0,stormC.width,stormC.height);
-      stormFlash *= .75;
+      stormFlash *= .88;
     }
     for(let i=stormArcs.length-1;i>=0;i--){
       const a=stormArcs[i];
@@ -334,15 +334,16 @@ resetIdleTimer();
     if(!stormRunning) return;
     if(t - stormLastSpawn > SPAWN_MS){
       stormLastSpawn = t;
-      const isSuper = Math.random() < .02;
-      if(Math.random() < .18) spawnBolt(isSuper);
-      if(!isLowEnd && Math.random() < .01) spawnArc();
+      const isSuper = Math.random() < .07;
+      if(Math.random() < .55) spawnBolt(isSuper);
+      if(!isLowEnd && Math.random() < .03) spawnArc();
     }
     drawStormFrame(t);
     stormAnimId = requestAnimationFrame(stormTick);
   }
 
-  spawnBolt(false);
+  spawnBolt(true);
+  setTimeout(()=>spawnBolt(false),280);
   stormAnimId = requestAnimationFrame(stormTick);
 
   const sparks = [];
@@ -1156,13 +1157,13 @@ function runHeroTypewriter(){
     var mx=(x1+x2)/2+(Math.random()-.5)*rough;
     var my=(y1+y2)/2+(Math.random()-.5)*rough*.4;
     ctx.strokeStyle='rgba(88,101,242,'+alpha+')';
-    ctx.lineWidth=depth*1.6; ctx.shadowColor='rgba(88,101,242,.95)'; ctx.shadowBlur=depth*14;
+    ctx.lineWidth=depth*1.6; ctx.shadowColor='rgba(88,101,242,.95)'; ctx.shadowBlur=depth*8;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(mx,my);  ctx.lineTo(x2,y2); ctx.stroke();
     ctx.strokeStyle='rgba(165,180,252,'+(alpha*.5)+')'; ctx.lineWidth=depth*.45; ctx.shadowBlur=0;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(mx,my); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(mx,my);  ctx.lineTo(x2,y2); ctx.stroke();
-    if(Math.random()<.4&&depth>1) drawPortalBolt(ctx,mx,my,mx+(Math.random()-.5)*180,my+Math.random()*120,rough*.55,alpha*.4,depth-1);
+    if(Math.random()<.24&&depth>1) drawPortalBolt(ctx,mx,my,mx+(Math.random()-.5)*180,my+Math.random()*120,rough*.55,alpha*.4,depth-1);
     drawPortalBolt(ctx,x1,y1,mx,my,rough*.55,alpha*.75,depth-1);
     drawPortalBolt(ctx,mx,my,x2,y2,rough*.55,alpha*.75,depth-1);
   }
@@ -1171,7 +1172,7 @@ function runHeroTypewriter(){
   function drawPortalCracks(prog){
     var w=crackCanvas.width, h=crackCanvas.height, cx=w/2, cy=h/2;
     crackCtx.clearRect(0,0,w,h);
-    var n=Math.floor(prog*18)+4;
+    var n=Math.floor(prog*10)+2;
     crackCtx.lineCap='round';
     for(var ci=0;ci<n;ci++){
       var seed=ci*113.7;
@@ -1184,7 +1185,7 @@ function runHeroTypewriter(){
       // Warna Discord ungu untuk crack
       crackCtx.strokeStyle='rgba(88,101,242,'+alpha*.95+')';
       crackCtx.lineWidth=width+1.4;
-      crackCtx.shadowColor='rgba(88,101,242,.9)'; crackCtx.shadowBlur=14*prog;
+      crackCtx.shadowColor='rgba(88,101,242,.9)'; crackCtx.shadowBlur=8*prog;
       crackCtx.beginPath(); crackCtx.moveTo(x,y);
       var segs=4+(ci%5);
       for(var s=0;s<segs;s++){
@@ -1211,8 +1212,8 @@ function runHeroTypewriter(){
     stormBolts.push({
       x:w*(.1+Math.random()*.8), tx:(w/2)+(Math.random()-.5)*220,
       ty:h*(.25+Math.random()*.5),
-      alpha:(.7+Math.random()*.6), decay:(.04+Math.random()*.06),
-      depth:(isLowEnd?4:6), rough:(80+Math.random()*130)
+      alpha:(.42+Math.random()*.36), decay:(.04+Math.random()*.06),
+      depth:(isLowEnd?2:3), rough:(80+Math.random()*130)
     });
   }
   function stormTick(){
@@ -1221,11 +1222,11 @@ function runHeroTypewriter(){
     // Ambient glow Discord ungu di tengah
     var cx=pCanvas.width/2, cy=pCanvas.height/2;
     var grd=pCtx.createRadialGradient(cx,cy,0,cx,cy,pCanvas.width*.55);
-    grd.addColorStop(0,'rgba(88,101,242,0.10)');
-    grd.addColorStop(.5,'rgba(88,101,242,0.04)');
+    grd.addColorStop(0,'rgba(88,101,242,0.06)');
+    grd.addColorStop(.5,'rgba(88,101,242,0.025)');
     grd.addColorStop(1,'rgba(0,0,0,0)');
     pCtx.fillStyle=grd; pCtx.fillRect(0,0,pCanvas.width,pCanvas.height);
-    if(Math.random()<.55) spawnStormBolt();
+    if(Math.random()<.33) spawnStormBolt();
     for(var i=stormBolts.length-1;i>=0;i--){
       var b=stormBolts[i];
       if(b.alpha>.03){
@@ -1267,7 +1268,7 @@ function runHeroTypewriter(){
           stormBolts.push({
             x:w*(.2+Math.random()*.6), tx:w/2+(Math.random()-.5)*80,
             ty:pCanvas.height*.38,
-            alpha:1.4, decay:.028, depth:isLowEnd?6:8, rough:160
+            alpha:0.84, decay:.028, depth:isLowEnd?3:4, rough:160
           });
         }, delay);
       })(i*120);
@@ -1275,7 +1276,7 @@ function runHeroTypewriter(){
 
     // Fase 2: Flash + crack mulai muncul
     setTimeout(function(){
-      flash.style.transition='opacity .05s'; flash.style.opacity='.7';
+      flash.style.transition='opacity .05s'; flash.style.opacity='.42';
       setTimeout(function(){ flash.style.opacity='0'; }, 70);
       crackCanvas.style.opacity='1';
       var cp=0;
@@ -1289,8 +1290,8 @@ function runHeroTypewriter(){
     // Fase 3: Super bolt dari pusat + flash keras
     setTimeout(function(){
       var w=pCanvas.width, h=pCanvas.height;
-      stormBolts.push({x:w/2,tx:w/2,ty:h*.4,alpha:2,decay:.018,depth:isLowEnd?8:11,rough:200});
-      flash.style.transition='opacity .04s'; flash.style.opacity='1';
+      stormBolts.push({x:w/2,tx:w/2,ty:h*.4,alpha:1.2,decay:.018,depth:isLowEnd?4:6,rough:200});
+      flash.style.transition='opacity .04s'; flash.style.opacity='.6';
       setTimeout(function(){ flash.style.opacity='0'; }, 55);
     }, 1050);
 
@@ -1300,7 +1301,7 @@ function runHeroTypewriter(){
       portalText.textContent='PORTAL OPENED!';
       stormActive=false;
       if(stormRaf){ cancelAnimationFrame(stormRaf); stormRaf=null; }
-      flash.style.transition='opacity .05s'; flash.style.opacity='.9';
+      flash.style.transition='opacity .05s'; flash.style.opacity='.54';
       setTimeout(function(){ flash.style.opacity='0'; }, 80);
       portal.style.animation='portalShatter .5s cubic-bezier(.55,0,1,.45) both';
       setTimeout(function(){
