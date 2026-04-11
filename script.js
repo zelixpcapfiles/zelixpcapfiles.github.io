@@ -926,17 +926,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('.close-modal').addEventListener('click',()=>payModal.classList.remove('show'));
   payModal.addEventListener('click',e=>{if(e.target===payModal)payModal.classList.remove('show');});
   
-  document.querySelectorAll('.download-option-btn').forEach(a=>{
-    a.addEventListener('click',function(e){
-      e.preventDefault();
-      const base=this.getAttribute('href').split('?')[0];
-      const url=base+'?t='+Date.now();
-      const tmp=document.createElement('a');
-      tmp.href=url; tmp.download=''; tmp.style.display='none';
-      document.body.appendChild(tmp); tmp.click();
-      setTimeout(()=>document.body.removeChild(tmp),300);
-    });
-  });
+  // Download handled by runDownloadAnim (see DOWNLOAD ANIMATION ENGINE below)
   
   // Touch hologram effect for mobile
   document.querySelectorAll('.product-card').forEach(card=>{
