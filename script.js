@@ -62,12 +62,7 @@ updateLoadingScreenTheme();
     }
   }
   document.addEventListener('keydown',blockDev,true);
-  let devOpen=false;
-  setInterval(()=>{
-    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      if(!devOpen){devOpen=true;alert('Matikan Mode desktop / inspeksi / pop up blocker.');}
-    } else devOpen=false;
-  },1500);
+
   document.addEventListener('selectstart',e=>e.preventDefault());
   document.addEventListener('dragstart',e=>e.preventDefault());
   document.addEventListener('keydown',e=>{if(e.altKey)e.preventDefault();},true);
