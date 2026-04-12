@@ -572,52 +572,129 @@
       #visitor-widget{left:10px;}
     }
 
-    /* Mobile */
+    /* Mobile - semua layar ≤ 520px */
     @media screen and (max-width:520px) {
-      .container{padding:0 16px;}
-      /* Header */
-      .logo span{font-size:1.2rem;} .logo i{font-size:1.6rem;}
-      .nav-menu a{font-size:.82rem;} .nav-menu{gap:4px 10px;}
-      #currentLang{display:inline-block;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;}
-      .lang-btn{padding:7px 10px;}
-      .theme-dot{width:20px;height:20px;} .theme-picker{gap:5px;padding:4px 6px;}
-      /* Hero */
-      .hero{padding:120px 0 60px;min-height:auto;}
-      .hero h1{font-size:2.2rem;line-height:1.25;}
-      .hero-desc{font-size:1rem;}
-      .hero-illustration{height:240px;border-radius:24px;}
-      .hero-stats{gap:10px;}
-      .stat-item{padding:10px 14px;}
-      .stat-value{font-size:1.7rem;}
-      .tech-stack{gap:8px;}
-      .tech-pill{font-size:.8rem;padding:6px 14px;}
-      /* Buttons */
-      .btn{padding:12px 22px;font-size:.95rem;}
-      /* Section */
-      .section-title{font-size:1.8rem;}
-      .section-subtitle{font-size:.95rem;}
-      /* Products */
-      .product-card{padding:28px 20px;border-radius:32px;}
-      .product-name{font-size:1.7rem;}
-      .product-price{font-size:2.4rem;}
-      .product-grid{gap:24px;}
-      /* Features */
-      .features{border-radius:48px 48px 0 0;padding:60px 0;}
-      .feature-item{padding:24px 20px;border-radius:24px;}
-      .features-grid{gap:20px;}
-      /* Downloads & Discord */
-      .downloads-card,.discord-card{padding:32px 20px;border-radius:32px;}
-      .downloads-card .btn-primary,.discord-card .btn-primary{font-size:1rem;padding:14px 28px;}
-      /* Modal */
-      .modal-card{padding:28px 20px;border-radius:32px;}
-      /* Download options */
-      .download-option-btn{padding:14px;}
-      /* FAQ */
-      .accordion-header{padding:16px 20px;font-size:.95rem;}
-      .accordion-content{padding:0 20px;}
-      /* Footer */
-      .footer{padding:40px 0 24px;border-radius:40px 40px 0 0;}
-      /* Visitor widget - sembunyikan di mobile kecil agar tidak overlap */
+      .container{padding:0 14px;}
+
+      /* ── Header ── */
+      .header{padding:8px 0;}
+      .header-content{gap:0;padding:0 14px;flex-wrap:nowrap;align-items:center;}
+      .logo{order:1;flex:0 0 auto;}
+      .logo span{font-size:1.1rem;} .logo i{font-size:1.5rem;}
+      /* Sembunyikan nav di HP, tampilkan hanya logo + actions */
+      .nav-menu{
+        order:4; width:100%;
+        display:flex; flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden;
+        gap:0 10px; padding:6px 0 4px;
+        border-top:1px solid rgba(255,255,255,.06);
+        margin-top:4px;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+      }
+      .nav-menu::-webkit-scrollbar{display:none;}
+      .nav-menu a{font-size:.78rem;white-space:nowrap;padding:4px 2px;}
+      .header-actions{order:2;margin-left:auto;gap:6px;flex-shrink:0;}
+      /* Theme picker lebih kecil */
+      .theme-dot{width:18px;height:18px;} .theme-picker{gap:4px;padding:3px 6px;}
+      /* Lang button - cukup ikon saja */
+      #currentLang{display:none;}
+      .lang-btn{padding:8px 10px;gap:0;}
+      .lang-btn .fa-chevron-down{display:none;}
+
+      /* ── Hero ── */
+      .hero{padding:110px 0 50px;min-height:auto;}
+      .hero h1{font-size:2rem;line-height:1.2;}
+      .hero-desc{font-size:.95rem;margin-bottom:24px;}
+      /* Tombol hero sejajar horizontal */
+      .hero > .hero-grid > div:first-child > div[style]{
+        display:flex!important; flex-direction:row!important;
+        flex-wrap:wrap!important; gap:10px!important;
+      }
+      .btn{padding:11px 20px;font-size:.9rem;}
+      .tech-stack{gap:7px;margin-top:20px;}
+      .tech-pill{font-size:.75rem;padding:5px 12px;}
+      /* Sembunyikan ilustrasi hero di HP agar hero tidak terlalu panjang */
+      .hero-illustration{height:200px;border-radius:20px;transform:none!important;}
+      .hero-stats{gap:8px;flex-wrap:wrap;}
+      .stat-item{padding:9px 13px;border-radius:28px;}
+      .stat-value{font-size:1.5rem;}
+
+      /* ── Sections ── */
+      .section-title{font-size:1.7rem;padding:0 4px;}
+      .section-subtitle{font-size:.9rem;margin-bottom:32px;}
+      .products-section{padding:50px 0;}
+      .testimonials{padding:50px 0;}
+
+      /* ── Product cards ── */
+      .product-grid{grid-template-columns:1fr;gap:20px;}
+      .product-card{padding:24px 18px;border-radius:28px;}
+      .product-card::before{border-radius:30px;}
+      .product-card::after{border-radius:26px;}
+      .product-name{font-size:1.55rem;}
+      .product-price{font-size:2.2rem;}
+      .product-badge{top:16px;right:16px;padding:4px 14px;font-size:.8rem;}
+      .product-icon{font-size:2.8rem;margin-bottom:16px;}
+      .product-features li{padding:8px 0;font-size:.9rem;}
+
+      /* ── Features ── */
+      .features{border-radius:36px 36px 0 0;padding:50px 0;}
+      .features-grid{grid-template-columns:1fr;gap:16px;}
+      .feature-item{padding:22px 18px;border-radius:22px;}
+      .feature-icon{font-size:2rem;margin-bottom:14px;}
+      .feature-item h3{font-size:1.1rem;}
+      .feature-item p{font-size:.88rem;}
+
+      /* ── Downloads & Discord ── */
+      .downloads-section,.discord-section{padding:40px 0 50px;}
+      .downloads-card,.discord-card{padding:28px 18px;border-radius:28px;text-align:center;}
+      .downloads-card .btn-primary,.discord-card .btn-primary{
+        font-size:.95rem;padding:13px 24px;
+        width:100%;box-sizing:border-box;
+        justify-content:center;
+      }
+      .downloads-card > i,.discord-card > i{font-size:3rem;margin-bottom:14px;}
+
+      /* ── Modal ── */
+      .modal-card{padding:24px 16px;border-radius:28px;width:94%;}
+      .modal-card .download-option-btn{padding:12px 10px;}
+      .modal-card > div > div[style*="grid"]{grid-template-columns:1fr 1fr!important;gap:10px!important;}
+      .dl-name{font-size:.82rem;}
+      .dl-arch{font-size:.7rem;}
+
+      /* ── FAQ ── */
+      .faq{padding:40px 0;}
+      .accordion-header{padding:14px 16px;font-size:.9rem;}
+      .accordion-content{padding:0 16px;font-size:.88rem;}
+
+      /* ── Footer ── */
+      .footer{padding:32px 0 20px;border-radius:32px 32px 0 0;}
+      .footer .container{flex-direction:column;gap:10px;text-align:center;}
+
+      /* ── Visitor widget — hide on mobile ── */
+      #visitor-widget{display:none;}
+
+      /* ── Cursor — hide on touch ── */
+      .custom-cursor{display:none!important;}
+      html,body{cursor:auto!important;}
+      body, a, button, input, select, textarea,
+      .btn, .lang-btn, .lang-option, .theme-dot,
+      .accordion-header, .tech-pill, .product-card,
+      .feature-item, .download-option-btn{cursor:auto!important;}
+    }
+
+    /* Mobile landscape / medium phones (521–768px) */
+    @media screen and (min-width:521px) and (max-width:768px) {
+      .container{padding:0 18px;}
+      .hero{padding:130px 0 70px;}
+      .hero h1{font-size:2.6rem;text-align:center;}
+      .hero-desc{text-align:center;}
+      .hero-illustration{height:260px;transform:none!important;}
+      .product-grid{grid-template-columns:1fr;gap:24px;}
+      .features-grid{grid-template-columns:1fr 1fr;}
+      .feature-item{padding:26px 20px;}
+      .section-title{font-size:2rem;}
+      .downloads-card,.discord-card{padding:36px 22px;}
+      .footer .container{flex-direction:column;gap:10px;text-align:center;}
       #visitor-widget{display:none;}
     }
 
