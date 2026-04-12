@@ -603,6 +603,27 @@ function applyLanguage(lang){
    ============================================================== */
 let swiperInstance = null;
 
+/* ==============================================================
+   CURRENCY SYSTEM
+   ============================================================== */
+const CURRENCY = {
+  id: { code:'IDR', symbol:'Rp',  locale:'id-ID', rate:1,        position:'before', decimals:0 },
+  en: { code:'USD', symbol:'$',   locale:'en-US', rate:0.000062, position:'before', decimals:2 },
+  fr: { code:'EUR', symbol:'€',   locale:'fr-FR', rate:0.000057, position:'before', decimals:2 },
+  vi: { code:'VND', symbol:'₫',   locale:'vi-VN', rate:1.56,     position:'after',  decimals:0 },
+  es: { code:'MXN', symbol:'MX$', locale:'es-MX', rate:0.00106,  position:'before', decimals:2 }
+};
+
+function formatPrice(priceIDR, lang){
+  const c = CURRENCY[lang] || CURRENCY.id;
+  const converted = priceIDR * c.rate;
+  const formatted = converted.toLocaleString(c.locale, {
+    minimumFractionDigits: c.decimals,
+    maximumFractionDigits: c.decimals
+  });
+  return c.position === 'before' ? c.symbol + formatted : formatted + c.symbol;
+}
+
 const productsData = [
   { id:'esp', icon:'fa-gauge-low', nameKey:'basic_name', price:5000, popular:true, featuresKeys:['basic_feat1','basic_feat2','basic_feat3','basic_feat4','basic_feat5'], dataProduct:'ESP' },
   { id:'aimbot', icon:'fa-crown', nameKey:'premium_name', price:10000, popular:false, featuresKeys:['premium_feat1','premium_feat2','premium_feat3','premium_feat4','premium_feat5'], dataProduct:'AIMBOT EXTERNAL' }
@@ -644,7 +665,7 @@ function renderProductCards(){
     card.appendChild(nameDiv);
     const priceDiv=document.createElement('div');
     priceDiv.className='product-price';
-    priceDiv.innerHTML=`Rp${prod.price.toLocaleString('id')} <small>${T[lang]?.per_day||'/hari'}</small>`;
+    priceDiv.innerHTML=`${formatPrice(prod.price, lang)} <small>${T[lang]?.per_day||'/hari'}</small>`;
     card.appendChild(priceDiv);
     const ul=document.createElement('ul');
     ul.className='product-features';
@@ -811,8 +832,9 @@ function attachBuyListeners(){
       const p=btn.dataset.product,price=parseInt(btn.dataset.price);
       showDiscordPopup(function(){
         document.getElementById('modalProductName').textContent=p;
-        document.getElementById('modalPrice').textContent='Rp'+price.toLocaleString('id');
-        document.getElementById('whatsappLink').href='https://wa.me/6289677648795?text=Halo%20saya%20mau%20konfirmasi%20pembelian%20'+encodeURIComponent(p)+'%20sebesar%20Rp'+price;
+        const displayPrice=formatPrice(price, currentLang);
+        document.getElementById('modalPrice').textContent=displayPrice;
+        document.getElementById('whatsappLink').href='https://wa.me/6289677648795?text=Halo%20saya%20mau%20konfirmasi%20pembelian%20'+encodeURIComponent(p)+'%20sebesar%20'+encodeURIComponent(displayPrice)+'%20(IDR%20Rp'+price+')';
         const pm=document.getElementById('paymentModal');
         pm.classList.add('show'); void pm.offsetWidth; pm.classList.add('modal-visible');
       });
