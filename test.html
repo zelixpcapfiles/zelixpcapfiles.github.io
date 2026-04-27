@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HACKED</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rubik+Glitch&family=VT323&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Share Tech Mono',monospace;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.18) 2px,rgba(0,0,0,0.18) 4px);pointer-events:none;z-index:9999;}
+#vignette{position:fixed;inset:0;z-index:9997;pointer-events:none;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,0.97) 100%);}
+
+/* MAIN */
+#wrapper{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding-bottom:155px;}
+
+/* TITLE with drip effect */
+.title-wrap{position:relative;display:inline-block;text-align:center;}
+.glitch-title{
+  font-family:'Rubik Glitch',cursive;
+  font-size:clamp(2.8rem,8vw,6.5rem);
+  color:#fff;position:relative;
+  letter-spacing:0.05em;line-height:1.1;
+  animation:glitch-main 2s infinite;
+  text-shadow:0 0 20px #cc0000,0 0 60px #8b0000,0 0 120px #4a0000;
+}
+.glitch-title::before,.glitch-title::after{content:attr(data-text);position:absolute;inset:0;text-align:center;}
+.glitch-title::before{color:#ff0000;clip-path:polygon(0 25%,100% 25%,100% 45%,0 45%);animation:glitch-1 2s infinite;transform:translateX(-5px);}
+.glitch-title::after{color:#00ffff;clip-path:polygon(0 55%,100% 55%,100% 75%,0 75%);animation:glitch-2 2s infinite;transform:translateX(5px);}
+@keyframes glitch-main{0%,85%,100%{transform:none}86%{transform:skewX(-4deg)}88%{transform:skewX(4deg) scaleY(0.98)}90%{transform:none}92%{transform:skewX(-2deg)}95%{transform:scaleX(1.02)}}
+@keyframes glitch-1{0%,100%{opacity:0}20%,22%{opacity:1;transform:translateX(-8px)}21%{transform:translateX(5px)}50%,52%{opacity:1;transform:translateX(-4px)}70%,72%{opacity:1;transform:translateX(-10px) skewX(3deg)}}
+@keyframes glitch-2{0%,100%{opacity:0}25%,27%{opacity:1;transform:translateX(8px)}26%{transform:translateX(-5px)}55%,57%{opacity:1;transform:translateX(4px)}80%,82%{opacity:1;transform:translateX(10px) skewX(-3deg)}}
+
+/* LETTER DRIPS */
+.drip-container{position:absolute;top:100%;left:0;right:0;height:80px;pointer-events:none;overflow:visible;}
+.drip{position:absolute;top:0;width:6px;background:linear-gradient(180deg,#8b0000,#4a0000);border-radius:0 0 50% 50%;animation:drip-fall linear infinite;}
+@keyframes drip-fall{0%{height:0;opacity:1}70%{opacity:1}100%{height:60px;opacity:0}}
+
+.subtitle{font-family:'VT323',monospace;font-size:clamp(1.2rem,3vw,1.8rem);color:#cc0000;letter-spacing:0.3em;text-transform:uppercase;margin-top:2.5rem;animation:blink-red 1.2s step-end infinite;text-shadow:0 0 10px #ff0000;}
+@keyframes blink-red{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.terminal{font-family:'Share Tech Mono',monospace;font-size:clamp(0.6rem,1.3vw,0.82rem);color:#660000;margin-top:1.2rem;text-align:center;line-height:2;max-width:560px;padding:0 1rem;}
+.terminal .red{color:#ff3333;animation:flk 3s infinite;}
+@keyframes flk{0%,19%,22%,62%,64%,70%,100%{opacity:1}20%,21%,63%,65%,69%{opacity:0.3}}
+
+.ui-row{display:flex;gap:1.2rem;margin-top:1rem;align-items:flex-start;justify-content:center;flex-wrap:wrap;}
+.countdown-box,.progress-box{border:1px solid #8b0000;padding:0.5rem 1rem;animation:border-pulse 2s infinite;}
+.countdown-label,.progress-label{font-size:0.6rem;color:#660000;letter-spacing:0.15em;margin-bottom:0.3rem;}
+.countdown-timer{font-family:'VT323',monospace;font-size:2rem;color:#ff0000;text-shadow:0 0 10px #ff0000;}
+.progress-box{min-width:210px;}
+.progress-track{background:#1a0000;height:9px;width:100%;border:1px solid #440000;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#8b0000,#ff0000);width:0%;}
+.progress-pct{font-size:0.58rem;color:#cc0000;margin-top:0.25rem;text-align:right;}
+@keyframes border-pulse{0%,100%{border-color:#8b0000;box-shadow:0 0 5px #8b0000}50%{border-color:#ff0000;box-shadow:0 0 18px #ff0000,inset 0 0 8px rgba(139,0,0,0.3)}}
+
+.warn-box{margin-top:0.8rem;border:1px solid #8b0000;padding:0.4rem 1.2rem;font-size:clamp(0.5rem,1.1vw,0.7rem);color:#aa0000;letter-spacing:0.1em;text-transform:uppercase;animation:border-pulse 1.5s infinite;}
+
+/* GLITCH STRIPS */
+.gstrip{position:fixed;left:0;right:0;height:3px;background:rgba(255,0,0,0.7);pointer-events:none;z-index:9995;opacity:0;}
+#gs1{top:18%;animation:sa 5s infinite;}#gs2{top:62%;animation:sa 5s infinite 1.8s;}
+#gs3{top:40%;animation:sa 7s infinite 3s;background:rgba(0,255,255,0.35);}
+#gs4{top:78%;animation:sa 4s infinite 0.5s;}#gs5{top:28%;animation:sa 6s infinite 2.5s;}
+@keyframes sa{0%,93%,100%{opacity:0;transform:scaleX(1)}94%{opacity:1;transform:scaleX(0.7) translateX(30px)}95%{opacity:0}97%{opacity:1;height:8px}98%{opacity:0}}
+
+#redflash{position:fixed;inset:0;background:#8b0000;opacity:0;pointer-events:none;z-index:9994;transition:opacity 0.05s;}
+
+/* FLOATING SYSTEM MESSAGES */
+.sysmsg{position:fixed;font-family:'Share Tech Mono',monospace;pointer-events:none;z-index:200;white-space:nowrap;border:1px solid #660000;padding:4px 10px;background:rgba(0,0,0,0.85);color:#cc0000;font-size:0.7rem;letter-spacing:0.1em;}
+
+/* HACKER LOG PANEL — bottom CMD style */
+#logpanel{position:fixed;left:0;bottom:0;right:0;height:145px;border-top:2px solid #cc0000;background:#080000;z-index:300;padding:8px 16px 10px;overflow:hidden;font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:#ff4444;display:flex;flex-direction:column;box-shadow:0 -4px 30px rgba(200,0,0,0.5);}
+#logpanel .lp-title{color:#ff2222;font-size:0.68rem;letter-spacing:0.25em;border-bottom:1px solid #880000;padding-bottom:5px;margin-bottom:5px;flex-shrink:0;text-shadow:0 0 8px #ff0000;}
+#loglines{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;}
+.log-line{color:#dd3333;line-height:1.7;animation:fadein 0.3s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 4px #990000;}
+.log-line.hot{color:#ff6666;text-shadow:0 0 8px #ff2222;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* FAKE ALERT POPUP */
+#fakealert{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9990;background:#0a0000;border:2px solid #8b0000;box-shadow:0 0 40px #8b0000,0 0 80px #4a0000;padding:0;min-width:340px;display:none;}
+.fa-bar{background:#8b0000;padding:6px 12px;display:flex;justify-content:space-between;align-items:center;font-size:0.7rem;color:#fff;letter-spacing:0.1em;}
+.fa-bar span{cursor:pointer;color:#ffaaaa;}
+.fa-body{padding:18px 20px;}
+.fa-icon{font-size:2rem;text-align:center;margin-bottom:8px;}
+.fa-msg{font-size:0.68rem;color:#cc0000;line-height:1.8;margin-bottom:14px;letter-spacing:0.05em;}
+.fa-btn{display:block;width:100%;background:#8b0000;color:#fff;border:none;padding:8px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;cursor:pointer;animation:border-pulse 1s infinite;}
+
+/* EYE JUMPSCARE */
+#eyescare{position:fixed;inset:0;z-index:9993;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.96);}
+#eyescare svg{width:min(75vw,520px);filter:drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 80px #8b0000);}
+@keyframes eye-shake{0%,100%{transform:translate(0,0) rotate(0deg)}10%{transform:translate(-6px,3px) rotate(-1deg)}20%{transform:translate(5px,-4px) rotate(1deg)}30%{transform:translate(-4px,5px) rotate(-0.5deg)}40%{transform:translate(6px,2px) rotate(1.5deg)}50%{transform:translate(-3px,-5px) rotate(-1deg)}60%{transform:translate(4px,4px) rotate(0.5deg)}70%{transform:translate(-5px,2px) rotate(-1.5deg)}80%{transform:translate(3px,-3px) rotate(1deg)}90%{transform:translate(-2px,4px) rotate(-0.5deg)}}
+@keyframes eye-fade-in{0%{opacity:0;transform:scale(0.8)}100%{opacity:1;transform:scale(1)}}
+@keyframes pupil-dart{0%,100%{transform:translate(0,0)}15%{transform:translate(-12px,-8px)}30%{transform:translate(10px,5px)}45%{transform:translate(-8px,12px)}60%{transform:translate(14px,-6px)}75%{transform:translate(-10px,8px)}90%{transform:translate(6px,-10px)}}
+@keyframes lid-twitch{0%,100%{transform:scaleY(1)}20%{transform:scaleY(0.92)}22%{transform:scaleY(1)}50%{transform:scaleY(0.88)}52%{transform:scaleY(1)}80%{transform:scaleY(0.95)}82%{transform:scaleY(1)}}
+@keyframes iris-pulse{0%,100%{r:72}50%{r:65}}
+
+</style>
+</head>
+<body>
+
+<!-- CANVASES -->
+<canvas id="bgTextCanvas" style="position:fixed;inset:0;z-index:2;pointer-events:none;"></canvas>
+<canvas id="bloodCanvas" style="position:fixed;inset:0;z-index:3;pointer-events:none;"></canvas>
+<canvas id="dustCanvas" style="position:fixed;inset:0;z-index:4;pointer-events:none;"></canvas>
+<canvas id="batCanvas" style="position:fixed;inset:0;z-index:5;pointer-events:none;"></canvas>
+<canvas id="crackCanvas" style="position:fixed;inset:0;z-index:6;pointer-events:none;"></canvas>
+<canvas id="webCanvas" style="position:fixed;inset:0;z-index:7;pointer-events:none;"></canvas>
+<canvas id="noiseCanvas" style="position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.07;image-rendering:pixelated;width:100%;height:100%;"></canvas>
+
+<div id="vignette"></div>
+<div id="redflash"></div>
+<div class="gstrip" id="gs1"></div><div class="gstrip" id="gs2"></div>
+<div class="gstrip" id="gs3"></div><div class="gstrip" id="gs4"></div><div class="gstrip" id="gs5"></div>
+
+<!-- HACKER LOG PANEL -->
+<div id="logpanel">
+  <div class="lp-title">⛧ FELIX — ACTIVITY LOG ⛧</div>
+  <div id="loglines"></div>
+</div>
+
+<!-- FAKE ALERT -->
+<div id="fakealert">
+  <div class="fa-bar">⚠ SYSTEM WARNING <span onclick="this.closest('#fakealert').style.display='none'">✕</span></div>
+  <div class="fa-body">
+    <div class="fa-icon">☠</div>
+    <div class="fa-msg" id="fa-msg">CRITICAL ERROR DETECTED.<br>YOUR SYSTEM HAS BEEN COMPROMISED.<br>ALL DATA IS BEING TRANSMITTED.</div>
+    <button class="fa-btn" onclick="document.getElementById('fakealert').style.display='none'">[ ACKNOWLEDGE — YOU CANNOT STOP THIS ]</button>
+  </div>
+</div>
+
+<!-- EYE JUMPSCARE -->
+<div id="eyescare">
+  <svg id="eyesvg" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ff0000"/>
+        <stop offset="60%" stop-color="#990000"/>
+        <stop offset="100%" stop-color="#4a0000"/>
+      </radialGradient>
+      <radialGradient id="eyeWhite" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#1a0000"/>
+        <stop offset="100%" stop-color="#050000"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="bloodglow">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- eyelids / eye socket dark bg -->
+    <ellipse cx="260" cy="155" rx="250" ry="130" fill="#000"/>
+
+    <!-- eyeball white (dark red tinted) -->
+    <ellipse cx="260" cy="155" rx="220" ry="110" fill="url(#eyeWhite)" stroke="#3a0000" stroke-width="1.5"/>
+
+    <!-- veins - many and detailed -->
+    <path d="M45,145 Q90,120 150,138 Q190,148 230,152" stroke="#8b0000" stroke-width="2" fill="none" opacity="0.8" filter="url(#bloodglow)"/>
+    <path d="M40,165 Q95,185 160,170 Q200,162 235,158" stroke="#8b0000" stroke-width="1.5" fill="none" opacity="0.7"/>
+    <path d="M60,135 Q100,110 155,128" stroke="#660000" stroke-width="1" fill="none" opacity="0.6"/>
+    <path d="M50,175 Q110,200 170,182" stroke="#660000" stroke-width="1" fill="none" opacity="0.5"/>
+    <path d="M475,145 Q430,122 370,140 Q330,150 295,153" stroke="#8b0000" stroke-width="2" fill="none" opacity="0.8" filter="url(#bloodglow)"/>
+    <path d="M480,165 Q425,186 365,172 Q320,163 290,158" stroke="#8b0000" stroke-width="1.5" fill="none" opacity="0.7"/>
+    <path d="M460,132 Q410,108 355,126" stroke="#660000" stroke-width="1" fill="none" opacity="0.6"/>
+    <path d="M470,178 Q415,202 360,185" stroke="#660000" stroke-width="1" fill="none" opacity="0.5"/>
+    <!-- top veins -->
+    <path d="M220,48 Q240,90 252,130" stroke="#6b0000" stroke-width="1.2" fill="none" opacity="0.6"/>
+    <path d="M260,42 Q262,85 261,128" stroke="#7a0000" stroke-width="1.5" fill="none" opacity="0.7"/>
+    <path d="M300,48 Q280,90 268,130" stroke="#6b0000" stroke-width="1.2" fill="none" opacity="0.6"/>
+
+    <!-- iris + pupil group — animates like darting eyes -->
+    <g style="transform-origin:260px 155px;animation:pupil-dart 2.5s steps(1) infinite;">
+      <circle cx="260" cy="155" r="72" fill="url(#irisGrad)" filter="url(#glow)"/>
+      <circle cx="260" cy="155" r="72" fill="none" stroke="#cc0000" stroke-width="1" opacity="0.4"/>
+      <circle cx="260" cy="155" r="58" fill="none" stroke="#ff3300" stroke-width="0.8" opacity="0.3"/>
+      <line x1="260" y1="83" x2="258" y2="115" stroke="#ff4400" stroke-width="0.8" opacity="0.5"/>
+      <line x1="296" y1="93" x2="282" y2="120" stroke="#ff4400" stroke-width="0.8" opacity="0.5"/>
+      <line x1="322" y1="120" x2="300" y2="138" stroke="#ff4400" stroke-width="0.8" opacity="0.5"/>
+      <line x1="224" y1="93" x2="238" y2="120" stroke="#ff4400" stroke-width="0.8" opacity="0.5"/>
+      <line x1="198" y1="120" x2="220" y2="138" stroke="#ff4400" stroke-width="0.8" opacity="0.5"/>
+      <!-- pupil -->
+      <circle cx="260" cy="155" r="38" fill="#000"/>
+      <ellipse cx="246" cy="142" rx="9" ry="7" fill="#fff" opacity="0.15"/>
+      <ellipse cx="243" cy="140" rx="4" ry="3" fill="#fff" opacity="0.35"/>
+    </g>
+
+    <!-- eyelids top & bottom clipping -->
+    <path d="M10,155 Q260,20 510,155" fill="#000" opacity="0.5"/>
+    <path d="M10,155 Q260,290 510,155" fill="#000" opacity="0.5"/>
+
+    <!-- eyelid edges -->
+    <path d="M10,155 Q260,22 510,155" stroke="#1a0000" stroke-width="3" fill="none"/>
+    <path d="M10,155 Q260,288 510,155" stroke="#1a0000" stroke-width="3" fill="none"/>
+
+    <!-- BLOOD TEARS - animating drips from lower lid -->
+    <!-- tear 1 -->
+    <g filter="url(#bloodglow)">
+      <path d="M200,210 Q198,240 196,270 Q195,285 198,295" stroke="#cc0000" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.9">
+        <animate attributeName="stroke-dasharray" from="0 200" to="200 0" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <ellipse cx="197" cy="298" rx="5" ry="7" fill="#aa0000" opacity="0.9">
+        <animate attributeName="cy" from="270" to="315" dur="1.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="1" to="0" dur="1.2s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <!-- tear 2 -->
+    <g filter="url(#bloodglow)">
+      <path d="M260,215 Q260,248 258,278 Q257,292 260,305" stroke="#bb0000" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.95">
+        <animate attributeName="stroke-dasharray" from="0 200" to="200 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      </path>
+      <ellipse cx="259" cy="308" rx="6" ry="8" fill="#cc0000" opacity="0.95">
+        <animate attributeName="cy" from="278" to="320" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="1" to="0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <!-- tear 3 -->
+    <g filter="url(#bloodglow)">
+      <path d="M320,210 Q322,242 324,268 Q325,282 322,294" stroke="#cc0000" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.85">
+        <animate attributeName="stroke-dasharray" from="0 200" to="200 0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+      </path>
+      <ellipse cx="323" cy="297" rx="5" ry="7" fill="#aa0000" opacity="0.85">
+        <animate attributeName="cy" from="268" to="312" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="1" to="0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <!-- tear 4 small -->
+    <g filter="url(#bloodglow)">
+      <path d="M230,212 Q229,235 228,255" stroke="#990000" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7">
+        <animate attributeName="stroke-dasharray" from="0 100" to="100 0" dur="1s" begin="0.9s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <!-- tear 5 small -->
+    <g filter="url(#bloodglow)">
+      <path d="M290,213 Q291,236 293,257" stroke="#990000" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7">
+        <animate attributeName="stroke-dasharray" from="0 100" to="100 0" dur="1.1s" begin="1.2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+
+    <!-- blood pool at bottom of eye -->
+    <ellipse cx="260" cy="265" rx="70" ry="8" fill="#6b0000" opacity="0.5">
+      <animate attributeName="rx" values="60;75;60" dur="2s" repeatCount="indefinite"/>
+    </ellipse>
+  </svg>
+</div>
+
+<!-- MAIN -->
+<div id="wrapper">
+  <div class="title-wrap">
+    <h1 class="glitch-title" data-text="HACKED BY FELIX">HACKED BY FELIX</h1>
+    <div class="drip-container" id="drips"></div>
+  </div>
+  <div class="subtitle">⚠ PWNED BY FELIX ⚠</div>
+  <div class="terminal">
+    <span class="red">[ CRITICAL SYSTEM BREACH — UNAUTHORIZED ACCESS GRANTED ]</span><br>
+    ALL FIREWALL PROTOCOLS BYPASSED<br>
+    ENCRYPTION KEYS COMPROMISED<br>
+    <span class="red">ROOT ACCESS OBTAINED — FULL CONTROL ESTABLISHED</span><br>
+    &gt; WIPING SYSTEM LOGS . . .<br>
+    &gt; EXFILTRATING DATA . . .<br>
+    <span class="red">&gt; THERE IS NO ESCAPE. NO SYSTEM IS SAFE._</span>
+  </div>
+  <div class="ui-row">
+    <div class="countdown-box">
+      <div class="countdown-label">⛧ SYSTEM DESTRUCTION IN ⛧</div>
+      <div class="countdown-timer" id="ctimer">00:13:37</div>
+    </div>
+    <div class="progress-box">
+      <div class="progress-label">DELETING FILES — PROGRESS</div>
+      <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      <div class="progress-pct" id="ppct">0%</div>
+    </div>
+  </div>
+  <div class="warn-box">⛧ FELIX WAS HERE ⛧ NO SYSTEM IS SAFE ⛧ YOU HAVE BEEN OWNED ⛧</div>
+</div>
+
+<script>
+// ── AUDIO (unlock on first user gesture OR immediate attempt) ──
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+let audioReady = false;
+
+function initAudio() {
+  if (audioReady) return;
+  if (AC.state === 'suspended') AC.resume();
+  audioReady = true;
+
+  // drone bass
+  function mkDrone(f, g) {
+    const o = AC.createOscillator(), gn = AC.createGain(), fl = AC.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.value = f; gn.gain.value = g;
+    fl.type = 'lowpass'; fl.frequency.value = 180;
+    o.connect(gn); gn.connect(fl); fl.connect(AC.destination); o.start();
+  }
+  mkDrone(38, 0.025); mkDrone(57, 0.018);
+
+  // heartbeat
+  function hb() {
+    const g = AC.createGain();
+    g.gain.setValueAtTime(0, AC.currentTime);
+    g.gain.linearRampToValueAtTime(0.12, AC.currentTime + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + 0.35);
+    const o = AC.createOscillator(); o.type = 'sine'; o.frequency.value = 55;
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + 0.4);
+    setTimeout(hb, 1600 + Math.random() * 500);
+  }
+  hb();
+
+  // wind noise
+  const wbuf = AC.createBuffer(1, AC.sampleRate * 3, AC.sampleRate);
+  const wd = wbuf.getChannelData(0);
+  for (let i = 0; i < wd.length; i++) wd[i] = Math.random() * 2 - 1;
+  const wsrc = AC.createBufferSource(); wsrc.buffer = wbuf; wsrc.loop = true;
+  const wg = AC.createGain(); wg.gain.value = 0.018;
+  const wf = AC.createBiquadFilter(); wf.type = 'bandpass'; wf.frequency.value = 400; wf.Q.value = 0.4;
+  wsrc.connect(wf); wf.connect(wg); wg.connect(AC.destination); wsrc.start();
+  function modWind() { const t = AC.currentTime; wg.gain.linearRampToValueAtTime(0.005 + Math.random() * 0.03, t + 2 + Math.random() * 3); setTimeout(modWind, 2500 + Math.random() * 3000); }
+  modWind();
+
+  // whisper
+  function whisper() {
+    const b = AC.createBuffer(1, AC.sampleRate * 0.5, AC.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = AC.createBufferSource(); src.buffer = b;
+    const g = AC.createGain(); g.gain.value = 0.03;
+    const f = AC.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1200; f.Q.value = 0.8;
+    src.connect(f); f.connect(g); g.connect(AC.destination); src.start();
+    setTimeout(whisper, 6000 + Math.random() * 10000);
+  }
+  setTimeout(whisper, 3000);
+}
+
+// Try immediate start (works if page loaded via user action)
+initAudio();
+// Fallback: unlock on any gesture
+['click','keydown','touchstart','mousemove'].forEach(e => document.addEventListener(e, initAudio, {once: true}));
+
+// ── NOISE ──
+(function(){
+  const c=document.getElementById('noiseCanvas'),ctx=c.getContext('2d');
+  c.width=256;c.height=256;
+  function draw(){const id=ctx.createImageData(256,256),d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}ctx.putImageData(id,0,0);}
+  draw();setInterval(draw,70);
+})();
+
+// ── LETTER DRIPS ──
+(function(){
+  const cont=document.getElementById('drips');
+  const positions=[5,12,18,25,32,39,46,53,60,67,74,81,88,95];
+  positions.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='drip';
+    d.style.left=p+'%';
+    d.style.width=(4+Math.random()*6)+'px';
+    d.style.animationDuration=(2+Math.random()*3)+'s';
+    d.style.animationDelay=(Math.random()*3)+'s';
+    cont.appendChild(d);
+  });
+})();
+
+// ── FLOATING SYSTEM MESSAGES ──
+(function(){
+  const msgs=[
+    'SYSTEM ERROR 0x0000007E','WARNING: INTRUSION DETECTED',
+    'KERNEL PANIC — NOT SYNCING','FATAL ERROR: MEMORY CORRUPTED',
+    'ACCESS VIOLATION @ 0xDEADBEEF','BUFFER OVERFLOW DETECTED',
+    'FIREWALL BYPASSED','ROOT SHELL OBTAINED',
+    'CRITICAL FAILURE: DISK WIPE IN PROGRESS','ENCRYPTION BROKEN',
+    'TRACING IP: 192.168.'+Math.floor(Math.random()*255)+'.'+Math.floor(Math.random()*255),
+    'UPLOADING PAYLOAD... 87%','BACKDOOR INSTALLED',
+    'SSH SESSION ESTABLISHED','CREDENTIALS STOLEN',
+    'WARNING: UNAUTHORIZED ACCESS','SYSTEM COMPROMISED',
+    'FILE DELETED: system32\\winlogon.exe','REGISTRY CORRUPTED',
+    'ERROR: NO ESCAPE ROUTE FOUND','LOGGING KEYSTROKES...',
+    'SCANNING PORTS: 80, 443, 22, 3306','BRUTE FORCE SUCCESS',
+    'CONNECTION TO C2 SERVER ESTABLISHED','DEPLOYING RANSOMWARE...',
+  ];
+
+  const activeMsgs=[];
+
+  function spawnMsg(){
+    if(activeMsgs.length>12)return;
+    const el=document.createElement('div');
+    el.className='sysmsg';
+    el.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    const x=Math.random()*(window.innerWidth-350);
+    const y=Math.random()*(window.innerHeight-60);
+    el.style.left=x+'px';el.style.top=y+'px';
+    el.style.opacity='0';el.style.transition='opacity 0.4s';
+    // random animation type
+    const type=Math.floor(Math.random()*3);
+    document.body.appendChild(el);
+    activeMsgs.push(el);
+    setTimeout(()=>el.style.opacity='1',50);
+
+    if(type===0){
+      // typewriter
+      const full=el.textContent;el.textContent='';
+      let i=0;const iv=setInterval(()=>{el.textContent+=full[i++];if(i>=full.length)clearInterval(iv);},40);
+    } else if(type===1){
+      // glitch flicker
+      let g=0;const gv=setInterval(()=>{
+        el.style.transform=g%2===0?`skewX(${(Math.random()-0.5)*8}deg)`:'none';
+        el.style.color=g%3===0?'#ff0000':'#cc0000';
+        g++;if(g>10)clearInterval(gv);
+      },80);
+    }
+
+    const life=3000+Math.random()*5000;
+    setTimeout(()=>{
+      el.style.opacity='0';
+      setTimeout(()=>{el.remove();activeMsgs.splice(activeMsgs.indexOf(el),1);},500);
+    },life);
+  }
+
+  setInterval(spawnMsg,800);
+})();
+
+// ── HACKER LOG PANEL ──
+(function(){
+  const cont=document.getElementById('loglines');
+  const logs=[
+    '>>> felix@root:~# ./exploit.sh','[+] Target acquired: 127.0.0.1',
+    '[+] Scanning ports...','[+] Port 22 OPEN — SSH',
+    '[+] Port 80 OPEN — HTTP','[+] Port 3306 OPEN — MySQL',
+    '[!] Brute forcing credentials...','[+] PASSWORD FOUND: *****',
+    '[+] SSH session established','[+] Escalating privileges...',
+    '[+] ROOT ACCESS GRANTED','[!] Disabling firewall...',
+    '[+] Firewall: DISABLED','[!] Injecting payload...',
+    '[+] Payload deployed','[!] Exfiltrating data...',
+    '[+] 4.7 GB transferred','[!] Wiping logs...',
+    '[+] /var/log/auth.log — DELETED','[+] /var/log/syslog — DELETED',
+    '[!] Installing backdoor...','[+] Backdoor active on port 1337',
+    '[!] Encrypting all files...','[+] AES-256 encryption applied',
+    '[!] Sending ransom note...','[+] SYSTEM FULLY COMPROMISED',
+    '>>> All your base are belong to FELIX','>>> No trace. No mercy. No escape.',
+  ];
+  let idx=0;
+
+  function typeLine(text,isHot,cb){
+    const line=document.createElement('div');
+    line.className='log-line'+(isHot?' hot':'');
+    line.textContent='';
+    cont.appendChild(line);
+    if(cont.children.length>6)cont.removeChild(cont.firstChild);
+    cont.scrollTop=cont.scrollHeight;
+    const cursor=document.createElement('span');
+    cursor.textContent='_';
+    cursor.style.cssText='animation:blink-red 0.5s step-end infinite;';
+    line.appendChild(cursor);
+    let i=0;
+    function typeChar(){
+      if(i<text.length){
+        line.insertBefore(document.createTextNode(text[i]),cursor);
+        i++;
+        const delay='.,!?-/[]'.includes(text[i-1])?70+Math.random()*70:15+Math.random()*35;
+        setTimeout(typeChar,delay);
+      } else {
+        cursor.remove();
+        cb();
+      }
+    }
+    typeChar();
+  }
+
+  function addLog(){
+    const text=logs[idx%logs.length];
+    const isHot=Math.random()<0.35;
+    idx++;
+    typeLine(text,isHot,()=>{
+      setTimeout(addLog,500+Math.random()*700);
+    });
+  }
+  addLog();
+})();
+
+// ── FAKE ALERT POPUP ──
+(function(){
+  const alertMsgs=[
+    'CRITICAL ERROR DETECTED.<br>YOUR SYSTEM HAS BEEN COMPROMISED.<br>ALL DATA IS BEING TRANSMITTED.',
+    'WARNING: RANSOMWARE DETECTED.<br>YOUR FILES ARE BEING ENCRYPTED.<br>RESISTANCE IS FUTILE.',
+    'FATAL ERROR 0xDEADBEEF.<br>MEMORY CORRUPTION DETECTED.<br>SYSTEM WILL NOT RECOVER.',
+    'UNAUTHORIZED ACCESS LOGGED.<br>IP: 192.168.0.1 — FELIX<br>YOU CANNOT STOP THIS.',
+  ];
+  const popup=document.getElementById('fakealert');
+  const msgEl=document.getElementById('fa-msg');
+  function showAlert(){
+    msgEl.innerHTML=alertMsgs[Math.floor(Math.random()*alertMsgs.length)];
+    popup.style.display='block';
+    setTimeout(()=>{popup.style.display='none';scheduleAlert();},6000);
+  }
+  function scheduleAlert(){setTimeout(showAlert,10000+Math.random()*15000);}
+  setTimeout(showAlert,4000);
+})();
+
+// ── EYE JUMPSCARE ──
+(function(){
+  const el=document.getElementById('eyescare');
+  function scare(){
+    el.style.display='flex';
+    const svg=document.getElementById('eyesvg');
+    // reset then apply animations
+    svg.style.animation='none';
+    svg.offsetHeight; // reflow
+    svg.style.animation='eye-fade-in 0.2s ease forwards, eye-shake 0.3s linear 0.2s infinite';
+    setTimeout(()=>{
+      el.style.display='none';
+      svg.style.animation='none';
+      scheduleScare();
+    },3200);
+  }
+  function scheduleScare(){setTimeout(scare,15000+Math.random()*20000);}
+  setTimeout(scare,8000);
+})();
+
+// ── RED FLASH ──
+(function(){
+  const fl=document.getElementById('redflash');
+  function flash(){
+    fl.style.transition='none';fl.style.opacity='0.6';
+    setTimeout(()=>{fl.style.transition='opacity 0.15s';fl.style.opacity='0';},80);
+    setTimeout(()=>{fl.style.opacity='0.3';},200);
+    setTimeout(()=>{fl.style.opacity='0';},320);
+  }
+  function schedule(){setTimeout(()=>{flash();schedule();},9000+Math.random()*12000);}
+  schedule();
+})();
+
+// ── BACKGROUND TEXT ──
+(function(){
+  const c=document.getElementById('bgTextCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const words=['0x4F3A','NULL','ERR_404','PWNED','KERNEL PANIC','OVERFLOW','0xFF','EXPLOIT',
+    'PAYLOAD','INJECT','ROOT','BREACH','DECRYPT','SHELL','BACKDOOR','DAEMON','SEGFAULT',
+    'FILE DELETED','CRITICAL','SYSTEM FAILURE','DATA WIPED','NO ESCAPE','FELIX',
+    'felix@root:~#','>>> OWNED <<<','0xDEADBEEF','rm -rf /','chmod 777','sudo su'];
+  const pts=[];
+  for(let i=0;i<55;i++)pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
+    text:words[Math.floor(Math.random()*words.length)],speed:0.1+Math.random()*0.2,
+    alpha:0.04+Math.random()*0.16,size:8+Math.random()*10,vx:(Math.random()-0.5)*0.2,
+    vy:Math.random()*0.15+0.05,life:Math.random(),drift:Math.random()*Math.PI*2});
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const p of pts){
+      p.life+=0.003;p.drift+=0.02;p.x+=p.vx+Math.sin(p.drift)*0.15;p.y+=p.vy;
+      if(p.y>c.height+30){p.y=-20;p.x=Math.random()*c.width;p.text=words[Math.floor(Math.random()*words.length)];p.life=0;}
+      const fade=Math.sin(p.life*Math.PI);
+      ctx.globalAlpha=p.alpha*(fade<0?0:fade);
+      ctx.fillStyle=Math.random()<0.03?'#ff0000':'#6b0000';
+      ctx.font=`${p.size}px 'Share Tech Mono',monospace`;
+      ctx.fillText(p.text,p.x,p.y);
+    }
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── BLOOD ──
+(function(){
+  const c=document.getElementById('bloodCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const drips=[],splats=[];
+  function mkDrip(){return{x:Math.random()*window.innerWidth,y:-20,speed:0.5+Math.random()*1.2,width:2+Math.random()*9,length:50+Math.random()*140,opacity:0.5+Math.random()*0.5,splat:false};}
+  function mkSplat(x,y,w){const b=[];for(let i=0;i<5+Math.floor(Math.random()*7);i++)b.push({x:x+(Math.random()-0.5)*w*5,y:y+(Math.random()-0.5)*w*3,r:w*0.4+Math.random()*w});return{blobs:b,opacity:0.5+Math.random()*0.4};}
+  for(let i=0;i<14;i++)drips.push(mkDrip());
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const s of splats){ctx.globalAlpha=s.opacity;for(const b of s.blobs){ctx.beginPath();ctx.ellipse(b.x,b.y,b.r,b.r*0.5,Math.random()*Math.PI,0,Math.PI*2);ctx.fillStyle='#5a0000';ctx.fill();}}
+    for(const d of drips){
+      d.y+=d.speed;
+      if(d.y>c.height+d.length){if(!d.splat){d.splat=true;splats.push(mkSplat(d.x,c.height,d.width));if(splats.length>50)splats.shift();}Object.assign(d,mkDrip());d.y=-20;}
+      const g=ctx.createLinearGradient(d.x,d.y,d.x,d.y+d.length);
+      g.addColorStop(0,'rgba(120,0,0,0)');g.addColorStop(0.2,`rgba(139,0,0,${d.opacity})`);g.addColorStop(1,`rgba(70,0,0,${d.opacity})`);
+      ctx.globalAlpha=1;ctx.strokeStyle=g;ctx.lineWidth=d.width;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x,d.y+d.length);ctx.stroke();
+      ctx.beginPath();ctx.arc(d.x,d.y+d.length,d.width*0.9,0,Math.PI*2);ctx.fillStyle=`rgba(90,0,0,${d.opacity})`;ctx.fill();
+    }
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  draw();
+  setInterval(()=>{splats.push(mkSplat(Math.random()*window.innerWidth,Math.random()*100+10,6+Math.random()*14));if(splats.length>60)splats.shift();},1500);
+})();
+
+// ── DUST ──
+(function(){
+  const c=document.getElementById('dustCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const pts=[];
+  for(let i=0;i<100;i++)pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:0.5+Math.random()*3,vx:(Math.random()-0.5)*0.35,vy:-0.1-Math.random()*0.35,alpha:0.04+Math.random()*0.18,life:Math.random()});
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const p of pts){p.x+=p.vx;p.y+=p.vy;p.life+=0.004;if(p.y<-10||p.life>1){p.x=Math.random()*c.width;p.y=c.height+10;p.life=0;}const fade=Math.sin(p.life*Math.PI);ctx.globalAlpha=p.alpha*(fade<0?0:fade);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='#3a0000';ctx.fill();}
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── BATS ──
+(function(){
+  const c=document.getElementById('batCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const bats=[];
+  function mkBat(){const fl=Math.random()>0.5;return{x:fl?-80:window.innerWidth+80,y:20+Math.random()*(window.innerHeight*0.65),vx:fl?(1.8+Math.random()*2.5):-(1.8+Math.random()*2.5),vy:(Math.random()-0.5)*0.7,wing:0,wingDir:1,wingSpeed:0.15+Math.random()*0.15,size:0.6+Math.random()*1.2,alpha:0.65+Math.random()*0.35,wobble:Math.random()*Math.PI*2};}
+  function drawBat(b){ctx.save();ctx.translate(b.x,b.y);if(b.vx<0)ctx.scale(-1,1);ctx.globalAlpha=b.alpha;const s=b.size,w=b.wing;ctx.fillStyle='#1a0000';ctx.strokeStyle='#3d0000';ctx.lineWidth=0.5;ctx.beginPath();ctx.ellipse(0,0,8*s,5*s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(-4*s,-4*s);ctx.lineTo(-7*s,-11*s);ctx.lineTo(-1*s,-5*s);ctx.fill();ctx.beginPath();ctx.moveTo(4*s,-4*s);ctx.lineTo(7*s,-11*s);ctx.lineTo(1*s,-5*s);ctx.fill();const lwy=w*20*s;ctx.beginPath();ctx.moveTo(-6*s,0);ctx.quadraticCurveTo(-22*s,lwy-5*s,-34*s,lwy);ctx.quadraticCurveTo(-24*s,lwy+9*s,-14*s,4*s);ctx.quadraticCurveTo(-10*s,2*s,-6*s,0);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(6*s,0);ctx.quadraticCurveTo(22*s,lwy-5*s,34*s,lwy);ctx.quadraticCurveTo(24*s,lwy+9*s,14*s,4*s);ctx.quadraticCurveTo(10*s,2*s,6*s,0);ctx.fill();ctx.stroke();ctx.fillStyle='#cc0000';ctx.beginPath();ctx.arc(-3*s,-1*s,1.8*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(3*s,-1*s,1.8*s,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function spawnFlock(){const n=5+Math.floor(Math.random()*10);for(let i=0;i<n;i++)setTimeout(()=>bats.push(mkBat()),i*120);}
+  spawnFlock();setInterval(()=>{if(Math.random()<0.4)spawnFlock();else if(bats.length<20)bats.push(mkBat());},2500);
+  function draw(){ctx.clearRect(0,0,c.width,c.height);for(let i=bats.length-1;i>=0;i--){const b=bats[i];b.wobble+=0.03;b.x+=b.vx;b.y+=b.vy+Math.sin(b.wobble)*0.5;b.wing+=b.wingDir*b.wingSpeed;if(b.wing>1||b.wing<-1)b.wingDir*=-1;drawBat(b);if(b.x<-120||b.x>c.width+120)bats.splice(i,1);}requestAnimationFrame(draw);}
+  draw();
+})();
+
+// ── CRACKS ──
+(function(){
+  const c=document.getElementById('crackCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  function drawCrack(ox,oy,angle,depth,maxDepth,len){if(depth>maxDepth||len<4)return;const ex=ox+Math.cos(angle)*len,ey=oy+Math.sin(angle)*len;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.strokeStyle=`rgba(180,0,0,${0.6-depth*0.08})`;ctx.lineWidth=Math.max(0.3,1.5-depth*0.25);ctx.stroke();const br=2+Math.floor(Math.random()*2);for(let i=0;i<br;i++)drawCrack(ex,ey,angle+(Math.random()-0.5)*1.0,depth+1,maxDepth,len*(0.55+Math.random()*0.25));}
+  function drawAll(){ctx.clearRect(0,0,c.width,c.height);const W=c.width,H=c.height;drawCrack(0,0,0.4,0,7,80);drawCrack(0,0,0.7,0,6,60);drawCrack(0,0,0.1,0,5,50);drawCrack(W,0,Math.PI-0.4,0,7,80);drawCrack(W,0,Math.PI-0.7,0,6,60);drawCrack(0,H,-0.4,0,7,80);drawCrack(0,H,-0.1,0,6,55);drawCrack(W,H,Math.PI+0.4,0,7,80);drawCrack(W,H,Math.PI+0.7,0,6,60);drawCrack(W*0.3,0,Math.PI/2+0.2,0,5,50);drawCrack(W*0.75,H,-(Math.PI/2)+0.2,0,5,45);}
+  drawAll();window.addEventListener('resize',drawAll);
+})();
+
+// ── SPIDER WEBS ──
+(function(){
+  const c=document.getElementById('webCanvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  function drawWeb(cx,cy,maxR,strands,rings){ctx.strokeStyle='rgba(100,0,0,0.35)';ctx.lineWidth=0.6;const angles=[];for(let i=0;i<strands;i++)angles.push((i/strands)*Math.PI*2);for(const a of angles){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*maxR,cy+Math.sin(a)*maxR);ctx.stroke();}for(let r=1;r<=rings;r++){const rad=(r/rings)*maxR;ctx.beginPath();for(let i=0;i<=strands;i++){const a=angles[i%strands],j=0.92+Math.random()*0.16,px=cx+Math.cos(a)*rad*j,py=cy+Math.sin(a)*rad*j;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}ctx.closePath();ctx.stroke();}}
+  function drawSpider(x,y,s){ctx.fillStyle='rgba(80,0,0,0.7)';ctx.beginPath();ctx.ellipse(x,y,s*1.2,s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x,y-s*1.5,s*0.8,s*0.7,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(80,0,0,0.6)';ctx.lineWidth=0.8;for(let i=0;i<4;i++){const a1=((i/4)*Math.PI)+0.2;ctx.beginPath();ctx.moveTo(x-s,y);ctx.lineTo(x-s-Math.cos(a1)*s*2.5,y+Math.sin(a1)*s*1.8);ctx.stroke();ctx.beginPath();ctx.moveTo(x+s,y);ctx.lineTo(x+s+Math.cos(a1+Math.PI)*s*2.5,y+Math.sin(a1+Math.PI)*s*1.8);ctx.stroke();}}
+  function drawAll(){ctx.clearRect(0,0,c.width,c.height);const W=c.width,H=c.height;drawWeb(0,0,160,10,6);drawSpider(60,55,5);drawWeb(W,0,140,9,5);drawSpider(W-55,50,4);drawWeb(0,H,130,9,5);drawSpider(50,H-48,4);drawWeb(W,H,150,10,6);drawSpider(W-58,H-52,5);drawWeb(W*0.5,0,80,8,4);}
+  drawAll();window.addEventListener('resize',drawAll);
+})();
+
+// ── SCREEN SHAKE ──
+(function(){
+  const w=document.getElementById('wrapper');
+  function shake(){const x=(Math.random()-0.5)*16,y=(Math.random()-0.5)*10;w.style.transform=`translate(${x}px,${y}px)`;setTimeout(()=>w.style.transform='',90);}
+  setInterval(()=>{if(Math.random()<0.3)shake();},1800);
+})();
+
+// ── COUNTDOWN ──
+(function(){
+  let total=13*60+37;const el=document.getElementById('ctimer');
+  setInterval(()=>{if(total<=0){el.textContent='00:00:00';return;}total--;const m=Math.floor(total/60),s=total%60;el.textContent=`00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);
+})();
+
+// ── PROGRESS BAR ──
+(function(){
+  let pct=0;const fill=document.getElementById('pfill'),pctEl=document.getElementById('ppct');
+  function tick(){pct+=0.04+Math.random()*0.08;if(pct>=100)pct=0;fill.style.width=Math.min(pct,100).toFixed(1)+'%';pctEl.textContent=Math.min(Math.floor(pct),100)+'%';setTimeout(tick,80+Math.random()*60);}
+  tick();
+})();
+</script>
+</body>
+</html>
