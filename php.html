@@ -557,9 +557,11 @@ function doRenameVars(code) {
 function doEncStrings(code) {
   // phpDqEsc: escape chars dangerous inside PHP double-quoted strings
   const phpDqEsc = s => s.replace(/\\/g,'\\\\').replace(/\$/g,'\\$').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n').replace(/\0/g,'\\0');
+  // Guard: skip strings that look like pure base64 payloads (already encoded by other layers)
+  const isB64Payload = s => s.length >= 8 && /^[A-Za-z0-9+\/=]+$/.test(s);
   return code
     .replace(/'([^'\\]*)'/g, (match, s) => {
-      if (!s || s.startsWith('\\x')) return match;
+      if (!s || s.startsWith('\\x') || isB64Payload(s)) return match;
       const c = r(4);
       if (c === 0) return 'base64_decode("' + b64e(s) + '")';
       if (c === 1) return '"' + hexS(s) + '"';
@@ -567,7 +569,7 @@ function doEncStrings(code) {
       return 'base64_decode("' + b64e(s) + '")';
     })
     .replace(/"([^"\\]*)"/g, (match, s) => {
-      if (!s || s.startsWith('\\x') || s.length < 3) return match;
+      if (!s || s.startsWith('\\x') || s.length < 3 || isB64Payload(s)) return match;
       return 'base64_decode("' + b64e(s) + '")';
     });
 }
@@ -632,13 +634,16 @@ function doXOR(code) {
   let strCount = 0;
   const res = code.replace(/'([^'\\]{4,25})'/g, (match, s) => {
     if (strCount > 12) return match;
+    // Skip strings that are already base64-encoded or look like encoded data
+    if (/^[A-Za-z0-9+\/=]{8,}$/.test(s)) return match;
     strCount++;
     let encoded = '';
     for (let i = 0; i < s.length; i++)
       encoded += String.fromCharCode(s.charCodeAt(i) ^ keyBytes[i % keyBytes.length]);
     try {
       const b = b64e(encoded);
-      return `${decoderName}(base64_decode("${b}"),"${key}")`;
+      // Use single-quoted PHP string for b64 payload (no variable interpolation risk)
+      return `${decoderName}(base64_decode('${b}'),'${key}')`;
     } catch (e) { return match; }
   });
   return res.replace(/(<\?php\s*)/i, '$1' + decoderFn + ' ');
@@ -656,7 +661,7 @@ function doArrTable(code) {
     return `$${arrName}[${i}]`;
   });
   if (strMap.length === 0) return code;
-  const arrDef = `$${arrName}=array(${strMap.map(s => "'" + s.replace(/'/g, "\\'") + "'").join(',')});`;
+  const arrDef = `$${arrName}=array(${strMap.map(s => "'" + s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'").join(',')});`;
   return res.replace(/(<\?php\s*)/i, '$1' + arrDef + ' ');
 }
 
@@ -797,10 +802,13 @@ function doBitwise(code) {
   let count = 0;
   const res = code.replace(/'([^'\\]{3,20})'/g, (match, s) => {
     if (count > 8) return match;
+    // Skip strings that are already base64-encoded or look like encoded data
+    if (/^[A-Za-z0-9+\/=]{8,}$/.test(s)) return match;
     count++;
     const encoded = s.split('').map(c => c.charCodeAt(0)).join(',');
     try {
-      return `${decoderName}(base64_decode("${b64e(encoded)}"))`;
+      // Use single-quoted PHP strings for b64 payload to prevent double-encoding
+      return `${decoderName}(base64_decode('${b64e(encoded)}'))`;
     } catch(e) { return match; }
   });
   return res.replace(/(<\?php\s*)/i, '$1' + decoderFn + ' ');
@@ -1062,18 +1070,21 @@ function run() {
       const l = id => document.getElementById(id).checked;
       let c = inp;
 
-      // Execute layers in optimal order
+      // Execute layers in safe order
+      // IMPORTANT: doXOR and doBitwise MUST run AFTER doEncStrings, doSplitStr, doChrEnc
+      // to prevent their generated base64 strings from being double-encoded by those layers.
       if (l('l-compact'))     c = doCompact(c);
       if (l('l-fnalias'))     c = doFnAlias(c);
       if (!isLarge && l('l-arr'))      c = doArrTable(c);
-      if (!isLarge && l('l-xor'))      c = doXOR(c);
-      if (!isLarge && l('l-bitwise'))  c = doBitwise(c);
-      else if (isLarge && l('l-bitwise')) c = doBitwise(c); // bitwise is OK for large
       if (l('l-vars'))        c = doRenameVars(c);
       if (!isLarge && l('l-strcat'))   c = doSplitStr(c);
       if (!isLarge && l('l-chr'))      c = doChrEnc(c);
       if (l('l-strenc'))      c = doEncStrings(c);
       if (l('l-numenc'))      c = doEncNums(c);
+      // XOR and Bitwise run AFTER string-encoding layers so their b64 payloads are safe
+      if (!isLarge && l('l-xor'))      c = doXOR(c);
+      if (!isLarge && l('l-bitwise'))  c = doBitwise(c);
+      else if (isLarge && l('l-bitwise')) c = doBitwise(c);
       if (l('l-selfref'))     c = doSelfRef(c);
       if (l('l-varvar'))      c = doVarVar(c);
       if (l('l-trinary'))     c = doTrinary(c);
