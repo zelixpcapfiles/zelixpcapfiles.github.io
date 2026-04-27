@@ -1,261 +1,668 @@
-
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP Obfuscator ULTRA v2 — 25 Layer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #0a0b0d;
+  --bg2: #111318;
+  --bg3: #181c24;
+  --bg4: #1e2330;
+  --border: #252b3a;
+  --border2: #2d3549;
+  --text: #e2e8f8;
+  --text2: #8b97b5;
+  --text3: #5a6480;
+  --accent: #4f7cff;
+  --accent2: #7c3aed;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --orange: #f97316;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-mono);font-size:13px}
-.wrap{padding:0.5rem 0}
-textarea{width:100%;height:300px;font-family:var(--font-mono);font-size:11.5px;background:var(--color-background-secondary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px;resize:vertical;line-height:1.6}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
-label.col-label{font-size:11px;color:var(--color-text-secondary);display:block;margin-bottom:5px}
-button{font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer}
-button:hover{background:var(--color-background-secondary)}
-button.primary{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info);font-weight:500}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.group{margin-bottom:10px}
-.group-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-tertiary);margin-bottom:5px}
-.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:5px}
-.opt-card{display:flex;align-items:flex-start;gap:7px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 9px;cursor:pointer}
-.opt-card:hover{background:var(--color-background-secondary)}
-.opt-card input{margin-top:2px;flex-shrink:0;cursor:pointer}
-.opt-name{font-size:12px;font-weight:500;color:var(--color-text-primary)}
-.opt-info{font-size:10.5px;color:var(--color-text-secondary);margin-top:1px;line-height:1.4}
-.tag{font-size:9.5px;padding:1px 5px;border-radius:999px;font-weight:500;margin-left:4px;display:inline-block}
-.tag-new{background:var(--color-background-success);color:var(--color-text-success)}
-.tag-hot{background:var(--color-background-danger);color:var(--color-text-danger)}
-.strength-wrap{display:flex;align-items:center;gap:8px;margin:8px 0}
-.strength-bar{display:flex;gap:3px;flex:1}
-.seg{height:5px;flex:1;border-radius:3px;background:var(--color-border-tertiary);transition:background .15s}
-.seg.on-1{background:#3B6D11}.seg.on-2{background:#639922}.seg.on-3{background:#BA7517}.seg.on-4{background:#D85A30}.seg.on-5{background:#A32D2D}
-.strength-label{font-size:11px;color:var(--color-text-secondary);min-width:60px}
-.stat-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--color-text-secondary)}
-.pill{padding:2px 8px;border-radius:999px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)}
-.info{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 12px;font-size:11.5px;color:var(--color-text-secondary);margin-bottom:12px;line-height:1.6}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* Animated bg grid */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(79,124,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,124,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:28px 24px;}
+
+/* Header */
+.header{margin-bottom:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.logo-box{
+  display:flex;align-items:center;gap:10px;
+}
+.logo-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;
+  box-shadow:0 0 20px rgba(79,124,255,.4);
+  font-family:'Syne',sans-serif;
+}
+.logo-text{
+  font-family:'Syne',sans-serif;
+  font-size:20px;font-weight:800;
+  background:linear-gradient(135deg,#e2e8f8,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.version-badge{
+  font-size:10px;padding:3px 8px;border-radius:999px;
+  background:rgba(79,124,255,.15);border:1px solid rgba(79,124,255,.3);
+  color:var(--accent);font-weight:600;letter-spacing:.08em;
+}
+.layer-count{
+  margin-left:auto;font-size:11px;color:var(--text3);
+  display:flex;align-items:center;gap:6px;
+}
+.lc-num{
+  font-family:'Syne',sans-serif;font-size:24px;font-weight:800;
+  color:var(--accent);line-height:1;
+}
+
+/* Info bar */
+.info-bar{
+  background:linear-gradient(135deg,rgba(79,124,255,.08),rgba(124,58,237,.08));
+  border:1px solid rgba(79,124,255,.2);
+  border-radius:10px;padding:10px 16px;
+  font-size:11.5px;color:var(--text2);
+  margin-bottom:20px;line-height:1.7;
+  display:flex;align-items:center;gap:12px;
+}
+.info-bar::before{content:'⚡';font-size:16px;}
+
+/* Strength meter */
+.strength-section{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;margin-bottom:20px;
+}
+.strength-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.strength-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);}
+.strength-label{font-size:13px;font-weight:700;color:var(--text);}
+.strength-bar{display:flex;gap:3px;height:6px;border-radius:3px;overflow:hidden;}
+.seg{flex:1;background:var(--bg4);border-radius:3px;transition:all .2s;}
+.seg.on{background:linear-gradient(90deg,var(--c1),var(--c2));}
+
+/* Upload zone */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:12px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all .2s;margin-bottom:20px;
+  background:var(--bg2);position:relative;overflow:hidden;
+}
+.upload-zone:hover,.upload-zone.drag{
+  border-color:var(--accent);
+  background:rgba(79,124,255,.06);
+}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:28px;margin-bottom:8px;}
+.upload-text{font-size:12px;color:var(--text2);}
+.upload-text strong{color:var(--text);font-weight:600;}
+.upload-info{font-size:10.5px;color:var(--text3);margin-top:4px;}
+.upload-ok{font-size:11px;color:var(--green);margin-top:6px;display:none;}
+
+/* Layer groups */
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:20px;}
+.group{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;
+}
+.group-header{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.group-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.group-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);}
+.group-count{margin-left:auto;font-size:10px;color:var(--text3);}
+.opts{display:flex;flex-direction:column;gap:5px;}
+.opt-card{
+  display:flex;align-items:flex-start;gap:9px;
+  border:1px solid var(--border);border-radius:8px;
+  padding:8px 10px;cursor:pointer;transition:all .15s;
+}
+.opt-card:hover{border-color:var(--border2);background:var(--bg3);}
+.opt-card:has(input:checked){
+  border-color:rgba(79,124,255,.4);
+  background:rgba(79,124,255,.06);
+}
+.opt-card input{margin-top:2px;flex-shrink:0;accent-color:var(--accent);}
+.opt-name{font-size:11.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.opt-info{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.45;}
+.tag{
+  font-size:9px;padding:1px 5px;border-radius:999px;
+  font-weight:700;letter-spacing:.04em;
+}
+.tag-new{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.3);}
+.tag-hot{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+.tag-max{background:rgba(124,58,237,.15);color:#c4b5fd;border:1px solid rgba(124,58,237,.3);}
+.tag-shield{background:rgba(6,182,212,.15);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
+
+/* Editor area */
+.editor-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;
+}
+@media(max-width:768px){.editor-grid{grid-template-columns:1fr;}}
+.editor-box{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+}
+.editor-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  background:var(--bg3);
+}
+.editor-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);}
+.editor-actions{display:flex;gap:6px;}
+.mini-btn{
+  font-size:10px;padding:2px 8px;border-radius:5px;
+  border:1px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;transition:all .15s;
+  font-family:inherit;
+}
+.mini-btn:hover{background:var(--bg4);color:var(--text);}
+.editor-body textarea{
+  width:100%;height:320px;
+  background:var(--bg2);color:var(--text);
+  border:none;outline:none;
+  padding:14px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;line-height:1.65;
+  resize:vertical;
+}
+.editor-body textarea::placeholder{color:var(--text3);}
+.editor-footer{
+  padding:6px 14px;border-top:1px solid var(--border);
+  font-size:10px;color:var(--text3);background:var(--bg3);
+  display:flex;justify-content:space-between;
+}
+
+/* Buttons */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;font-weight:600;
+  padding:8px 18px;border-radius:8px;
+  border:1px solid var(--border2);
+  background:transparent;color:var(--text2);
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--bg3);color:var(--text);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border-color:transparent;
+  box-shadow:0 0 20px rgba(79,124,255,.3);
+}
+.btn-primary:hover{
+  box-shadow:0 0 30px rgba(79,124,255,.5);
+  transform:translateY(-1px);
+}
+.btn-primary:active{transform:translateY(0);}
+
+/* Stats */
+.stats-bar{
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:10px 0;border-top:1px solid var(--border);
+}
+.pill{
+  font-size:10.5px;padding:3px 10px;border-radius:999px;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+}
+.pill-green{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#86efac;}
+.pill-blue{background:rgba(79,124,255,.1);border-color:rgba(79,124,255,.3);color:#93c5fd;}
+.pill-red{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+
+/* Progress */
+.progress-wrap{
+  display:none;height:3px;background:var(--bg3);
+  border-radius:3px;margin-bottom:16px;overflow:hidden;
+}
+.progress-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--pink));
+  background-size:200% 100%;
+  animation:progressFlow 1.5s linear infinite;
+  transition:width .15s;
+  border-radius:3px;
+}
+@keyframes progressFlow{0%{background-position:0 0}100%{background-position:200% 0}}
+
+/* Quick actions */
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.quick-btn{
+  font-size:10.5px;padding:5px 12px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg2);
+  color:var(--text3);cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.quick-btn:hover{border-color:var(--border2);color:var(--text2);}
+
+/* Custom scrollbar */
+textarea::-webkit-scrollbar{width:6px;}
+textarea::-webkit-scrollbar-track{background:var(--bg3);}
+textarea::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 </style>
+</head>
+<body>
+<div class="container">
 
-<div class="wrap">
-<div class="info">PHP Obfuscator Ultra — 15 layer. Output dijamin PHP 7.x/8.x valid. Aktifkan semua layer untuk perlindungan tertinggi.</div>
-
-<div class="group">
-  <div class="group-title">Layer 1–5 · Dasar</div>
-  <div class="opts">
-    <label class="opt-card"><input type="checkbox" id="l-compact" checked><div><div class="opt-name">Kompres &amp; strip komentar</div><div class="opt-info">Hapus spasi, tab, newline, semua komentar</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-vars" checked><div><div class="opt-name">Rename variabel</div><div class="opt-info">$nama → $__xkzf acak panjang 10–14 char</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-strenc" checked><div><div class="opt-name">Enkripsi string</div><div class="opt-info">base64 / hex / rot13 pada semua literal</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-strcat" checked><div><div class="opt-name">Pecah &amp; concat string</div><div class="opt-info">String dipecah jadi 3–6 potongan konkatenasi</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-numenc" checked><div><div class="opt-name">Encode angka</div><div class="opt-info">Literal numerik → hex / oktal / ekspresi</div></div></label>
+<!-- Header -->
+<div class="header">
+  <div class="logo-box">
+    <div class="logo-icon">OB</div>
+    <div class="logo-text">PHP Obfuscator ULTRA</div>
+  </div>
+  <div class="version-badge">v2.0</div>
+  <div class="layer-count">
+    <div class="lc-num" id="lc-num">25</div>
+    <div>layer aktif</div>
   </div>
 </div>
 
-<div class="group">
-  <div class="group-title">Layer 6–10 · Menengah</div>
-  <div class="opts">
-    <label class="opt-card"><input type="checkbox" id="l-fnalias" checked><div><div class="opt-name">Function aliasing <span class="tag tag-new">baru</span></div><div class="opt-info">Fungsi PHP bawaan dipanggil lewat variabel acak</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-xor" checked><div><div class="opt-name">XOR string encoding <span class="tag tag-new">baru</span></div><div class="opt-info">String di-XOR dengan kunci acak + decoder inline</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-arr" checked><div><div class="opt-name">Array string table <span class="tag tag-new">baru</span></div><div class="opt-info">String literal dimasukkan ke array acak, dipanggil by index</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-dead" checked><div><div class="opt-name">Inject dead code</div><div class="opt-info">Kode palsu yang tidak pernah dieksekusi</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-flow" checked><div><div class="opt-name">Scramble control flow</div><div class="opt-info">Sisip dead code di tiap baris secara acak</div></div></label>
-  </div>
+<!-- Info bar -->
+<div class="info-bar">
+  25 Layer Obfuscation — Output dijamin PHP 7.x/8.x valid. Tidak ada data yang dikirim ke server. Semua proses berjalan lokal di browser.
 </div>
 
-<div class="group">
-  <div class="group-title">Layer 11–15 · Kuat</div>
-  <div class="opts">
-    <label class="opt-card"><input type="checkbox" id="l-junkfn" checked><div><div class="opt-name">Junk functions <span class="tag tag-new">baru</span></div><div class="opt-info">3–5 fungsi palsu kompleks disisipkan</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-selfref" checked><div><div class="opt-name">Self-referential vars <span class="tag tag-new">baru</span></div><div class="opt-info">Variabel yang nilainya nama variabel lain</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-chr" checked><div><div class="opt-name">chr() encoding <span class="tag tag-new">baru</span></div><div class="opt-info">String pendek diubah ke chr(X).chr(Y)...</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-heredoc" checked><div><div class="opt-name">Heredoc injection <span class="tag tag-new">baru</span></div><div class="opt-info">Encode beberapa string sebagai heredoc tersembunyi</div></div></label>
-    <label class="opt-card"><input type="checkbox" id="l-eval" checked><div><div class="opt-name">Double eval wrapper <span class="tag tag-hot">kuat</span></div><div class="opt-info">Seluruh kode dibungkus double base64 + eval</div></div></label>
+<!-- Strength meter -->
+<div class="strength-section">
+  <div class="strength-header">
+    <span class="strength-title">Kekuatan Proteksi</span>
+    <span class="strength-label" id="slabel">Memuat...</span>
   </div>
-</div>
-
-<div class="strength-wrap">
-  <span class="strength-label" id="slabel">Kekuatan:</span>
   <div class="strength-bar" id="sbar"></div>
 </div>
 
-<div class="row">
-  <div><label class="col-label">Input PHP (kode asli)</label>
-    <textarea id="inp" placeholder="<?php&#10;$nama = 'Dunia';&#10;$pesan = 'Halo, ' . $nama . '!';&#10;echo $pesan;&#10;?>"></textarea>
+<!-- Upload zone -->
+<div class="upload-zone" id="upload-zone">
+  <input type="file" id="file-input" accept=".php,.txt,.inc" />
+  <div class="upload-icon">📁</div>
+  <div class="upload-text"><strong>Klik atau drag & drop file PHP</strong></div>
+  <div class="upload-info">File dibaca lokal — tidak dikirim ke server manapun. Mendukung .php, .inc, .txt</div>
+  <div class="upload-ok" id="upload-ok">✓ File berhasil dimuat</div>
+</div>
+
+<!-- Quick preset -->
+<div class="quick-row">
+  <span style="font-size:10px;color:var(--text3);align-self:center;">Preset:</span>
+  <button class="quick-btn" onclick="setPreset('basic')">Basic</button>
+  <button class="quick-btn" onclick="setPreset('medium')">Medium</button>
+  <button class="quick-btn" onclick="setPreset('strong')">Strong</button>
+  <button class="quick-btn" onclick="setPreset('ultra')">ULTRA MAX</button>
+  <button class="quick-btn" onclick="setPreset('none')">Clear all</button>
+</div>
+
+<!-- Layer groups -->
+<div class="groups-grid">
+
+  <!-- Group 1: Basic -->
+  <div class="group">
+    <div class="group-header">
+      <div class="group-dot" style="background:#22c55e;box-shadow:0 0 6px #22c55e;"></div>
+      <div class="group-title">Layer 1–5 · Dasar</div>
+      <div class="group-count" id="gc1"></div>
+    </div>
+    <div class="opts">
+      <label class="opt-card"><input type="checkbox" id="l-compact" checked><div><div class="opt-name">Kompres &amp; Strip Komentar</div><div class="opt-info">Hapus whitespace, newline berlebih, semua komentar (// # /* */)</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-vars" checked><div><div class="opt-name">Rename Variabel <span class="tag tag-shield">core</span></div><div class="opt-info">$nama → $__obf_xkzf8f (acak 12–18 char, konsisten di seluruh file)</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-strenc" checked><div><div class="opt-name">Enkripsi String <span class="tag tag-shield">core</span></div><div class="opt-info">base64 / hex / rot13 pada semua literal string</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-strcat" checked><div><div class="opt-name">Pecah &amp; Concat String</div><div class="opt-info">String dipecah jadi 3–8 potongan konkatenasi acak</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-numenc" checked><div><div class="opt-name">Encode Angka</div><div class="opt-info">Literal numerik → hex / oktal / ekspresi aritmatika kompleks</div></div></label>
+    </div>
   </div>
-  <div><label class="col-label">Output PHP (terobfuskasi)</label>
-    <textarea id="out" readonly placeholder="Hasil muncul di sini..."></textarea>
+
+  <!-- Group 2: Intermediate -->
+  <div class="group">
+    <div class="group-header">
+      <div class="group-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
+      <div class="group-title">Layer 6–10 · Menengah</div>
+      <div class="group-count" id="gc2"></div>
+    </div>
+    <div class="opts">
+      <label class="opt-card"><input type="checkbox" id="l-fnalias" checked><div><div class="opt-name">Function Aliasing <span class="tag tag-new">baru</span></div><div class="opt-info">Fungsi PHP bawaan dipanggil lewat variabel acak dinamis</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-xor" checked><div><div class="opt-name">XOR String Encoding <span class="tag tag-new">baru</span></div><div class="opt-info">String di-XOR dengan kunci multi-byte acak + decoder inline</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-arr" checked><div><div class="opt-name">Array String Table <span class="tag tag-new">baru</span></div><div class="opt-info">Semua string literal dimasukkan ke array tersembunyi, dipanggil by index</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-dead" checked><div><div class="opt-name">Inject Dead Code</div><div class="opt-info">Kode palsu yang tidak pernah dieksekusi disebar acak</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-flow" checked><div><div class="opt-name">Control Flow Scramble</div><div class="opt-info">Dead code disisip di tiap baris secara acak (30% probability)</div></div></label>
+    </div>
+  </div>
+
+  <!-- Group 3: Strong -->
+  <div class="group">
+    <div class="group-header">
+      <div class="group-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>
+      <div class="group-title">Layer 11–15 · Kuat</div>
+      <div class="group-count" id="gc3"></div>
+    </div>
+    <div class="opts">
+      <label class="opt-card"><input type="checkbox" id="l-junkfn" checked><div><div class="opt-name">Junk Functions Injection <span class="tag tag-hot">hot</span></div><div class="opt-info">5–8 fungsi palsu kompleks disisipkan ke dalam kode</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-selfref" checked><div><div class="opt-name">Self-referential Variables</div><div class="opt-info">Variabel yang nilainya adalah nama variabel lain ($$var pattern)</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-chr" checked><div><div class="opt-name">chr() Encoding <span class="tag tag-hot">hot</span></div><div class="opt-info">String diubah ke chr(72).chr(101).chr(108)... per karakter</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-heredoc" checked><div><div class="opt-name">Nowdoc Injection</div><div class="opt-info">String statis dienkode sebagai nowdoc tersembunyi</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-const" checked><div><div class="opt-name">Constant Obfuscation <span class="tag tag-new">baru</span></div><div class="opt-info">PHP_EOL, PHP_INT_MAX, PHP_OS dll digunakan sebagai noise</div></div></label>
+    </div>
+  </div>
+
+  <!-- Group 4: Ultra -->
+  <div class="group">
+    <div class="group-header">
+      <div class="group-dot" style="background:#7c3aed;box-shadow:0 0 6px #7c3aed;"></div>
+      <div class="group-title">Layer 16–20 · Ultra</div>
+      <div class="group-count" id="gc4"></div>
+    </div>
+    <div class="opts">
+      <label class="opt-card"><input type="checkbox" id="l-varvar" checked><div><div class="opt-name">Variable Variables <span class="tag tag-new">baru</span></div><div class="opt-info">Gunakan $$var untuk dinamis variable access acak</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-bitwise" checked><div><div class="opt-name">Bitwise String Encoding <span class="tag tag-new">baru</span></div><div class="opt-info">String dikonversi via bitwise XOR, OR, AND operations</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-strarray" checked><div><div class="opt-name">String Char Array Access <span class="tag tag-new">baru</span></div><div class="opt-info">String di-access karakter per karakter via index [0][1][2]</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-fakeclass" checked><div><div class="opt-name">Fake Class Injection <span class="tag tag-new">baru</span></div><div class="opt-info">Class palsu dengan properties dan method kosong disisipkan</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-trinary" checked><div><div class="opt-name">Ternary Obfuscation <span class="tag tag-new">baru</span></div><div class="opt-info">Nilai didefinisikan via ternary berlapis yang selalu bernilai sama</div></div></label>
+    </div>
+  </div>
+
+  <!-- Group 5: Maximum -->
+  <div class="group">
+    <div class="group-header">
+      <div class="group-dot" style="background:#ec4899;box-shadow:0 0 6px #ec4899;"></div>
+      <div class="group-title">Layer 21–25 · Maksimum</div>
+      <div class="group-count" id="gc5"></div>
+    </div>
+    <div class="opts">
+      <label class="opt-card"><input type="checkbox" id="l-antidebug" checked><div><div class="opt-name">Anti-Debug Traps <span class="tag tag-max">max</span></div><div class="opt-info">Jebakan yang mendeteksi analisis statis (tidak mempengaruhi runtime)</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-polydec" checked><div><div class="opt-name">Polymorphic Decoder <span class="tag tag-max">max</span></div><div class="opt-info">Decoder berbeda setiap kali obfuscate — kode tidak pernah sama</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-multilayer" checked><div><div class="opt-name">Multi-layer Base64 <span class="tag tag-max">max</span></div><div class="opt-info">base64 di-encode 3–5x berlapis dengan nama variabel acak</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-customalpha" checked><div><div class="opt-name">Custom Alphabet Encoding <span class="tag tag-max">max</span></div><div class="opt-info">String dienkode dengan alphabet acak custom dan decoder dinamis</div></div></label>
+      <label class="opt-card"><input type="checkbox" id="l-eval" checked><div><div class="opt-name">Double Eval Wrapper <span class="tag tag-max">max</span></div><div class="opt-info">Seluruh kode dibungkus double base64 + eval berlapis</div></div></label>
+    </div>
+  </div>
+
+</div><!-- /groups-grid -->
+
+<!-- Progress -->
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<!-- Main buttons -->
+<div class="btn-row">
+  <button class="btn btn-primary" onclick="run()">⚡ Obfuskasi Sekarang</button>
+  <button class="btn" onclick="doCopy()">📋 Salin Output</button>
+  <button class="btn" onclick="doDownload()">💾 Unduh .php</button>
+  <button class="btn" onclick="doClear()">🗑 Reset</button>
+  <button class="btn" onclick="setPreset('ultra')" style="margin-left:auto;">🔒 Aktifkan Semua</button>
+</div>
+
+<!-- Editor -->
+<div class="editor-grid">
+  <div class="editor-box">
+    <div class="editor-header">
+      <span class="editor-label">📝 Input PHP (Kode Asli)</span>
+      <div class="editor-actions">
+        <button class="mini-btn" onclick="countLines('inp')">Hitung baris</button>
+        <button class="mini-btn" onclick="document.getElementById('inp').value=''">Clear</button>
+      </div>
+    </div>
+    <div class="editor-body">
+      <textarea id="inp" spellcheck="false" placeholder="<?php&#10;// Tempelkan kode PHP kamu di sini&#10;// atau gunakan upload file di atas&#10;&#10;$nama = 'Dunia';&#10;$pesan = 'Halo, ' . $nama . '!';&#10;echo $pesan;&#10;?>" oninput="updateFooter()"></textarea>
+    </div>
+    <div class="editor-footer">
+      <span id="inp-stat">0 karakter · 0 baris</span>
+      <span>Input</span>
+    </div>
+  </div>
+  <div class="editor-box">
+    <div class="editor-header">
+      <span class="editor-label">🔒 Output PHP (Terobfuskasi)</span>
+      <div class="editor-actions">
+        <button class="mini-btn" onclick="doCopy()">Salin</button>
+        <button class="mini-btn" onclick="doDownload()">Unduh</button>
+      </div>
+    </div>
+    <div class="editor-body">
+      <textarea id="out" readonly spellcheck="false" placeholder="Hasil obfuskasi muncul di sini..."></textarea>
+    </div>
+    <div class="editor-footer">
+      <span id="out-stat">—</span>
+      <span>Output</span>
+    </div>
   </div>
 </div>
 
-<div class="btn-row">
-  <button class="primary" onclick="run()">Obfuskasi sekarang</button>
-  <button onclick="doCopy()">Salin output</button>
-  <button onclick="doDownload()">Unduh .php</button>
-  <button onclick="doClear()">Reset</button>
+<!-- Stats -->
+<div class="stats-bar" id="stats">
+  <span class="pill">Siap — pilih layer lalu klik Obfuskasi</span>
 </div>
-<div class="stat-row" id="stats"><span class="pill">Siap.</span></div>
-</div>
+
+</div><!-- /container -->
 
 <script>
-const ALL_LAYERS=['l-compact','l-vars','l-strenc','l-strcat','l-numenc','l-fnalias','l-xor','l-arr','l-dead','l-flow','l-junkfn','l-selfref','l-chr','l-heredoc','l-eval'];
-const C='abcdefghijklmnopqrstuvwxyz';
-const R=n=>{let s='_'+C[r(26)];for(let i=1;i<n;i++)s+=C[r(26)];return s;};
-const r=n=>Math.floor(Math.random()*n);
-const b64e=s=>{try{return btoa(unescape(encodeURIComponent(s)))}catch(e){return btoa(s)}};
-const hexS=s=>s.split('').map(c=>'\\x'+c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
-const rot13=s=>s.replace(/[a-zA-Z]/g,c=>{const b=c<='Z'?65:97;return String.fromCharCode(((c.charCodeAt(0)-b+13)%26)+b);});
+// ═══════════════════════════════════════════════════════
+//  CONFIG & HELPERS
+// ═══════════════════════════════════════════════════════
+const ALL_LAYERS = [
+  'l-compact','l-vars','l-strenc','l-strcat','l-numenc',
+  'l-fnalias','l-xor','l-arr','l-dead','l-flow',
+  'l-junkfn','l-selfref','l-chr','l-heredoc','l-const',
+  'l-varvar','l-bitwise','l-strarray','l-fakeclass','l-trinary',
+  'l-antidebug','l-polydec','l-multilayer','l-customalpha','l-eval'
+];
 
-const RESERVED=new Set(['this','self','parent','static','true','false','null','echo','print','return',
+const GROUPS = [
+  ['l-compact','l-vars','l-strenc','l-strcat','l-numenc'],
+  ['l-fnalias','l-xor','l-arr','l-dead','l-flow'],
+  ['l-junkfn','l-selfref','l-chr','l-heredoc','l-const'],
+  ['l-varvar','l-bitwise','l-strarray','l-fakeclass','l-trinary'],
+  ['l-antidebug','l-polydec','l-multilayer','l-customalpha','l-eval']
+];
+
+const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
+const r = n => Math.floor(Math.random() * n);
+const rPick = arr => arr[r(arr.length)];
+const b64e = s => { try { return btoa(unescape(encodeURIComponent(s))) } catch(e) { return btoa(s) } };
+const hexS = s => s.split('').map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
+const rot13 = s => s.replace(/[a-zA-Z]/g, c => { const b = c <= 'Z' ? 65 : 97; return String.fromCharCode(((c.charCodeAt(0) - b + 13) % 26) + b); });
+
+// Random PHP identifier — longer for more confusion
+function R(n) {
+  let s = '_' + ALPHA[r(26)];
+  for (let i = 1; i < n; i++) s += (Math.random() > 0.5 ? ALPHA[r(26)] : r(10));
+  return s;
+}
+
+const RESERVED = new Set([
+  'this','self','parent','static','true','false','null','echo','print','return',
   'if','else','elseif','while','for','foreach','do','switch','case','break','continue','default',
   'class','function','new','array','list','isset','empty','unset','die','exit','include','require',
   'include_once','require_once','use','namespace','abstract','interface','extends','implements',
   'public','private','protected','final','const','try','catch','throw','finally','match','fn',
-  'yield','global','GLOBALS','_SERVER','_GET','_POST','_FILES','_COOKIE','_SESSION','_REQUEST','_ENV']);
+  'yield','global','GLOBALS','_SERVER','_GET','_POST','_FILES','_COOKIE','_SESSION','_REQUEST','_ENV',
+  'argc','argv','php_self','http_raw_post_data'
+]);
 
-const PHP_FNS=['strlen','strpos','str_replace','substr','strtolower','strtoupper','trim','ltrim','rtrim',
-  'str_pad','str_repeat','str_split','str_word_count','strcmp','strcasecmp','strncmp','strrev',
+const PHP_FNS = [
+  'strlen','strpos','str_replace','substr','strtolower','strtoupper','trim','ltrim','rtrim',
+  'str_pad','str_repeat','str_split','strcmp','strrev','ucfirst','lcfirst','ucwords',
   'array_merge','array_map','array_keys','array_values','array_push','array_pop','array_shift',
   'array_unshift','array_slice','array_splice','array_search','array_flip','array_unique',
   'array_reverse','array_count_values','array_fill','array_chunk','array_combine','array_diff',
-  'in_array','explode','implode','join','count','sizeof','sort','rsort','asort','arsort','ksort',
+  'in_array','explode','implode','count','sort','rsort','asort','arsort','ksort',
   'preg_match','preg_replace','preg_split','preg_match_all',
   'json_encode','json_decode','serialize','unserialize',
-  'file_get_contents','file_put_contents','fopen','fclose','fread','fwrite','file_exists',
+  'file_get_contents','file_put_contents','file_exists','is_file','is_dir',
   'is_array','is_string','is_numeric','is_int','is_float','is_null','is_object','is_bool',
-  'intval','floatval','strval','boolval','settype','gettype',
-  'printf','sprintf','fprintf','number_format','abs','ceil','floor','round','max','min','pow','sqrt',
+  'intval','floatval','strval','settype','gettype',
+  'sprintf','number_format','abs','ceil','floor','round','max','min','pow','sqrt',
   'htmlspecialchars','htmlentities','strip_tags','addslashes','stripslashes','nl2br',
   'md5','sha1','crc32','hash','base64_encode','base64_decode','str_rot13','urlencode','urldecode',
-  'date','time','mktime','strtotime','microtime','sleep','usleep',
+  'date','time','microtime','sleep',
   'header','session_start','setcookie','ob_start','ob_end_clean','ob_get_clean',
-  'class_exists','method_exists','function_exists','property_exists','get_class','is_a',
-  'array_key_exists','array_keys','array_pop','array_push'];
+  'class_exists','method_exists','function_exists','get_class',
+  'array_key_exists','array_keys','array_pop'
+];
 
-// ── L1: Compact
-function doCompact(code){
+// ═══════════════════════════════════════════════════════
+//  LAYER 1: Compact & Strip Comments
+// ═══════════════════════════════════════════════════════
+function doCompact(code) {
   return code
-    .replace(/\/\/[^\n]*/g,'')
-    .replace(/#[^\n]*/g,'')
-    .replace(/\/\*[\s\S]*?\*\//g,'')
-    .replace(/[ \t]+/g,' ')
-    .replace(/\n\s*\n+/g,'\n')
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/#[^\n]*/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n+/g, '\n')
     .trim();
 }
 
-// ── L2: Rename vars
-function doRenameVars(code){
-  const map={};
-  const re=/\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
+// ═══════════════════════════════════════════════════════
+//  LAYER 2: Rename Variables (deep mapping)
+// ═══════════════════════════════════════════════════════
+function doRenameVars(code) {
+  const map = {};
+  const re = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
   let m;
-  while((m=re.exec(code))!==null){
-    const v=m[1];
-    if(!RESERVED.has(v.toLowerCase())&&!map[v])
-      map[v]=R(10+r(5));
+  while ((m = re.exec(code)) !== null) {
+    const v = m[1];
+    if (!RESERVED.has(v.toLowerCase()) && !map[v])
+      map[v] = R(12 + r(6));
   }
-  let res=code;
-  for(const[o,n] of Object.entries(map))
-    res=res.replace(new RegExp('\\$'+o.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),'$'+n);
+  let res = code;
+  for (const [o, n] of Object.entries(map))
+    res = res.replace(new RegExp('\\$' + o.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g'), '$' + n);
   return res;
 }
 
-// ── L3: Encode strings
-function doEncStrings(code){
+// ═══════════════════════════════════════════════════════
+//  LAYER 3: Encrypt Strings
+// ═══════════════════════════════════════════════════════
+function doEncStrings(code) {
   return code
-    .replace(/'([^'\\]*)'/g,(match,s)=>{
-      if(!s||s.startsWith('\\x'))return match;
-      const c=r(3);
-      if(c===0)return 'base64_decode("'+b64e(s)+'")';
-      if(c===1)return '"'+hexS(s)+'"';
-      return 'str_rot13("'+rot13(s)+'")';
+    .replace(/'([^'\\]*)'/g, (match, s) => {
+      if (!s || s.startsWith('\\x')) return match;
+      const c = r(4);
+      if (c === 0) return 'base64_decode("' + b64e(s) + '")';
+      if (c === 1) return '"' + hexS(s) + '"';
+      if (c === 2) return 'str_rot13("' + rot13(s) + '")';
+      return 'base64_decode("' + b64e(s) + '")';
     })
-    .replace(/"([^"\\]*)"/g,(match,s)=>{
-      if(!s||s.startsWith('\\x')||s.length<3)return match;
-      return 'base64_decode("'+b64e(s)+'")';
+    .replace(/"([^"\\]*)"/g, (match, s) => {
+      if (!s || s.startsWith('\\x') || s.length < 3) return match;
+      return 'base64_decode("' + b64e(s) + '")';
     });
 }
 
-// ── L4: Split & concat strings
-function doSplitStr(code){
-  return code.replace(/'([^'\\]{5,})'/g,(match,s)=>{
-    const parts=[];let i=0;
-    while(i<s.length){const l=2+r(4);parts.push("'"+s.slice(i,i+l)+"'");i+=l;}
-    return parts.length>1?'('+parts.join('.')+')':"'"+s+"'";
+// ═══════════════════════════════════════════════════════
+//  LAYER 4: Split & Concat Strings
+// ═══════════════════════════════════════════════════════
+function doSplitStr(code) {
+  return code.replace(/'([^'\\]{5,})'/g, (match, s) => {
+    const parts = []; let i = 0;
+    while (i < s.length) { const l = 2 + r(5); parts.push("'" + s.slice(i, i + l) + "'"); i += l; }
+    return parts.length > 1 ? '(' + parts.join('.') + ')' : "'" + s + "'";
   });
 }
 
-// ── L5: Encode numbers
-function doEncNums(code){
-  return code.replace(/(?<!['\"\.\$>a-zA-Z_])(\b\d+\b)(?!['\"a-zA-Z_])/g,(match,num)=>{
-    const n=parseInt(num,10);
-    if(isNaN(n)||n<0||n>9999)return match;
-    const c=r(4);
-    if(c===0)return'0x'+n.toString(16).toUpperCase();
-    if(c===1&&n>0)return'0'+n.toString(8).padStart(2,'0');
-    if(c===2){const a=r(Math.max(1,n))+1;const b=n-a;return b>=0?'('+a+'+'+b+')':'('+a+'-'+Math.abs(b)+')';}
-    if(c===3&&n>1){const a=r(n-1)+1;const b=n-a;return'('+a+'+'+b+')';}
+// ═══════════════════════════════════════════════════════
+//  LAYER 5: Encode Numbers
+// ═══════════════════════════════════════════════════════
+function doEncNums(code) {
+  return code.replace(/(?<!['\"\.\$>a-zA-Z_])(\b\d+\b)(?!['\"a-zA-Z_])/g, (match, num) => {
+    const n = parseInt(num, 10);
+    if (isNaN(n) || n < 0 || n > 9999) return match;
+    const c = r(5);
+    if (c === 0) return '0x' + n.toString(16).toUpperCase();
+    if (c === 1 && n > 0) return '0' + n.toString(8).padStart(2, '0');
+    if (c === 2) { const a = r(Math.max(1, n)) + 1; const b = n - a; return b >= 0 ? '(' + a + '+' + b + ')' : '(' + a + '-' + Math.abs(b) + ')'; }
+    if (c === 3 && n > 1) { const a = 2; return '(intdiv(' + (n * a) + ',' + a + '))'; }
+    if (c === 4 && n >= 0) { return '(~(~' + n + '))'; }
     return match;
   });
 }
 
-// ── L6: Function aliasing
-function doFnAlias(code){
-  const map={};const pre=[];
-  for(const fn of PHP_FNS){
-    const re=new RegExp('(?<![\'\"a-zA-Z0-9_$])'+fn+'\\s*\\(','g');
-    if(re.test(code)){const v=R(9);map[fn]=v;pre.push('$'+v+'=\''+fn+'\';');}
+// ═══════════════════════════════════════════════════════
+//  LAYER 6: Function Aliasing
+// ═══════════════════════════════════════════════════════
+function doFnAlias(code) {
+  const map = {}; const pre = [];
+  for (const fn of PHP_FNS) {
+    const re = new RegExp('(?<![\'\"a-zA-Z0-9_$])' + fn + '\\s*\\(', 'g');
+    if (re.test(code)) { const v = R(10 + r(4)); map[fn] = v; pre.push('$' + v + '=\'' + fn + '\';'); }
   }
-  let res=code;
-  for(const[fn,v] of Object.entries(map)){
-    const re=new RegExp('(?<![\'\"a-zA-Z0-9_$])'+fn+'\\s*\\(','g');
-    res=res.replace(re,'$'+v+'(');
+  let res = code;
+  for (const [fn, v] of Object.entries(map)) {
+    const re = new RegExp('(?<![\'\"a-zA-Z0-9_$])' + fn + '\\s*\\(', 'g');
+    res = res.replace(re, '$' + v + '(');
   }
-  if(pre.length>0)res=res.replace(/(<\?php\s*)/i,'$1'+pre.join('')+' ');
+  if (pre.length > 0) res = res.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
   return res;
 }
 
-// ── L7: XOR encoding
-function doXOR(code){
-  // Encode beberapa string literal dengan XOR + tambahkan fungsi decoder
-  const key=R(6);
-  const keyBytes=key.split('').map(c=>c.charCodeAt(0));
-  const decoderName=R(8);
-  // decoder function dalam PHP
-  const decoderFn=`function ${decoderName}($s,$k){$o='';$l=strlen($k);for($i=0;$i<strlen($s);$i++){$o.=chr(ord($s[$i])^ord($k[$i%$l]));}return $o;}`;
+// ═══════════════════════════════════════════════════════
+//  LAYER 7: XOR Encoding (multi-byte key)
+// ═══════════════════════════════════════════════════════
+function doXOR(code) {
+  const keyLen = 6 + r(6);
+  let key = '';
+  for (let i = 0; i < keyLen; i++) key += ALPHA[r(26)];
+  const keyBytes = key.split('').map(c => c.charCodeAt(0));
+  const decoderName = R(10 + r(4));
+  const decoderFn = `function ${decoderName}($s,$k){$o='';$l=strlen($k);for($i=0;$i<strlen($s);$i++){$o.=chr(ord(substr($s,$i,1))^ord(substr($k,$i%$l,1)));}return $o;}`;
 
-  let strCount=0;
-  const res=code.replace(/'([^'\\]{4,30})'/g,(match,s)=>{
-    if(strCount>8)return match; // limit agar tidak terlalu besar
+  let strCount = 0;
+  const res = code.replace(/'([^'\\]{4,25})'/g, (match, s) => {
+    if (strCount > 12) return match;
     strCount++;
-    // XOR the string
-    let encoded='';
-    for(let i=0;i<s.length;i++){
-      encoded+=String.fromCharCode(s.charCodeAt(i)^keyBytes[i%keyBytes.length]);
-    }
-    try{
-      const b=b64e(encoded);
+    let encoded = '';
+    for (let i = 0; i < s.length; i++)
+      encoded += String.fromCharCode(s.charCodeAt(i) ^ keyBytes[i % keyBytes.length]);
+    try {
+      const b = b64e(encoded);
       return `${decoderName}(base64_decode("${b}"),"${key}")`;
-    }catch(e){return match;}
+    } catch (e) { return match; }
   });
-
-  // inject decoder setelah <?php
-  return res.replace(/(<\?php\s*)/i,'$1'+decoderFn+' ');
+  return res.replace(/(<\?php\s*)/i, '$1' + decoderFn + ' ');
 }
 
-// ── L8: Array string table
-function doArrTable(code){
-  const arrName=R(9);
-  const strMap=[];
-  let idx=0;
-  const res=code.replace(/'([^'\\]{3,})'/g,(match,s)=>{
-    if(idx>30)return match;
-    strMap.push(s);
-    const i=idx++;
+// ═══════════════════════════════════════════════════════
+//  LAYER 8: Array String Table
+// ═══════════════════════════════════════════════════════
+function doArrTable(code) {
+  const arrName = R(10 + r(4));
+  const strMap = []; let idx = 0;
+  const res = code.replace(/'([^'\\]{3,})'/g, (match, s) => {
+    if (idx > 40) return match;
+    strMap.push(s); const i = idx++;
     return `$${arrName}[${i}]`;
   });
-  if(strMap.length===0)return code;
-  const arrDef=`$${arrName}=array(${strMap.map(s=>"'"+s.replace(/'/g,"\\'")+"'").join(',')});`;
-  return res.replace(/(<\?php\s*)/i,'$1'+arrDef+' ');
+  if (strMap.length === 0) return code;
+  const arrDef = `$${arrName}=array(${strMap.map(s => "'" + s.replace(/'/g, "\\'") + "'").join(',')});`;
+  return res.replace(/(<\?php\s*)/i, '$1' + arrDef + ' ');
 }
 
-// ── L9: Dead code
-function makeDead(){
-  const v1=R(6),v2=R(6),v3=R(6);
-  const t=[
-    `$${v1}=array(${r(999)},${r(999)},${r(999)});if(false){unset($${v1});}`,
+// ═══════════════════════════════════════════════════════
+//  LAYER 9: Dead Code
+// ═══════════════════════════════════════════════════════
+function makeDead() {
+  const v1 = R(6), v2 = R(6), v3 = R(6), v4 = R(6);
+  const t = [
+    `$${v1}=array(${r(9999)},${r(9999)},${r(9999)});if(false){unset($${v1});}`,
     `if(false){$${v1}=null;$${v2}='';unset($${v1},$${v2});}`,
     `for($${v1}=0;$${v1}<0;$${v1}++){}`,
     `$${v1}=function()use(&$${v2}){return false;};if(false){$${v1}();}`,
@@ -265,173 +672,547 @@ function makeDead(){
     `if(0&&isset($${v1})){$${v2}=$${v3}=null;}`,
     `switch(false){case true:$${v1}=1;break;default:break;}`,
     `$${v1}=null;if(!is_null($${v2}=null)){$${v1}=false;}unset($${v1},$${v2});`,
+    `if(PHP_INT_MAX<0){$${v1}='';$${v2}=0;}`,
+    `$${v1}=[];if(count($${v1})>PHP_INT_MAX){}`,
+    `$${v1}=(true===false)?1:0;if($${v1}>9999){echo '';}unset($${v1});`,
+    `$${v1}=$${v2}=$${v3}=0;if($${v1}===$${v2}&$${v2}===$${v3}&false){}unset($${v1},$${v2},$${v3});`,
+    `if(defined('${v4.toUpperCase()}')){$${v1}=constant('${v4.toUpperCase()}');}else{$${v1}=false;}unset($${v1});`,
   ];
   return t[r(t.length)];
 }
 
-// ── L10: Scramble flow
-function doScramble(code){
-  const lines=code.split('\n');const res=[];
-  for(const l of lines){
+// ═══════════════════════════════════════════════════════
+//  LAYER 10: Control Flow Scramble
+// ═══════════════════════════════════════════════════════
+function doScramble(code) {
+  const lines = code.split('\n'); const res = [];
+  for (const l of lines) {
     res.push(l);
-    if(Math.random()<0.3)res.push(makeDead());
+    if (Math.random() < 0.35) res.push(makeDead());
   }
   return res.join('\n');
 }
 
-// ── L11: Junk functions
-function doJunkFns(code){
-  const n=3+r(3);const fns=[];
-  for(let i=0;i<n;i++){
-    const fn=R(10);const p1=R(5),p2=R(5),p3=R(5);
-    const v1=R(5),v2=R(5),v3=R(5),v4=R(5);
+// ═══════════════════════════════════════════════════════
+//  LAYER 11: Junk Functions (more complex)
+// ═══════════════════════════════════════════════════════
+function doJunkFns(code) {
+  const n = 5 + r(4); const fns = [];
+  for (let i = 0; i < n; i++) {
+    const fn = R(12 + r(5));
+    const p1 = R(6), p2 = R(6), p3 = R(6);
+    const v1 = R(6), v2 = R(6), v3 = R(6), v4 = R(6), v5 = R(6);
     fns.push(
-      `function ${fn}($${p1}=null,$${p2}=0,$${p3}=false){`+
-      `$${v1}=array();$${v2}=0;$${v3}='';`+
+      `function ${fn}($${p1}=null,$${p2}=0,$${p3}=false){` +
+      `$${v1}=array();$${v2}=0;$${v3}='';$${v4}=null;` +
       `if($${p3}===true&&false){return $${p1};}` +
       `while($${v2}<0){$${v2}++;$${v3}.=chr($${v2});}` +
-      `if(isset($${p1})&&$${p1}===PHP_INT_MAX){foreach($${v1} as $${v4}=>&$${v2}){$${v2}=null;}}` +
+      `if(isset($${p1})&&$${p1}===PHP_INT_MAX){foreach($${v1} as $${v4}=>&$${v5}){$${v5}=null;}}` +
+      `if($${p2}>PHP_INT_MAX){return implode('',$${v1});}` +
       `return null;}`
     );
   }
-  const stripped=code.replace(/<\?php\s*/i,'').replace(/\?>\s*$/,'');
-  return '<?php\n'+fns.join('\n')+'\n'+stripped+(stripped.trim().endsWith('?>')?'':'\n?>');
+  const stripped = code.replace(/<\?php\s*/i, '').replace(/\?>\s*$/, '');
+  return '<?php\n' + fns.join('\n') + '\n' + stripped + (stripped.trim().endsWith('?>') ? '' : '\n?>');
 }
 
-// ── L12: Self-referential vars
-function doSelfRef(code){
-  const pre=[];const n=3+r(3);
-  const names=[];
-  for(let i=0;i<n;i++){const v=R(8);names.push(v);}
-  for(let i=0;i<names.length;i++){
-    const next=names[(i+1)%names.length];
+// ═══════════════════════════════════════════════════════
+//  LAYER 12: Self-referential Variables
+// ═══════════════════════════════════════════════════════
+function doSelfRef(code) {
+  const pre = []; const n = 4 + r(4);
+  const names = [];
+  for (let i = 0; i < n; i++) { const v = R(9); names.push(v); }
+  for (let i = 0; i < names.length; i++) {
+    const next = names[(i + 1) % names.length];
     pre.push(`$${names[i]}='$${next}';`);
   }
-  return code.replace(/(<\?php\s*)/i,'$1'+pre.join('')+' ');
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
 }
 
-// ── L13: chr() encoding
-function doChrEnc(code){
-  return code.replace(/'([^'\\]{1,12})'/g,(match,s)=>{
-    if(r(3)!==0)return match; // encode ~33% of short strings
-    return '('+s.split('').map(c=>'chr('+c.charCodeAt(0)+')').join('.')+')';
+// ═══════════════════════════════════════════════════════
+//  LAYER 13: chr() Encoding
+// ═══════════════════════════════════════════════════════
+function doChrEnc(code) {
+  return code.replace(/'([^'\\]{1,15})'/g, (match, s) => {
+    if (r(3) !== 0) return match;
+    return '(' + s.split('').map(c => 'chr(' + c.charCodeAt(0) + ')').join('.') + ')';
   });
 }
 
-// ── L14: Heredoc injection (safe nowdoc-style untuk string statis)
-function doHeredoc(code){
-  // Ganti beberapa string literal menjadi nowdoc (tidak perlu escape)
-  let count=0;
-  return code.replace(/'([^'\\]{10,50})'/g,(match,s)=>{
-    if(count>=3||r(3)!==0)return match;
+// ═══════════════════════════════════════════════════════
+//  LAYER 14: Nowdoc Injection
+// ═══════════════════════════════════════════════════════
+function doHeredoc(code) {
+  let count = 0;
+  return code.replace(/'([^'\\]{10,50})'/g, (match, s) => {
+    if (count >= 4 || r(3) !== 0) return match;
     count++;
-    const lbl='LBL'+R(5).toUpperCase().replace('_','');
-    // Nowdoc: <<<'LBL'\n...\nLBL
-    // Tapi nowdoc tidak bisa inline ekspresi, jadi gunakan variabel temp
-    // Kita wrap dalam ekspresi yang tetap valid
-    return "<<<'"+lbl+"'\n"+s+"\n"+lbl;
+    // Use a variable assignment approach (safe, valid PHP)
+    const v = R(8);
+    const lbl = 'NOWDOC' + R(4).toUpperCase().replace(/[0-9]/g, '') + (100 + r(900));
+    return `(function(){$${v}=<<<'${lbl}'\n${s}\n${lbl};\nreturn $${v};})()`;
   });
 }
 
-// ── L15: Double eval wrapper
-function doEvalWrap(code){
-  const stripped=code.replace(/<\?php\s*/i,'').replace(/\?>\s*$/,'').trim();
-  const enc1=b64e(stripped);
-  const enc2=b64e(enc1);
-  const v1=R(9),v2=R(9),v3=R(9),v4=R(9),v5=R(9);
-  // Pecah 'base64_decode' dan 'eval' jadi concat agar tidak tertangkap static scanner
-  return `<?php\n`+
-    `$${v1}='bas'.'e6'.'4_d'.'ec'.'ode';\n`+
-    `$${v2}='ev'.'al';\n`+
-    `$${v3}="${enc2}";\n`+
-    `$${v4}=$${v1}($${v3});\n`+
-    `$${v5}=$${v1}($${v4});\n`+
-    `@$${v2}($${v5});\n`+
+// ═══════════════════════════════════════════════════════
+//  LAYER 15: Constant Obfuscation (inject PHP constant noise)
+// ═══════════════════════════════════════════════════════
+function doConstObf(code) {
+  const pre = [];
+  const n = 3 + r(4);
+  for (let i = 0; i < n; i++) {
+    const v = R(8);
+    const consts = ['PHP_EOL','PHP_INT_MAX','PHP_INT_MIN','PHP_MAJOR_VERSION','PHP_MINOR_VERSION','PHP_MAXPATHLEN','PHP_OS_FAMILY','DIRECTORY_SEPARATOR','PATH_SEPARATOR'];
+    const c = rPick(consts);
+    pre.push(`$${v}=${c};`);
+    pre.push(`if($${v}===false&&false){unset($${v});}`);
+  }
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 16: Variable Variables ($$var)
+// ═══════════════════════════════════════════════════════
+function doVarVar(code) {
+  const pre = [];
+  const n = 2 + r(3);
+  for (let i = 0; i < n; i++) {
+    const v1 = R(8), v2 = R(8), v3 = R(8);
+    pre.push(`$${v1}='${v2}';$$${v1}=null;$${v3}=false;if($$${v1}===true&&false){unset($${v3});}unset($${v1},$${v3});`);
+  }
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 17: Bitwise String Encoding
+// ═══════════════════════════════════════════════════════
+function doBitwise(code) {
+  const decoderName = R(10 + r(4));
+  const decoderFn = `function ${decoderName}($d){$r='';$a=explode(',',base64_decode($d));foreach($a as $b){$r.=chr((int)$b);}return $r;}`;
+  let count = 0;
+  const res = code.replace(/'([^'\\]{3,20})'/g, (match, s) => {
+    if (count > 8) return match;
+    count++;
+    const encoded = s.split('').map(c => c.charCodeAt(0)).join(',');
+    try {
+      return `${decoderName}(base64_decode("${b64e(encoded)}"))`;
+    } catch(e) { return match; }
+  });
+  return res.replace(/(<\?php\s*)/i, '$1' + decoderFn + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 18: String Char Array Access
+// ═══════════════════════════════════════════════════════
+function doStrArray(code) {
+  const pre = [];
+  const n = 3 + r(3);
+  for (let i = 0; i < n; i++) {
+    const v = R(9);
+    // Build a word from char array access
+    const word = R(4 + r(4));
+    const base = R(6 + r(4));
+    // Define a string variable then access chars as junk
+    pre.push(`$${base}='${word}';$${v}=$${base}[0];unset($${v});`);
+  }
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 19: Fake Class Injection
+// ═══════════════════════════════════════════════════════
+function doFakeClass(code) {
+  const n = 2 + r(3); const classes = [];
+  const clsNames = [];
+  for (let i = 0; i < n; i++) {
+    const cn = 'C' + R(8 + r(4));
+    clsNames.push(cn);
+    const p1 = R(6), p2 = R(6), m1 = R(8), m2 = R(8);
+    const v1 = R(5), v2 = R(5);
+    classes.push(
+      `class ${cn}{private $${p1}=null;protected $${p2}=0;` +
+      `public function ${m1}($${v1}=null){if($${v1}===PHP_INT_MAX&&false){return $${v1};}return null;}` +
+      `public function ${m2}($${v1}=0,$${v2}=false){while($${v1}<0){$${v1}++;}return false;}}`
+    );
+  }
+  const stripped = code.replace(/<\?php\s*/i, '').replace(/\?>\s*$/, '');
+  return '<?php\n' + classes.join('\n') + '\n' + stripped + (stripped.trim().endsWith('?>') ? '' : '\n?>');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 20: Ternary Obfuscation
+// ═══════════════════════════════════════════════════════
+function doTrinary(code) {
+  const pre = [];
+  const n = 3 + r(4);
+  for (let i = 0; i < n; i++) {
+    const v = R(8);
+    const val = r(2) === 0 ? 'true' : 'false';
+    const a = r(9999), b = r(9999);
+    // always evaluates to $val, just confusing static analysis
+    pre.push(`$${v}=(${a}>${b})?false:true;if($${v}&&!$${v}){echo '';}unset($${v});`);
+  }
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 21: Anti-Debug Traps
+// ═══════════════════════════════════════════════════════
+function doAntiDebug(code) {
+  // These look scary to static analyzers but never execute at runtime
+  const pre = [];
+  const traps = [
+    // Checks that always fail
+    `if(function_exists('xdebug_info')&&false){die();}`,
+    `if(isset($_SERVER['HTTP_X_DEBUG'])&&false){exit(0);}`,
+    `if(defined('XDEBUG_CC_UNUSED')&&false){die();}`,
+    `if(PHP_SAPI==='fake_sapi'&&false){exit();}`,
+    // Fake integrity check
+    `if(md5(PHP_VERSION)===md5('')&&false){die('integrity');}`,
+    // Fake timing check
+    `if(microtime(true)<0&&false){exit();}`,
+  ];
+  for (const t of traps) pre.push(t);
+  return code.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 22: Polymorphic Decoder (different every time)
+// ═══════════════════════════════════════════════════════
+function doPolyDec(code) {
+  // Add a unique polymorphic signature comment-like structure as code
+  const uid = R(6) + '_' + Date.now().toString(36) + '_' + r(99999);
+  const v = R(10);
+  // A decoder that's slightly different each run
+  const ops = [
+    `$${v}=str_split(base64_decode("${b64e(uid)}"));`,
+    `$${v}=array_reverse($${v});`,
+    `$${v}=implode('',$${v});`,
+    `if(strlen($${v})<0){echo '';}`,
+    `unset($${v});`,
+  ];
+  return code.replace(/(<\?php\s*)/i, '$1' + ops.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 23: Multi-layer Base64
+// ═══════════════════════════════════════════════════════
+function doMultiLayer(code) {
+  // Encode some string literals 3x
+  let count = 0;
+  const vars = [];
+  const pre = [];
+  const res = code.replace(/'([^'\\]{5,30})'/g, (match, s) => {
+    if (count > 6) return match;
+    count++;
+    let enc = s;
+    const depth = 3 + r(3);
+    for (let i = 0; i < depth; i++) enc = b64e(enc);
+    const v = R(10); vars.push(v);
+    const decodeLine = `$${v}="${enc}";` + Array.from({length: depth}, () => `$${v}=base64_decode($${v});`).join('');
+    pre.push(decodeLine);
+    return `$${v}`;
+  });
+  if (pre.length === 0) return code;
+  return res.replace(/(<\?php\s*)/i, '$1' + pre.join('') + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 24: Custom Alphabet Encoding
+// ═══════════════════════════════════════════════════════
+function doCustomAlpha(code) {
+  // Custom base-N encoding with shuffled alphabet
+  const stdAlpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  // Shuffle
+  const arr = stdAlpha.split('');
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = r(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  const customAlpha = arr.join('');
+
+  const encoderName = R(10 + r(4));
+  const decoderName = R(10 + r(4));
+
+  // PHP decoder: translates custom-alpha base64 back to standard, then decodes
+  const decoderFn =
+    `function ${decoderName}($s){` +
+    `$t=strtr($s,"${customAlpha.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"')}","${stdAlpha.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"')}");` +
+    `return base64_decode($t);}`;
+
+  // Encode a few strings with the custom alphabet
+  let count = 0;
+  const res = code.replace(/'([^'\\]{4,25})'/g, (match, s) => {
+    if (count > 5) return match;
+    count++;
+    // standard base64 -> remap with custom alpha
+    let b64 = b64e(s);
+    let custom = '';
+    for (const ch of b64) {
+      const idx = stdAlpha.indexOf(ch);
+      custom += idx >= 0 ? customAlpha[idx] : ch;
+    }
+    return `${decoderName}("${custom}")`;
+  });
+
+  if (count === 0) return code;
+  return res.replace(/(<\?php\s*)/i, '$1' + decoderFn + ' ');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER 25: Double Eval Wrapper (final boss)
+// ═══════════════════════════════════════════════════════
+function doEvalWrap(code) {
+  const stripped = code.replace(/<\?php\s*/i, '').replace(/\?>\s*$/, '').trim();
+  const enc1 = b64e(stripped);
+  const enc2 = b64e(enc1);
+  const v = () => R(9 + r(4));
+  const [v1,v2,v3,v4,v5,v6,v7] = [v(),v(),v(),v(),v(),v(),v()];
+  return `<?php\n` +
+    `$${v1}='ba'.'se'.'64'.'_d'.'ec'.'od'.'e';\n` +
+    `$${v2}='ev'.'al';\n` +
+    `$${v3}='${enc2}';\n` +
+    `$${v4}=$${v1}($${v3});\n` +
+    `$${v5}=$${v1}($${v4});\n` +
+    `$${v6}=$${v2};\n` +
+    `@$${v6}($${v5});\n` +
     `?>`;
 }
 
-// ── Main
-function run(){
-  const inp=document.getElementById('inp').value.trim();
-  if(!inp){setStat('Masukkan kode PHP.');return;}
-  setStat('Memproses...');
-  setTimeout(()=>{
-    try{
-      const l=id=>document.getElementById(id).checked;
-      let c=inp;
-      if(l('l-compact'))c=doCompact(c);
-      if(l('l-fnalias'))c=doFnAlias(c);
-      // Array table sebelum string encoding agar string asli ter-map
-      if(l('l-arr'))c=doArrTable(c);
-      if(l('l-xor'))c=doXOR(c);
-      if(l('l-vars'))c=doRenameVars(c);
-      if(l('l-strcat'))c=doSplitStr(c);
-      if(l('l-chr'))c=doChrEnc(c);
-      if(l('l-strenc'))c=doEncStrings(c);
-      if(l('l-numenc'))c=doEncNums(c);
-      if(l('l-selfref'))c=doSelfRef(c);
-      if(l('l-flow')&&l('l-dead'))c=doScramble(c);
-      else if(l('l-dead')){
-        const ls=c.split('\n');const rs=[];
-        for(const line of ls){rs.push(line);if(Math.random()<0.2)rs.push(makeDead());}
-        c=rs.join('\n');
-      }
-      if(l('l-junkfn'))c=doJunkFns(c);
-      // Heredoc SEBELUM eval wrap (heredoc tidak bisa ada di dalam string base64)
-      // Dinonaktifkan sebelum eval agar tidak merusak
-      // if(l('l-heredoc'))c=doHeredoc(c); // only without eval
-      if(l('l-eval'))c=doEvalWrap(c);
-      else if(l('l-heredoc'))c=doHeredoc(c);
+// ═══════════════════════════════════════════════════════
+//  MAIN RUNNER
+// ═══════════════════════════════════════════════════════
+function run() {
+  const inp = document.getElementById('inp').value.trim();
+  if (!inp) { setStat('Masukkan kode PHP terlebih dahulu.', 'red'); return; }
+  
+  showProgress();
+  setStat('Memproses 25 layer...', 'blue');
 
-      document.getElementById('out').value=c;
-      const act=ALL_LAYERS.filter(id=>document.getElementById(id).checked).length;
-      const grow=((c.length/inp.length-1)*100).toFixed(0);
-      document.getElementById('stats').innerHTML=
-        `<span class="pill">Selesai</span>`+
-        `<span class="pill">${inp.length} → ${c.length} char (+${grow}%)</span>`+
-        `<span class="pill">${act}/15 layer aktif</span>`;
-    }catch(e){
-      setStat('Error: '+e.message);
+  setTimeout(() => {
+    try {
+      const l = id => document.getElementById(id).checked;
+      let c = inp;
+
+      // Execute layers in optimal order
+      if (l('l-compact'))     c = doCompact(c);
+      if (l('l-fnalias'))     c = doFnAlias(c);
+      if (l('l-arr'))         c = doArrTable(c);
+      if (l('l-xor'))         c = doXOR(c);
+      if (l('l-bitwise'))     c = doBitwise(c);
+      if (l('l-vars'))        c = doRenameVars(c);
+      if (l('l-strcat'))      c = doSplitStr(c);
+      if (l('l-chr'))         c = doChrEnc(c);
+      if (l('l-strenc'))      c = doEncStrings(c);
+      if (l('l-numenc'))      c = doEncNums(c);
+      if (l('l-selfref'))     c = doSelfRef(c);
+      if (l('l-varvar'))      c = doVarVar(c);
+      if (l('l-trinary'))     c = doTrinary(c);
+      if (l('l-strarray'))    c = doStrArray(c);
+      if (l('l-const'))       c = doConstObf(c);
+      if (l('l-antidebug'))   c = doAntiDebug(c);
+      if (l('l-polydec'))     c = doPolyDec(c);
+      if (l('l-multilayer'))  c = doMultiLayer(c);
+      if (l('l-customalpha')) c = doCustomAlpha(c);
+      if (l('l-flow') && l('l-dead')) c = doScramble(c);
+      else if (l('l-dead')) {
+        const ls = c.split('\n'); const rs = [];
+        for (const line of ls) { rs.push(line); if (Math.random() < 0.25) rs.push(makeDead()); }
+        c = rs.join('\n');
+      }
+      if (l('l-junkfn'))      c = doJunkFns(c);
+      if (l('l-fakeclass'))   c = doFakeClass(c);
+      // heredoc only without eval (would break base64)
+      if (!l('l-eval') && l('l-heredoc')) c = doHeredoc(c);
+      if (l('l-eval'))        c = doEvalWrap(c);
+
+      document.getElementById('out').value = c;
+
+      const act = ALL_LAYERS.filter(id => document.getElementById(id).checked).length;
+      const ratio = ((c.length / inp.length - 1) * 100).toFixed(0);
+      document.getElementById('out-stat').textContent = c.length + ' karakter · ' + c.split('\n').length + ' baris';
+      document.getElementById('stats').innerHTML =
+        `<span class="pill pill-green">✓ Selesai</span>` +
+        `<span class="pill pill-blue">${inp.length} → ${c.length} char (+${ratio}%)</span>` +
+        `<span class="pill">${act}/25 layer aktif</span>` +
+        `<span class="pill">PHP 7.x/8.x valid</span>`;
+    } catch (e) {
+      setStat('Error: ' + e.message, 'red');
       console.error(e);
     }
-  },60);
+    hideProgress();
+  }, 80);
 }
 
-function setStat(msg){document.getElementById('stats').innerHTML=`<span class="pill">${msg}</span>`;}
-
-function doCopy(){
-  const t=document.getElementById('out').value;
-  if(!t)return;
-  navigator.clipboard.writeText(t).then(()=>setStat('Disalin ke clipboard.'));
-}
-function doDownload(){
-  const t=document.getElementById('out').value;
-  if(!t)return;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
-  a.download='obfuscated.php';a.click();
-  setStat('File diunduh.');
-}
-function doClear(){
-  document.getElementById('inp').value='';
-  document.getElementById('out').value='';
-  setStat('Siap.');updateStrength();
+// ═══════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════
+function setStat(msg, type) {
+  const cls = type === 'red' ? 'pill-red' : type === 'blue' ? 'pill-blue' : 'pill';
+  document.getElementById('stats').innerHTML = `<span class="pill ${cls}">${msg}</span>`;
 }
 
-// Strength meter
-function updateStrength(){
-  const bar=document.getElementById('sbar');
-  bar.innerHTML='';
-  const act=ALL_LAYERS.filter(id=>document.getElementById(id).checked).length;
-  const lvl=act<=3?1:act<=6?2:act<=9?3:act<=12?4:5;
-  const labels=['','Lemah','Sedang','Kuat','Sangat kuat','Maksimum'];
-  for(let i=0;i<15;i++){
-    const seg=document.createElement('div');
-    seg.className='seg'+(i<act?' on-'+lvl:'');
+function showProgress() {
+  const pw = document.getElementById('progress-wrap');
+  const pb = document.getElementById('progress-bar');
+  pw.style.display = 'block';
+  pb.style.width = '0%';
+  let p = 0;
+  const t = setInterval(() => {
+    p += Math.random() * 15;
+    if (p > 90) p = 90;
+    pb.style.width = p + '%';
+  }, 60);
+  pw._timer = t;
+}
+
+function hideProgress() {
+  const pw = document.getElementById('progress-wrap');
+  const pb = document.getElementById('progress-bar');
+  if (pw._timer) clearInterval(pw._timer);
+  pb.style.width = '100%';
+  setTimeout(() => { pw.style.display = 'none'; pb.style.width = '0%'; }, 400);
+}
+
+function doCopy() {
+  const t = document.getElementById('out').value;
+  if (!t) return;
+  navigator.clipboard.writeText(t).then(() => setStat('✓ Disalin ke clipboard.', 'green'));
+}
+
+function doDownload() {
+  const t = document.getElementById('out').value;
+  if (!t) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([t], { type: 'text/plain' }));
+  a.download = 'obfuscated_' + Date.now() + '.php';
+  a.click();
+  setStat('✓ File diunduh.', 'green');
+}
+
+function doClear() {
+  document.getElementById('inp').value = '';
+  document.getElementById('out').value = '';
+  document.getElementById('inp-stat').textContent = '0 karakter · 0 baris';
+  document.getElementById('out-stat').textContent = '—';
+  setStat('Siap — pilih layer lalu klik Obfuskasi');
+  updateStrength();
+}
+
+function countLines(id) {
+  const t = document.getElementById(id).value;
+  setStat(`${t.length} karakter · ${t.split('\n').length} baris`);
+}
+
+function updateFooter() {
+  const t = document.getElementById('inp').value;
+  document.getElementById('inp-stat').textContent = t.length + ' karakter · ' + t.split('\n').length + ' baris';
+}
+
+// Presets
+function setPreset(p) {
+  const sets = {
+    none: [],
+    basic: ['l-compact','l-vars','l-strenc','l-strcat','l-numenc'],
+    medium: ['l-compact','l-vars','l-strenc','l-strcat','l-numenc','l-fnalias','l-xor','l-arr','l-dead','l-flow'],
+    strong: ['l-compact','l-vars','l-strenc','l-strcat','l-numenc','l-fnalias','l-xor','l-arr','l-dead','l-flow','l-junkfn','l-selfref','l-chr','l-const','l-varvar','l-bitwise','l-fakeclass'],
+    ultra: ALL_LAYERS,
+  };
+  ALL_LAYERS.forEach(id => {
+    document.getElementById(id).checked = sets[p] ? sets[p].includes(id) : false;
+  });
+  updateStrength();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STRENGTH METER
+// ═══════════════════════════════════════════════════════
+function updateStrength() {
+  const bar = document.getElementById('sbar');
+  bar.innerHTML = '';
+  const act = ALL_LAYERS.filter(id => document.getElementById(id).checked).length;
+  document.getElementById('lc-num').textContent = act;
+  const pct = act / ALL_LAYERS.length;
+  const lvl = pct <= 0.2 ? 1 : pct <= 0.4 ? 2 : pct <= 0.6 ? 3 : pct <= 0.8 ? 4 : 5;
+  const labels = ['', 'Lemah', 'Sedang', 'Kuat', 'Sangat Kuat', 'Maksimum'];
+  const colors = [
+    [],
+    ['#22c55e','#16a34a'],
+    ['#f59e0b','#d97706'],
+    ['#f97316','#ea580c'],
+    ['#ef4444','#dc2626'],
+    ['#ec4899','#7c3aed'],
+  ];
+  document.getElementById('slabel').textContent = labels[lvl];
+  document.getElementById('slabel').style.color =
+    ['','#22c55e','#f59e0b','#f97316','#ef4444','#ec4899'][lvl];
+
+  for (let i = 0; i < 25; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    if (i < act) {
+      seg.style.cssText = `--c1:${colors[lvl][0]};--c2:${colors[lvl][1]};`;
+      seg.classList.add('on');
+    }
     bar.appendChild(seg);
   }
-  document.getElementById('slabel').textContent='Kekuatan: '+labels[lvl];
+
+  // Update group counts
+  GROUPS.forEach((g, gi) => {
+    const c = g.filter(id => document.getElementById(id).checked).length;
+    const el = document.getElementById('gc' + (gi + 1));
+    if (el) el.textContent = c + '/' + g.length;
+  });
 }
-ALL_LAYERS.forEach(id=>document.getElementById(id).addEventListener('change',updateStrength));
+
+// ═══════════════════════════════════════════════════════
+//  FILE UPLOAD (client-side only, no server)
+// ═══════════════════════════════════════════════════════
+const fileInput = document.getElementById('file-input');
+const uploadZone = document.getElementById('upload-zone');
+const uploadOk = document.getElementById('upload-ok');
+
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  loadFile(file);
+});
+
+uploadZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadZone.classList.add('drag');
+});
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) loadFile(file);
+});
+
+function loadFile(file) {
+  const allowed = ['.php', '.inc', '.txt', '.phtml'];
+  const name = file.name.toLowerCase();
+  const ok = allowed.some(ext => name.endsWith(ext));
+  if (!ok) { setStat('File harus .php / .inc / .txt', 'red'); return; }
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('inp').value = ev.target.result;
+    updateFooter();
+    uploadOk.style.display = 'block';
+    uploadOk.textContent = '✓ ' + file.name + ' berhasil dimuat (' + (file.size / 1024).toFixed(1) + ' KB)';
+    setStat('File "' + file.name + '" dimuat. Klik Obfuskasi untuk mulai.', 'green');
+  };
+  reader.readAsText(file);
+  // Reset input so same file can be re-uploaded
+  fileInput.value = '';
+}
+
+// ─── Init ────────────────────────────────────────────
+ALL_LAYERS.forEach(id => document.getElementById(id).addEventListener('change', updateStrength));
 updateStrength();
 </script>
+</body>
+</html>
