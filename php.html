@@ -280,7 +280,7 @@ textarea::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 
 <!-- Info bar -->
 <div class="info-bar">
-  25 Layer Obfuscation — Output dijamin PHP 7.x/8.x valid. Tidak ada data yang dikirim ke server. Semua proses berjalan lokal di browser.
+  25 Layer Obfuscation — Output dijamin PHP 7.x/8.x valid. Layer eval menggunakan assert() bukan $var('eval') yang menyebabkan Fatal Error. Semua proses berjalan lokal di browser, tidak ada data dikirim ke server.
 </div>
 
 <!-- Strength meter -->
@@ -494,7 +494,9 @@ const RESERVED = new Set([
   'include_once','require_once','use','namespace','abstract','interface','extends','implements',
   'public','private','protected','final','const','try','catch','throw','finally','match','fn',
   'yield','global','GLOBALS','_SERVER','_GET','_POST','_FILES','_COOKIE','_SESSION','_REQUEST','_ENV',
-  'argc','argv','php_self','http_raw_post_data'
+  'argc','argv','php_self','http_raw_post_data',
+  // Language constructs — CANNOT be called via variable, must never be aliased
+  'eval','assert','list','compact','extract','print','echo','die','exit','isset','unset','empty'
 ]);
 
 const PHP_FNS = [
@@ -962,21 +964,32 @@ function doCustomAlpha(code) {
 
 // ═══════════════════════════════════════════════════════
 //  LAYER 25: Double Eval Wrapper (final boss)
+//  NOTE: eval() is a PHP language construct — cannot be
+//  called via variable ($v='eval'; $v(...) → FATAL ERROR).
+//  We use assert() which DOES accept a string and evals it
+//  in PHP 5.x–8.x, wrapped in extra obfuscation layers.
 // ═══════════════════════════════════════════════════════
 function doEvalWrap(code) {
   const stripped = code.replace(/<\?php\s*/i, '').replace(/\?>\s*$/, '').trim();
   const enc1 = b64e(stripped);
   const enc2 = b64e(enc1);
   const v = () => R(9 + r(4));
-  const [v1,v2,v3,v4,v5,v6,v7] = [v(),v(),v(),v(),v(),v(),v()];
+  const [v1,v2,v3,v4,v5] = [v(),v(),v(),v(),v()];
+
+  // Strategy: decode double-base64, then pass to assert()
+  // assert(string) executes PHP code — valid in PHP 5.x, 7.x, 8.x
+  // Obscure 'assert' and 'base64_decode' via string concat
+  // so static scanners can't trivially detect them
+  const assertParts = ["'as'", "'se'", "'rt'"];
+  const b64Parts = ["'base'", "'64_de'", "'code'"];
+
   return `<?php\n` +
-    `$${v1}='ba'.'se'.'64'.'_d'.'ec'.'od'.'e';\n` +
-    `$${v2}='ev'.'al';\n` +
+    `$${v1}=${b64Parts.join('.')};\n` +
+    `$${v2}=${assertParts.join('.')};\n` +
     `$${v3}='${enc2}';\n` +
     `$${v4}=$${v1}($${v3});\n` +
     `$${v5}=$${v1}($${v4});\n` +
-    `$${v6}=$${v2};\n` +
-    `@$${v6}($${v5});\n` +
+    `@$${v2}($${v5});\n` +
     `?>`;
 }
 
