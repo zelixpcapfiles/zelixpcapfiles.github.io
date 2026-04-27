@@ -280,7 +280,7 @@ textarea::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 
 <!-- Info bar -->
 <div class="info-bar">
-  25 Layer Obfuscation — Output dijamin PHP 7.x/8.x valid. Layer eval menggunakan assert() bukan $var('eval') yang menyebabkan Fatal Error. Semua proses berjalan lokal di browser, tidak ada data dikirim ke server.
+  25 Layer Obfuscation — PHP 7.x/8.x valid. File besar (>100KB) otomatis masuk mode aman. Layer Eval menggunakan eval() dengan chunked base64 — kompatibel semua ukuran file. Semua proses lokal, tidak ada data dikirim ke server.
 </div>
 
 <!-- Strength meter -->
@@ -963,34 +963,51 @@ function doCustomAlpha(code) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  LAYER 25: Double Eval Wrapper (final boss)
-//  NOTE: eval() is a PHP language construct — cannot be
-//  called via variable ($v='eval'; $v(...) → FATAL ERROR).
-//  We use assert() which DOES accept a string and evals it
-//  in PHP 5.x–8.x, wrapped in extra obfuscation layers.
+//  LAYER 25: Eval Wrapper — safe for large files
+//  - assert(string) silently fails on PHP 8 for large code
+//  - Solution: write code to a temp var via base64_decode,
+//    then use eval() directly (NOT via variable).
+//  - For large files (>50KB): use chunked approach.
 // ═══════════════════════════════════════════════════════
 function doEvalWrap(code) {
   const stripped = code.replace(/<\?php\s*/i, '').replace(/\?>\s*$/, '').trim();
-  const enc1 = b64e(stripped);
-  const enc2 = b64e(enc1);
+
+  // Safe b64 encode — handle multi-byte chars properly
+  let enc;
+  try {
+    enc = btoa(unescape(encodeURIComponent(stripped)));
+  } catch(e) {
+    enc = btoa(stripped);
+  }
+
   const v = () => R(9 + r(4));
-  const [v1,v2,v3,v4,v5] = [v(),v(),v(),v(),v()];
+  const [v1, v2, v3] = [v(), v(), v()];
+  const b64Parts = ["'base'", "'64'", "'_dec'", "'ode'"];
 
-  // Strategy: decode double-base64, then pass to assert()
-  // assert(string) executes PHP code — valid in PHP 5.x, 7.x, 8.x
-  // Obscure 'assert' and 'base64_decode' via string concat
-  // so static scanners can't trivially detect them
-  const assertParts = ["'as'", "'se'", "'rt'"];
-  const b64Parts = ["'base'", "'64_de'", "'code'"];
-
-  return `<?php\n` +
-    `$${v1}=${b64Parts.join('.')};\n` +
-    `$${v2}=${assertParts.join('.')};\n` +
-    `$${v3}='${enc2}';\n` +
-    `$${v4}=$${v1}($${v3});\n` +
-    `$${v5}=$${v1}($${v4});\n` +
-    `@$${v2}($${v5});\n` +
-    `?>`;
+  // For ALL file sizes: use eval() directly (valid PHP)
+  // Obscure 'base64_decode' via concat to avoid static scanners
+  // Split the encoded string into chunks to avoid PHP string limits
+  const CHUNK = 4000;
+  if (enc.length > CHUNK) {
+    // Chunked: $v1 = 'chunk1'.'chunk2'....;
+    const chunks = [];
+    for (let i = 0; i < enc.length; i += CHUNK) {
+      chunks.push("'" + enc.slice(i, i + CHUNK) + "'");
+    }
+    return `<?php\n` +
+      `$${v1}=${b64Parts.join('.')};\n` +
+      `$${v2}=${chunks.join('.')};\n` +
+      `$${v3}=$${v1}($${v2});\n` +
+      `eval($${v3});\n` +
+      `?>`;
+  } else {
+    return `<?php\n` +
+      `$${v1}=${b64Parts.join('.')};\n` +
+      `$${v2}='${enc}';\n` +
+      `$${v3}=$${v1}($${v2});\n` +
+      `eval($${v3});\n` +
+      `?>`;
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -999,9 +1016,27 @@ function doEvalWrap(code) {
 function run() {
   const inp = document.getElementById('inp').value.trim();
   if (!inp) { setStat('Masukkan kode PHP terlebih dahulu.', 'red'); return; }
-  
+
+  // ── Auto-safety for large files ──────────────────────
+  const isLarge = inp.length > 100000; // >100KB
+  if (isLarge) {
+    // Layers yang tidak aman untuk file besar: dinonaktifkan otomatis
+    const unsafeForLarge = ['l-xor','l-arr','l-chr','l-heredoc','l-strcat','l-multilayer','l-customalpha','l-dead','l-flow','l-strarray'];
+    let disabled = [];
+    unsafeForLarge.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.checked) { el.checked = false; disabled.push(id); }
+    });
+    updateStrength();
+    if (disabled.length > 0) {
+      setStat(`⚠ File besar (${(inp.length/1024).toFixed(0)}KB) — ${disabled.length} layer dinonaktifkan otomatis untuk stabilitas. Klik lagi untuk lanjut.`, 'red');
+      hideProgress();
+      return;
+    }
+  }
+
   showProgress();
-  setStat('Memproses 25 layer...', 'blue');
+  setStat('Memproses ' + (isLarge ? '(mode file besar) ' : '') + '25 layer...', 'blue');
 
   setTimeout(() => {
     try {
@@ -1011,33 +1046,34 @@ function run() {
       // Execute layers in optimal order
       if (l('l-compact'))     c = doCompact(c);
       if (l('l-fnalias'))     c = doFnAlias(c);
-      if (l('l-arr'))         c = doArrTable(c);
-      if (l('l-xor'))         c = doXOR(c);
-      if (l('l-bitwise'))     c = doBitwise(c);
+      if (!isLarge && l('l-arr'))      c = doArrTable(c);
+      if (!isLarge && l('l-xor'))      c = doXOR(c);
+      if (!isLarge && l('l-bitwise'))  c = doBitwise(c);
+      else if (isLarge && l('l-bitwise')) c = doBitwise(c); // bitwise is OK for large
       if (l('l-vars'))        c = doRenameVars(c);
-      if (l('l-strcat'))      c = doSplitStr(c);
-      if (l('l-chr'))         c = doChrEnc(c);
+      if (!isLarge && l('l-strcat'))   c = doSplitStr(c);
+      if (!isLarge && l('l-chr'))      c = doChrEnc(c);
       if (l('l-strenc'))      c = doEncStrings(c);
       if (l('l-numenc'))      c = doEncNums(c);
       if (l('l-selfref'))     c = doSelfRef(c);
       if (l('l-varvar'))      c = doVarVar(c);
       if (l('l-trinary'))     c = doTrinary(c);
-      if (l('l-strarray'))    c = doStrArray(c);
+      if (!isLarge && l('l-strarray')) c = doStrArray(c);
+      else if (isLarge && l('l-strarray')) c = doStrArray(c);
       if (l('l-const'))       c = doConstObf(c);
       if (l('l-antidebug'))   c = doAntiDebug(c);
       if (l('l-polydec'))     c = doPolyDec(c);
-      if (l('l-multilayer'))  c = doMultiLayer(c);
-      if (l('l-customalpha')) c = doCustomAlpha(c);
-      if (l('l-flow') && l('l-dead')) c = doScramble(c);
-      else if (l('l-dead')) {
+      if (!isLarge && l('l-multilayer')) c = doMultiLayer(c);
+      if (!isLarge && l('l-customalpha')) c = doCustomAlpha(c);
+      if (!isLarge && l('l-flow') && l('l-dead')) c = doScramble(c);
+      else if (!isLarge && l('l-dead')) {
         const ls = c.split('\n'); const rs = [];
         for (const line of ls) { rs.push(line); if (Math.random() < 0.25) rs.push(makeDead()); }
         c = rs.join('\n');
       }
       if (l('l-junkfn'))      c = doJunkFns(c);
       if (l('l-fakeclass'))   c = doFakeClass(c);
-      // heredoc only without eval (would break base64)
-      if (!l('l-eval') && l('l-heredoc')) c = doHeredoc(c);
+      if (!l('l-eval') && !isLarge && l('l-heredoc')) c = doHeredoc(c);
       if (l('l-eval'))        c = doEvalWrap(c);
 
       document.getElementById('out').value = c;
@@ -1046,8 +1082,8 @@ function run() {
       const ratio = ((c.length / inp.length - 1) * 100).toFixed(0);
       document.getElementById('out-stat').textContent = c.length + ' karakter · ' + c.split('\n').length + ' baris';
       document.getElementById('stats').innerHTML =
-        `<span class="pill pill-green">✓ Selesai</span>` +
-        `<span class="pill pill-blue">${inp.length} → ${c.length} char (+${ratio}%)</span>` +
+        `<span class="pill pill-green">✓ Selesai${isLarge?' (mode file besar)':''}</span>` +
+        `<span class="pill pill-blue">${(inp.length/1024).toFixed(1)}KB → ${(c.length/1024).toFixed(1)}KB (+${ratio}%)</span>` +
         `<span class="pill">${act}/25 layer aktif</span>` +
         `<span class="pill">PHP 7.x/8.x valid</span>`;
     } catch (e) {
