@@ -555,13 +555,15 @@ function doRenameVars(code) {
 //  LAYER 3: Encrypt Strings
 // ═══════════════════════════════════════════════════════
 function doEncStrings(code) {
+  // phpDqEsc: escape chars dangerous inside PHP double-quoted strings
+  const phpDqEsc = s => s.replace(/\\/g,'\\\\').replace(/\$/g,'\\$').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n').replace(/\0/g,'\\0');
   return code
     .replace(/'([^'\\]*)'/g, (match, s) => {
       if (!s || s.startsWith('\\x')) return match;
       const c = r(4);
       if (c === 0) return 'base64_decode("' + b64e(s) + '")';
       if (c === 1) return '"' + hexS(s) + '"';
-      if (c === 2) return 'str_rot13("' + rot13(s) + '")';
+      if (c === 2) return 'str_rot13("' + phpDqEsc(rot13(s)) + '")';
       return 'base64_decode("' + b64e(s) + '")';
     })
     .replace(/"([^"\\]*)"/g, (match, s) => {
@@ -925,7 +927,8 @@ function doMultiLayer(code) {
 // ═══════════════════════════════════════════════════════
 function doCustomAlpha(code) {
   // Custom base-N encoding with shuffled alphabet
-  const stdAlpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  // Use only alphanumeric chars to avoid ANY escape issues inside PHP double-quoted strings
+  const stdAlpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   // Shuffle
   const arr = stdAlpha.split('');
   for (let i = arr.length - 1; i > 0; i--) {
@@ -934,28 +937,44 @@ function doCustomAlpha(code) {
   }
   const customAlpha = arr.join('');
 
-  const encoderName = R(10 + r(4));
+  // Safe escaper for PHP double-quoted string context
+  // Escapes: \, $, ", newline, carriage return, null byte
+  const phpDqEsc = s => s
+    .replace(/\\/g, '\\\\')
+    .replace(/\$/g, '\\$')
+    .replace(/"/g, '\\"')
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')
+    .replace(/\0/g, '\\0');
+
   const decoderName = R(10 + r(4));
 
-  // PHP decoder: translates custom-alpha base64 back to standard, then decodes
+  // Use base64_decode on the encoded string to avoid any special char in output
+  // Decoder: translate custom-alpha -> std alpha chars, then base64_decode
   const decoderFn =
     `function ${decoderName}($s){` +
-    `$t=strtr($s,"${customAlpha.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"')}","${stdAlpha.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"')}");` +
-    `return base64_decode($t);}`;
+    `$f="${phpDqEsc(customAlpha)}";` +
+    `$t="${phpDqEsc(stdAlpha)}";` +
+    `$o='';$l=strlen($s);` +
+    `for($i=0;$i<$l;$i++){$p=strpos($f,$s[$i]);$o.=($p!==false)?$t[$p]:$s[$i];}` +
+    `return base64_decode($o);}`;
 
-  // Encode a few strings with the custom alphabet
+  // Encode only using the alphanumeric alphabet (base62 safe base64 subset)
+  // Use standard base64, then remap only the alphanumeric chars (skip +/= which we dropped)
   let count = 0;
   const res = code.replace(/'([^'\\]{4,25})'/g, (match, s) => {
     if (count > 5) return match;
-    count++;
-    // standard base64 -> remap with custom alpha
+    // Only encode strings that produce safe base64 (alphanumeric only output after remap)
     let b64 = b64e(s);
+    // Skip if b64 contains +/= chars we removed from alphabet
+    if (/[^A-Za-z0-9]/.test(b64)) return match;
+    count++;
     let custom = '';
     for (const ch of b64) {
       const idx = stdAlpha.indexOf(ch);
       custom += idx >= 0 ? customAlpha[idx] : ch;
     }
-    return `${decoderName}("${custom}")`;
+    return `${decoderName}("${phpDqEsc(custom)}")`;
   });
 
   if (count === 0) return code;
