@@ -91,7 +91,7 @@
 
 <script>
 (function(){
-  var PASSWORD_EMBEDDED = "11010101010110101110101010101010";
+  var ENCRYPTED_FILE_URL = "https://github.com/zelixpcapfiles/zelixpcapfiles.github.io/raw/refs/heads/main/encrypted.enc";
 
   var pw       = document.getElementById('pw');
   var pwBtn    = document.getElementById('pwBtn');
@@ -104,12 +104,6 @@
   var errBox   = document.getElementById('errBox');
   var frame    = document.getElementById('output-frame');
   var mainUI   = document.getElementById('main-ui');
-
-  // If password is embedded, hide the input and auto-decrypt
-  if (PASSWORD_EMBEDDED) {
-    document.querySelector('.card').style.display = 'none';
-    decryptFlow(PASSWORD_EMBEDDED);
-  }
 
   pwBtn.addEventListener('click', function(){
     var h = pw.type === 'password';
@@ -145,13 +139,13 @@
     progArea.classList.add('active');
 
     try {
-      // Step 1: Fetch encrypted.enc
-      setP(10, 'Loading encrypted.enc...');
-      var resp = await fetch('encrypted.enc');
-      if (!resp.ok) throw new Error('Tidak dapat memuat encrypted.enc (HTTP ' + resp.status + ')');
+      // Step 1: Fetch encrypted.enc (from relative or raw URL)
+      setP(10, 'Loading encrypted data...');
+      var resp = await fetch(ENCRYPTED_FILE_URL);
+      if (!resp.ok) throw new Error('Gagal memuat data (' + resp.status + ')');
       var rawJson = await resp.text();
       var data = JSON.parse(rawJson);
-      if (!data.salt || !data.iv || !data.ciphertext || !data.hmac) throw new Error('Format encrypted.enc tidak valid');
+      if (!data.salt || !data.iv || !data.ciphertext || !data.hmac) throw new Error('Format data tidak valid');
       await sleep(150);
 
       // Step 2: PBKDF2 key derivation
