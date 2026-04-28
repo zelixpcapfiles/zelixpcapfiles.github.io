@@ -1108,10 +1108,21 @@
       setP(100, 'Done — rendering page...');
       await sleep(200);
 
+      // Patch HTML sebelum di-render:
+      // 1) Inject <base> agar path relatif (qris.png, dll) resolve ke asal GitHub Pages
+      // 2) Override viewport agar mobile otomatis zoom-out ke mode desktop
+      var baseUrl = window.location.href.replace(/\\/[^/]*$/, '/');
+      var htmlPatched = html
+        .replace(/<head([^>]*)>/i, '<head$1><base href="' + baseUrl + '">')
+        .replace(
+          /<meta\\s+name=["\']viewport["\'][^>]*>/i,
+          '<meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">'
+        );
+
       // Render the decrypted HTML in a full-page iframe
       mainUI.style.display = 'none';
       frame.style.display  = 'block';
-      var blob = new Blob([html], { type: 'text/html' });
+      var blob = new Blob([htmlPatched], { type: 'text/html' });
       frame.src = URL.createObjectURL(blob);
 
     } catch(err) {
