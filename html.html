@@ -947,7 +947,7 @@
     .prog-fill{height:100%;background:var(--accent);width:0%;transition:width .3s;box-shadow:0 0 8px rgba(0,255,136,.5)}
     .err{margin-top:14px;padding:12px 16px;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.25);border-radius:4px;font-family:var(--mono,monospace);font-size:11px;color:#ff6666;display:none}
     .err.show{display:block}
-    #output-frame{display:none;position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:#fff}
+    #output-frame{display:none;position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:transparent}
     @media screen and (max-width:768px){
       .wrap{transform:scale(2.2);transform-origin:top center;margin-top:60px}
     }
@@ -1114,9 +1114,7 @@
       setP(100, 'Done — rendering page...');
       await sleep(200);
 
-      // Patch HTML sebelum di-render:
-      // 1) Inject <base> agar path relatif (qris.png, dll) resolve ke asal GitHub Pages
-      // 2) Override viewport agar mobile otomatis zoom-out ke mode desktop
+      // === LAYER 1: Patch base URL + viewport ===
       var baseUrl = window.location.href.replace(/\\/[^/]*$/, '/');
       var htmlPatched = html
         .replace(/<head([^>]*)>/i, '<head$1><base href="' + baseUrl + '">')
@@ -1125,11 +1123,62 @@
           '<meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">'
         );
 
-      // Render the decrypted HTML in a full-page iframe
+      // === LAYER 2: XOR obfuscate source sebelum masuk ke iframe ===
+      // Ini menyebabkan source yang terlihat di DevTools adalah garbled XOR bytes,
+      // bukan plain HTML. Key di-derive dari timestamp + random agar beda tiap session.
+      var xorKey = [];
+      var _ks = (Date.now() ^ 0xDEAD) + Math.floor(Math.random() * 0xFFFF);
+      for (var _ki = 0; _ki < 64; _ki++) {
+        _ks = (_ks * 1664525 + 1013904223) & 0xFFFFFFFF;
+        xorKey.push(_ks & 0xFF);
+      }
+      var enc8 = new TextEncoder().encode(htmlPatched);
+      var xorBuf = new Uint8Array(enc8.length);
+      for (var _xi = 0; _xi < enc8.length; _xi++) {
+        xorBuf[_xi] = enc8[_xi] ^ xorKey[_xi % xorKey.length];
+      }
+
+      // === LAYER 3: Split jadi N chunks acak ===
+      // Source tidak terlihat utuh di DevTools — tiap chunk hanya potongan XOR bytes
+      var CHUNK_COUNT = 7 + Math.floor(Math.random() * 5); // 7–11 chunks
+      var chunks = [];
+      var chunkSize = Math.ceil(xorBuf.length / CHUNK_COUNT);
+      for (var _ci = 0; _ci < CHUNK_COUNT; _ci++) {
+        chunks.push(Array.from(xorBuf.slice(_ci * chunkSize, (_ci + 1) * chunkSize)));
+      }
+
+      // === LAYER 4: Render via srcdoc + inline assembler script ===
+      // Tidak ada blob URL → tidak muncul sebagai file di Sources tab.
+      // Assembler script di srcdoc me-reassemble chunks + XOR decode di iframe context.
+      var keyJson   = JSON.stringify(xorKey);
+      var chunksJson = JSON.stringify(chunks);
+
+      var assemblerScript = [
+        '(function(){',
+        'var k=' + keyJson + ';',
+        'var ch=' + chunksJson + ';',
+        'var out=[];',
+        'for(var i=0;i<ch.length;i++){',
+        '  for(var j=0;j<ch[i].length;j++){',
+        '    out.push(ch[i][j]^k[(i*ch[0].length+j)%k.length]);',
+        '  }',
+        '}',
+        'var decoded=new TextDecoder().decode(new Uint8Array(out));',
+        'document.open();document.write(decoded);document.close();',
+        '})();'
+      ].join('\\n');
+
+      var srcdocHtml = [
+        '<!DOCTYPE html><html><head>',
+        '<meta name="viewport" content="width=1280,initial-scale=0.35,minimum-scale=0.1,maximum-scale=5.0,user-scalable=yes">',
+        '</head><body>',
+        '<script>' + assemblerScript + '<\\/script>',
+        '</body></html>'
+      ].join('');
+
       mainUI.style.display = 'none';
       frame.style.display  = 'block';
-      var blob = new Blob([htmlPatched], { type: 'text/html' });
-      frame.src = URL.createObjectURL(blob);
+      frame.srcdoc = srcdocHtml;
 
     } catch(err) {
       setP(0, '');
