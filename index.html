@@ -5,52 +5,435 @@
   <meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
   <title>Loader — Decrypting...</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#060608;--surface:#0e0e12;--surface2:#13131a;--border:#1e1e2e;--border2:#2a2a3e;--accent:#00ff88;--accent2:#00cc6a;--accent-dim:rgba(0,255,136,0.07);--text:#eeeef2;--text2:#7a7a9a;--text3:#44445a;--mono:'Space Mono',monospace;--sans:'Syne',sans-serif}
-    body{background:var(--bg);color:var(--text);font-family:var(--sans,sans-serif);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
-    body::after{content:'';position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:700px;background:radial-gradient(ellipse,rgba(0,255,136,0.08) 0%,rgba(0,180,80,0.03) 40%,transparent 70%);pointer-events:none;z-index:0}
-    .wrap{position:relative;z-index:1;width:100%;max-width:420px;padding:40px 24px}
-    .icon-wrap{text-align:center;margin-bottom:32px;position:relative}
-    .icon-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90px;height:90px;border:1px solid rgba(0,255,136,0.2);border-radius:50%;animation:ring-pulse 3s ease-in-out infinite}
-    .icon-ring:nth-child(2){width:110px;height:110px;border-color:rgba(0,255,136,0.08);animation-delay:0.6s}
-    @keyframes ring-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.08);opacity:0.4}}
-    .lock-svg{display:inline-block;animation:bob 3.5s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(0,255,136,0.5));position:relative;z-index:1}
-    @keyframes bob{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-5px) rotate(-1deg)}70%{transform:translateY(-2px) rotate(1deg)}}
-    h1{font-family:var(--sans,sans-serif);font-weight:800;font-size:28px;text-align:center;margin-bottom:6px;letter-spacing:-0.5px;line-height:1}
-    h1 span{color:var(--accent);text-shadow:0 0 24px rgba(0,255,136,0.4)}
-    .sub{font-family:var(--mono,monospace);font-size:10px;color:var(--text3);text-align:center;letter-spacing:.15em;text-transform:uppercase;margin-bottom:32px}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px 28px;margin-bottom:12px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
-    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,var(--accent) 50%,transparent 100%);opacity:0;transition:opacity .4s}
-    .card:focus-within::before{opacity:1}
-    .card:focus-within{border-color:rgba(0,255,136,0.2);box-shadow:0 0 30px rgba(0,255,136,0.05)}
-    .lbl{font-family:var(--mono,monospace);font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    :root{
+      --bg:#030305;--surface:#0a0a0f;--surface2:#0f0f16;--surface3:#14141e;
+      --border:#1a1a2a;--border2:#252538;
+      --accent:#00ff88;--accent2:#00cc6a;--accent3:#00ffaa;
+      --accent-dim:rgba(0,255,136,0.06);--accent-glow:rgba(0,255,136,0.3);
+      --text:#eeeef5;--text2:#8888aa;--text3:#3a3a55;
+      --red:#ff4466;--amber:#ffaa00;
+      --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+    }
+
+    /* ═══ FX 1: Deep space background with animated nebula ═══ */
+    html{height:100%}
+    body{
+      background:var(--bg);color:var(--text);font-family:var(--sans,sans-serif);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      overflow-x:hidden;perspective:1000px;
+    }
+
+    /* FX 2: Animated grid with depth fade */
+    .bg-grid{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:
+        linear-gradient(rgba(0,255,136,.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,255,136,.018) 1px,transparent 1px);
+      background-size:48px 48px;
+      mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%);
+      animation:grid-breathe 8s ease-in-out infinite;
+    }
+    @keyframes grid-breathe{
+      0%,100%{background-size:48px 48px;opacity:1}
+      50%{background-size:52px 52px;opacity:0.6}
+    }
+
+    /* FX 3: Scanning beam across grid */
+    .bg-scan{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:linear-gradient(0deg,transparent 0%,rgba(0,255,136,0.04) 50%,transparent 100%);
+      background-size:100% 200px;
+      animation:scan-down 6s linear infinite;
+    }
+    @keyframes scan-down{
+      0%{background-position:0 -200px}
+      100%{background-position:0 100vh}
+    }
+
+    /* FX 4: Radial aurora glow */
+    .bg-aurora{
+      position:fixed;top:-40%;left:50%;transform:translateX(-50%);z-index:0;pointer-events:none;
+      width:120vw;height:80vh;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,255,136,0.055) 0%,transparent 60%),
+        radial-gradient(ellipse 30% 20% at 30% 60%,rgba(0,200,255,0.02) 0%,transparent 60%),
+        radial-gradient(ellipse 30% 20% at 70% 40%,rgba(100,0,255,0.02) 0%,transparent 60%);
+      animation:aurora-shift 12s ease-in-out infinite alternate;
+    }
+    @keyframes aurora-shift{
+      0%{transform:translateX(-50%) scaleX(1) scaleY(1)}
+      50%{transform:translateX(-48%) scaleX(1.1) scaleY(0.9)}
+      100%{transform:translateX(-52%) scaleX(0.9) scaleY(1.1)}
+    }
+
+    /* FX 5: Floating particles */
+    .particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .p{
+      position:absolute;width:2px;height:2px;border-radius:50%;
+      background:var(--accent);opacity:0;
+      animation:float-up var(--dur,8s) var(--delay,0s) ease-in infinite;
+    }
+    @keyframes float-up{
+      0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0}
+      10%{opacity:var(--op,.4)}
+      90%{opacity:var(--op,.4)}
+      100%{transform:translateY(-10vh) translateX(var(--dx,20px)) scale(1.5);opacity:0}
+    }
+
+    /* ═══ MAIN WRAP ═══ */
+    .wrap{
+      position:relative;z-index:1;width:100%;max-width:440px;padding:40px 24px;
+      transform-style:preserve-3d;
+    }
+
+    /* FX 6: 3D hero icon scene */
+    .icon-scene{
+      text-align:center;margin-bottom:36px;position:relative;height:120px;
+      transform-style:preserve-3d;perspective:400px;
+    }
+
+    /* FX 7: Orbiting rings (CSS 3D) */
+    .orbit-container{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-55%);
+      width:100px;height:100px;
+      transform-style:preserve-3d;
+      animation:orbit-tilt 10s linear infinite;
+    }
+    @keyframes orbit-tilt{
+      0%{transform:translate(-50%,-55%) rotateX(65deg) rotateZ(0deg)}
+      100%{transform:translate(-50%,-55%) rotateX(65deg) rotateZ(360deg)}
+    }
+    .orbit-ring{
+      position:absolute;inset:0;border-radius:50%;
+      border:1.5px solid rgba(0,255,136,0.35);
+      box-shadow:0 0 10px rgba(0,255,136,0.2),inset 0 0 10px rgba(0,255,136,0.05);
+    }
+    .orbit-ring:nth-child(2){
+      inset:-16px;border-color:rgba(0,255,136,0.15);
+      animation:counter-spin 7s linear infinite;
+    }
+    .orbit-ring:nth-child(3){
+      inset:-30px;border-color:rgba(0,200,255,0.1);
+      animation:counter-spin 15s linear infinite reverse;
+    }
+    @keyframes counter-spin{
+      0%{transform:rotateZ(0deg)}
+      100%{transform:rotateZ(360deg)}
+    }
+
+    /* FX 8: 3D rotating lock icon */
+    .lock-3d{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-55%);
+      z-index:2;
+      animation:lock-3d-float 4s ease-in-out infinite;
+      filter:drop-shadow(0 0 20px rgba(0,255,136,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+    }
+    @keyframes lock-3d-float{
+      0%,100%{transform:translate(-50%,-55%) translateY(0) rotateY(0deg) rotateX(5deg)}
+      25%{transform:translate(-50%,-55%) translateY(-6px) rotateY(10deg) rotateX(8deg)}
+      50%{transform:translate(-50%,-55%) translateY(-8px) rotateY(0deg) rotateX(5deg)}
+      75%{transform:translate(-50%,-55%) translateY(-4px) rotateY(-10deg) rotateX(2deg)}
+    }
+
+    /* FX 9: Pulsing glow halo */
+    .halo{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-55%);
+      width:70px;height:70px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,255,136,0.2) 0%,transparent 70%);
+      animation:halo-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes halo-pulse{
+      0%,100%{transform:translate(-50%,-55%) scale(1);opacity:0.6}
+      50%{transform:translate(-50%,-55%) scale(2.2);opacity:0}
+    }
+
+    /* FX 10: Title with glitch effect */
+    h1{
+      font-family:var(--sans,sans-serif);font-weight:800;font-size:30px;
+      text-align:center;margin-bottom:6px;letter-spacing:-0.5px;line-height:1;
+      position:relative;
+    }
+    h1 span{
+      color:var(--accent);
+      text-shadow:0 0 30px rgba(0,255,136,0.5),0 0 60px rgba(0,255,136,0.2);
+      animation:glitch-text 6s ease-in-out infinite;
+      display:inline-block;
+    }
+    @keyframes glitch-text{
+      0%,92%,100%{transform:translateX(0);text-shadow:0 0 30px rgba(0,255,136,0.5)}
+      93%{transform:translateX(-2px);text-shadow:-2px 0 #ff0066,2px 0 #00ffff}
+      94%{transform:translateX(2px);text-shadow:2px 0 #ff0066,-2px 0 #00ffff}
+      95%{transform:translateX(-1px);text-shadow:-1px 0 rgba(0,255,136,0.8)}
+      96%{transform:translateX(0)}
+    }
+
+    .sub{
+      font-family:var(--mono,monospace);font-size:10px;color:var(--text3);
+      text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-bottom:32px;
+      animation:sub-fade 3s ease-in-out infinite alternate;
+    }
+    @keyframes sub-fade{
+      0%{color:var(--text3);letter-spacing:.18em}
+      100%{color:rgba(0,255,136,0.3);letter-spacing:.22em}
+    }
+
+    /* FX 11: 3D card with perspective tilt */
+    .card{
+      background:
+        linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 50%),
+        var(--surface);
+      border:1px solid var(--border);border-radius:10px;
+      padding:24px 28px;margin-bottom:14px;
+      position:relative;overflow:hidden;
+      transition:border-color .3s,box-shadow .3s,transform .3s;
+      transform-style:preserve-3d;
+      box-shadow:0 4px 24px rgba(0,0,0,0.4),0 1px 0 rgba(255,255,255,0.03) inset;
+    }
+    .card:hover{
+      transform:translateY(-2px) rotateX(1deg);
+      box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 20px rgba(0,255,136,0.04);
+    }
+
+    /* FX 12: Top edge shimmer on focus */
+    .card::before{
+      content:'';position:absolute;top:0;left:-100%;right:-100%;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(0,255,136,0.6),rgba(0,200,255,0.4),transparent);
+      opacity:0;transition:opacity .4s;
+      animation:shimmer-idle 4s ease-in-out infinite;
+    }
+    .card:focus-within::before{opacity:1;animation:shimmer-scan 1.5s linear infinite}
+    @keyframes shimmer-idle{
+      0%,100%{opacity:0}50%{opacity:0.15}
+    }
+    @keyframes shimmer-scan{
+      0%{left:-100%;right:100%}
+      100%{left:100%;right:-100%}
+    }
+
+    /* FX 13: Inner glow on focus */
+    .card:focus-within{
+      border-color:rgba(0,255,136,0.25);
+      box-shadow:0 0 0 1px rgba(0,255,136,0.05),0 0 40px rgba(0,255,136,0.06),0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    /* FX 14: Corner accent marks */
+    .card::after{
+      content:'';position:absolute;bottom:0;right:0;
+      width:40px;height:40px;
+      background:
+        linear-gradient(135deg,transparent 50%,rgba(0,255,136,0.06) 50%);
+      border-radius:0 0 10px 0;
+    }
+
+    .lbl{
+      font-family:var(--mono,monospace);font-size:9px;text-transform:uppercase;
+      letter-spacing:.22em;color:var(--text3);margin-bottom:14px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .lbl::before{content:'//';color:var(--accent);opacity:0.5;font-size:8px}
     .lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
+
+    /* ── Password ── */
     .pw-wrap{position:relative}
-    .pw-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:13px 46px 13px 14px;font-family:var(--mono,monospace);font-size:14px;color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s;letter-spacing:.08em}
+    .pw-input{
+      width:100%;background:var(--surface2);
+      border:1px solid var(--border2);border-radius:7px;
+      padding:14px 48px 14px 16px;
+      font-family:var(--mono,monospace);font-size:14px;color:var(--text);
+      outline:none;transition:border-color .25s,box-shadow .25s,background .25s;
+      letter-spacing:.08em;
+    }
     .pw-input::placeholder{color:var(--text3)}
-    .pw-input:focus{border-color:rgba(0,255,136,0.5);box-shadow:0 0 0 3px rgba(0,255,136,0.06),0 0 20px rgba(0,255,136,0.05)}
-    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;transition:color .2s}
-    .pw-toggle:hover{color:var(--accent)}
-    .btn{width:100%;padding:15px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:var(--sans,sans-serif);font-weight:700;font-size:13px;letter-spacing:.1em;cursor:pointer;transition:all .25s cubic-bezier(0.4,0,0.2,1);text-transform:uppercase;position:relative;overflow:hidden;margin-top:8px;box-shadow:0 0 24px rgba(0,255,136,0.2),0 4px 16px rgba(0,0,0,0.4)}
-    .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15) 0%,transparent 60%);transform:translateX(-100%) skewX(-15deg);transition:transform .5s cubic-bezier(0.4,0,0.2,1)}
-    .btn:hover::before{transform:translateX(100%) skewX(-15deg)}
-    .btn:hover{background:#1aff99;box-shadow:0 0 40px rgba(0,255,136,0.4),0 6px 24px rgba(0,0,0,0.4);transform:translateY(-1px)}
-    .btn:active{transform:scale(0.98)}
-    .btn:disabled{background:var(--surface2);color:var(--text3);cursor:not-allowed;box-shadow:none}
-    .prog-area{display:none;margin-top:16px;padding:18px;background:var(--surface2);border:1px solid var(--border);border-radius:8px}
-    .prog-area.active{display:block;animation:fade-in 0.3s ease}
-    @keyframes fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    .prog-header{display:flex;justify-content:space-between;margin-bottom:8px}
-    .prog-status{font-family:var(--mono,monospace);font-size:10px;color:var(--text2);letter-spacing:.05em}
-    .prog-pct{font-family:var(--mono,monospace);font-size:10px;color:var(--accent);font-weight:700;text-shadow:0 0 10px rgba(0,255,136,0.5)}
-    .prog-track{height:5px;background:var(--surface);border-radius:3px;overflow:hidden;position:relative}
-    .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%;transition:width .35s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 12px rgba(0,255,136,0.6),0 0 4px rgba(0,255,136,0.9);border-radius:3px;position:relative}
-    .prog-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:7px;height:7px;background:white;border-radius:50%;box-shadow:0 0 8px rgba(0,255,136,1);opacity:0.8}
-    .err{margin-top:14px;padding:12px 16px;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.2);border-radius:6px;font-family:var(--mono,monospace);font-size:11px;color:#ff7090;display:none;animation:fade-in 0.3s ease}
-    .err.show{display:block}
-    #output-frame{display:none;position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:transparent}
+    .pw-input:focus{
+      border-color:rgba(0,255,136,0.45);background:var(--surface3);
+      box-shadow:0 0 0 3px rgba(0,255,136,0.06),0 0 24px rgba(0,255,136,0.05);
+    }
+    .pw-toggle{
+      position:absolute;right:13px;top:50%;transform:translateY(-50%);
+      background:none;border:none;cursor:pointer;color:var(--text3);
+      padding:4px;transition:color .2s,transform .2s;
+    }
+    .pw-toggle:hover{color:var(--accent);transform:translateY(-50%) scale(1.1)}
+
+    /* FX 15: Neon glow button with 3D press */
+    .btn{
+      width:100%;padding:16px;
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent3) 100%);
+      color:#000;border:none;border-radius:8px;
+      font-family:var(--sans,sans-serif);font-weight:700;font-size:13px;
+      letter-spacing:.12em;cursor:pointer;
+      transition:all .2s cubic-bezier(0.4,0,0.2,1);
+      text-transform:uppercase;position:relative;overflow:hidden;margin-top:8px;
+      box-shadow:
+        0 0 30px rgba(0,255,136,0.25),
+        0 4px 0 rgba(0,100,50,0.8),
+        0 6px 20px rgba(0,0,0,0.4);
+      transform:translateY(0);
+    }
+
+    /* FX 16: Liquid fill sweep on hover */
+    .btn::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 50%);
+      transform:translateX(-100%) skewX(-15deg);
+      transition:transform .6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn:hover::before{transform:translateX(110%) skewX(-15deg)}
+
+    /* FX 17: Ripple effect layer */
+    .btn::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.15) 0%,transparent 60%);
+      opacity:0;transition:opacity .3s;
+    }
+    .btn:hover::after{opacity:1}
+    .btn:hover{
+      background:linear-gradient(135deg,#1aff99 0%,#00ffcc 100%);
+      box-shadow:0 0 50px rgba(0,255,136,0.5),0 2px 0 rgba(0,100,50,0.8),0 8px 28px rgba(0,0,0,0.4);
+      transform:translateY(-2px);
+    }
+    .btn:active{
+      transform:translateY(2px);
+      box-shadow:0 0 20px rgba(0,255,136,0.2),0 0px 0 rgba(0,100,50,0.8),0 2px 10px rgba(0,0,0,0.4);
+    }
+    .btn:disabled{
+      background:var(--surface3);color:var(--text3);
+      cursor:not-allowed;box-shadow:none;transform:none;
+    }
+    .btn:disabled::before,.btn:disabled::after{display:none}
+
+    /* FX 18: Multi-layer progress bar */
+    .prog-area{
+      display:none;margin-top:16px;padding:20px;
+      background:
+        linear-gradient(135deg,rgba(0,255,136,0.02) 0%,transparent 50%),
+        var(--surface2);
+      border:1px solid var(--border);border-radius:10px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .prog-area.active{display:block;animation:slide-up .35s cubic-bezier(0.4,0,0.2,1)}
+    @keyframes slide-up{
+      from{opacity:0;transform:translateY(10px) scale(0.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+    .prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .prog-status{
+      font-family:var(--mono,monospace);font-size:10px;color:var(--text2);
+      letter-spacing:.06em;
+    }
+    .prog-pct{
+      font-family:var(--mono,monospace);font-size:11px;color:var(--accent);
+      font-weight:700;text-shadow:0 0 12px rgba(0,255,136,0.6);
+      animation:pct-glow 1s ease-in-out infinite alternate;
+    }
+    @keyframes pct-glow{
+      from{text-shadow:0 0 8px rgba(0,255,136,0.4)}
+      to{text-shadow:0 0 20px rgba(0,255,136,0.9),0 0 40px rgba(0,255,136,0.3)}
+    }
+
+    /* FX 19: Segmented 3D progress track */
+    .prog-track{
+      height:8px;background:var(--surface);border-radius:4px;
+      overflow:hidden;position:relative;
+      box-shadow:inset 0 2px 4px rgba(0,0,0,0.5),0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    /* FX 20: Plasma fill with animated shimmer */
+    .prog-fill{
+      height:100%;width:0%;border-radius:4px;
+      background:linear-gradient(90deg,
+        rgba(0,180,80,0.9) 0%,
+        rgba(0,255,136,1) 50%,
+        rgba(0,255,180,0.9) 100%
+      );
+      background-size:200% 100%;
+      transition:width .4s cubic-bezier(0.4,0,0.2,1);
+      box-shadow:0 0 14px rgba(0,255,136,0.8),0 0 4px rgba(0,255,136,1);
+      position:relative;
+      animation:plasma-shift 2s linear infinite;
+    }
+    @keyframes plasma-shift{
+      0%{background-position:0% 50%}
+      100%{background-position:200% 50%}
+    }
+
+    /* FX 21: Bright spark at progress tip */
+    .prog-fill::after{
+      content:'';position:absolute;right:-2px;top:50%;
+      transform:translateY(-50%);
+      width:10px;height:10px;
+      background:white;border-radius:50%;
+      box-shadow:0 0 10px #fff,0 0 20px rgba(0,255,136,1),0 0 30px rgba(0,255,136,0.6);
+      opacity:0.9;
+      animation:spark-pulse 0.6s ease-in-out infinite alternate;
+    }
+    @keyframes spark-pulse{
+      from{transform:translateY(-50%) scale(0.8);opacity:0.7}
+      to{transform:translateY(-50%) scale(1.3);opacity:1}
+    }
+
+    /* FX 22: Segment tick marks on track */
+    .prog-ticks{
+      display:flex;margin-top:6px;gap:0;
+    }
+    .prog-tick{
+      flex:1;height:3px;border-radius:1px;
+      background:var(--surface3);margin:0 1px;
+      transition:background .4s,box-shadow .4s;
+    }
+    .prog-tick.lit{
+      background:rgba(0,255,136,0.5);
+      box-shadow:0 0 4px rgba(0,255,136,0.4);
+    }
+
+    /* FX 23: Error box with shake animation */
+    .err{
+      margin-top:14px;padding:14px 18px;
+      background:
+        linear-gradient(135deg,rgba(255,68,68,0.05) 0%,transparent 50%),
+        rgba(255,68,68,0.04);
+      border:1px solid rgba(255,68,68,.2);border-radius:8px;
+      font-family:var(--mono,monospace);font-size:11px;color:#ff7090;
+      display:none;
+      box-shadow:0 0 20px rgba(255,68,68,0.06);
+    }
+    .err.show{display:block;animation:err-shake .4s cubic-bezier(.36,.07,.19,.97)}
+    @keyframes err-shake{
+      10%,90%{transform:translateX(-2px)}
+      20%,80%{transform:translateX(3px)}
+      30%,50%,70%{transform:translateX(-3px)}
+      40%,60%{transform:translateX(3px)}
+    }
+
+    /* FX 24: Data stream ticker */
+    .data-stream{
+      margin-top:12px;overflow:hidden;height:16px;
+      opacity:0;transition:opacity .3s;
+    }
+    .prog-area.active .data-stream{opacity:1}
+    .data-stream-inner{
+      font-family:var(--mono,monospace);font-size:9px;color:rgba(0,255,136,0.25);
+      letter-spacing:.05em;white-space:nowrap;
+      animation:stream-scroll 8s linear infinite;
+    }
+    @keyframes stream-scroll{
+      0%{transform:translateX(100%)}
+      100%{transform:translateX(-100%)}
+    }
+
+    /* iframe */
+    #output-frame{
+      display:none;position:fixed;inset:0;width:100%;height:100%;
+      border:none;z-index:9999;background:transparent;
+    }
+
+    /* Responsive scaling */
     @media screen and (max-width:768px){
       .wrap{transform:scale(2.2);transform-origin:top center;margin-top:60px}
     }
@@ -58,23 +441,48 @@
       .wrap{transform:scale(2.6);transform-origin:top center;margin-top:80px}
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<!-- FX background layers -->
+<div class="bg-grid"></div>
+<div class="bg-scan"></div>
+<div class="bg-aurora"></div>
+<div class="particles" id="particles"></div>
 
 <iframe id="output-frame"></iframe>
 
 <div class="wrap" id="main-ui">
-  <div class="icon-wrap">
-    <div class="icon-ring"></div>
-    <div class="icon-ring"></div>
-    <svg class="lock-svg" width="52" height="52" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="8" y="18" width="24" height="18" rx="3" fill="#00ff88" fill-opacity="0.12" stroke="#00ff88" stroke-width="1.5"/>
+
+  <!-- FX: 3D Icon scene -->
+  <div class="icon-scene">
+    <div class="halo"></div>
+    <div class="orbit-container">
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring"></div>
+    </div>
+    <svg class="lock-3d" width="56" height="56" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow-lock">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="lock-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#00ffaa"/>
+          <stop offset="100%" stop-color="#00cc6a"/>
+        </linearGradient>
+      </defs>
+      <rect x="8" y="18" width="24" height="18" rx="3"
+        fill="url(#lock-grad)" fill-opacity="0.15"
+        stroke="url(#lock-grad)" stroke-width="1.5"
+        filter="url(#glow-lock)"/>
       <path d="M13 18V13a7 7 0 0114 0v5" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="20" cy="27" r="2.5" fill="#00ff88"/>
+      <circle cx="20" cy="27" r="2.5" fill="#00ffaa"/>
       <line x1="20" y1="29.5" x2="20" y2="32" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
   </div>
+
   <h1>Membuka <span>Kunci</span></h1>
   <p class="sub">AES-256-CBC · PBKDF2 · HMAC-SHA256</p>
 
@@ -100,6 +508,12 @@
     <div class="prog-track">
       <div class="prog-fill" id="progFill"></div>
     </div>
+    <div class="prog-ticks" id="progTicks"></div>
+    <div class="data-stream">
+      <div class="data-stream-inner" id="dataStream">
+        AES-256-CBC :: PBKDF2-SHA512 :: HMAC-SHA256 :: XOR-OBFUSCATION :: CHUNK-ASSEMBLY :: RENDER-ENGINE :: SECURE-CONTEXT ::
+      </div>
+    </div>
   </div>
 
   <div class="err" id="errBox"></div>
@@ -107,7 +521,37 @@
 
 <script>
 (function(){
-  var PASSWORD_EMBEDDED = "10101010101010110101011010101";
+  // Init particles
+  var pc = document.getElementById('particles');
+  for(var i=0;i<25;i++){
+    var p=document.createElement('div');
+    p.className='p';
+    p.style.cssText=[
+      'left:'+Math.random()*100+'%',
+      '--dur:'+(6+Math.random()*10)+'s',
+      '--delay:'+(Math.random()*8)+'s',
+      '--op:'+(0.15+Math.random()*0.4),
+      '--dx:'+(Math.random()*80-40)+'px',
+      'width:'+(1+Math.random()*2)+'px',
+      'height:'+(1+Math.random()*2)+'px',
+    ].join(';');
+    pc.appendChild(p);
+  }
+
+  // Init tick marks
+  var ticks=document.getElementById('progTicks');
+  var TICK=20;
+  for(var t=0;t<TICK;t++){
+    var td=document.createElement('div');
+    td.className='prog-tick';
+    td.id='tick'+t;
+    ticks.appendChild(td);
+  }
+</script>
+
+<script>
+(function(){
+  var PASSWORD_EMBEDDED = "suka ya sama design webnya? curi aja gapapa kok";
 
   var pw       = document.getElementById('pw');
   var pwBtn    = document.getElementById('pwBtn');
@@ -120,6 +564,7 @@
   var errBox   = document.getElementById('errBox');
   var frame    = document.getElementById('output-frame');
   var mainUI   = document.getElementById('main-ui');
+  var TICK_COUNT = 20;
 
   // If password is embedded, hide the input and auto-decrypt
   if (PASSWORD_EMBEDDED) {
@@ -145,6 +590,12 @@
     progFill.style.width = pct + '%';
     progPct.textContent  = pct + '%';
     progSt.textContent   = st;
+    // update tick marks
+    var lit = Math.floor(pct / 100 * TICK_COUNT);
+    for(var i=0;i<TICK_COUNT;i++){
+      var el=document.getElementById('tick'+i);
+      if(el){ if(i<lit){el.classList.add('lit')}else{el.classList.remove('lit')} }
+    }
   }
 
   function showErr(msg){
