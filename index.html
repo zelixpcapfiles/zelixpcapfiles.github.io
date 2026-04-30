@@ -1,495 +1,147 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
-  <title>Loader — Decrypting...</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#030305;--surface:#0a0a0f;--surface2:#0f0f16;--surface3:#14141e;
-      --border:#1a1a2a;--border2:#252538;
-      --accent:#00ff88;--accent2:#00cc6a;--accent3:#00ffaa;
-      --accent-dim:rgba(0,255,136,0.06);--accent-glow:rgba(0,255,136,0.3);
-      --text:#eeeef5;--text2:#8888aa;--text3:#3a3a55;
-      --red:#ff4466;--amber:#ffaa00;
-      --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
-    }
-
-    /* ═══ FX 1: Deep space background with animated nebula ═══ */
-    html{height:100%}
-    body{
-      background:var(--bg);color:var(--text);font-family:var(--sans,sans-serif);
-      min-height:100vh;display:flex;align-items:center;justify-content:center;
-      overflow-x:hidden;perspective:1000px;
-    }
-
-    /* FX 2: Animated grid with depth fade */
-    .bg-grid{
-      position:fixed;inset:0;z-index:0;pointer-events:none;
-      background-image:
-        linear-gradient(rgba(0,255,136,.018) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(0,255,136,.018) 1px,transparent 1px);
-      background-size:48px 48px;
-      mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%);
-      animation:grid-breathe 8s ease-in-out infinite;
-    }
-    @keyframes grid-breathe{
-      0%,100%{background-size:48px 48px;opacity:1}
-      50%{background-size:52px 52px;opacity:0.6}
-    }
-
-    /* FX 3: Scanning beam across grid */
-    .bg-scan{
-      position:fixed;inset:0;z-index:0;pointer-events:none;
-      background:linear-gradient(0deg,transparent 0%,rgba(0,255,136,0.04) 50%,transparent 100%);
-      background-size:100% 200px;
-      animation:scan-down 6s linear infinite;
-    }
-    @keyframes scan-down{
-      0%{background-position:0 -200px}
-      100%{background-position:0 100vh}
-    }
-
-    /* FX 4: Radial aurora glow */
-    .bg-aurora{
-      position:fixed;top:-40%;left:50%;transform:translateX(-50%);z-index:0;pointer-events:none;
-      width:120vw;height:80vh;
-      background:
-        radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,255,136,0.055) 0%,transparent 60%),
-        radial-gradient(ellipse 30% 20% at 30% 60%,rgba(0,200,255,0.02) 0%,transparent 60%),
-        radial-gradient(ellipse 30% 20% at 70% 40%,rgba(100,0,255,0.02) 0%,transparent 60%);
-      animation:aurora-shift 12s ease-in-out infinite alternate;
-    }
-    @keyframes aurora-shift{
-      0%{transform:translateX(-50%) scaleX(1) scaleY(1)}
-      50%{transform:translateX(-48%) scaleX(1.1) scaleY(0.9)}
-      100%{transform:translateX(-52%) scaleX(0.9) scaleY(1.1)}
-    }
-
-    /* FX 5: Floating particles */
-    .particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-    .p{
-      position:absolute;width:2px;height:2px;border-radius:50%;
-      background:var(--accent);opacity:0;
-      animation:float-up var(--dur,8s) var(--delay,0s) ease-in infinite;
-    }
-    @keyframes float-up{
-      0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0}
-      10%{opacity:var(--op,.4)}
-      90%{opacity:var(--op,.4)}
-      100%{transform:translateY(-10vh) translateX(var(--dx,20px)) scale(1.5);opacity:0}
-    }
-
-    /* ═══ MAIN WRAP ═══ */
-    .wrap{
-      position:relative;z-index:1;width:100%;max-width:440px;padding:40px 24px;
-      transform-style:preserve-3d;
-    }
-
-    /* FX 6: 3D hero icon scene */
-    .icon-scene{
-      text-align:center;margin-bottom:36px;position:relative;height:120px;
-      transform-style:preserve-3d;perspective:400px;
-    }
-
-    /* FX 7: Orbiting rings (CSS 3D) */
-    .orbit-container{
-      position:absolute;top:50%;left:50%;
-      transform:translate(-50%,-55%);
-      width:100px;height:100px;
-      transform-style:preserve-3d;
-      animation:orbit-tilt 10s linear infinite;
-    }
-    @keyframes orbit-tilt{
-      0%{transform:translate(-50%,-55%) rotateX(65deg) rotateZ(0deg)}
-      100%{transform:translate(-50%,-55%) rotateX(65deg) rotateZ(360deg)}
-    }
-    .orbit-ring{
-      position:absolute;inset:0;border-radius:50%;
-      border:1.5px solid rgba(0,255,136,0.35);
-      box-shadow:0 0 10px rgba(0,255,136,0.2),inset 0 0 10px rgba(0,255,136,0.05);
-    }
-    .orbit-ring:nth-child(2){
-      inset:-16px;border-color:rgba(0,255,136,0.15);
-      animation:counter-spin 7s linear infinite;
-    }
-    .orbit-ring:nth-child(3){
-      inset:-30px;border-color:rgba(0,200,255,0.1);
-      animation:counter-spin 15s linear infinite reverse;
-    }
-    @keyframes counter-spin{
-      0%{transform:rotateZ(0deg)}
-      100%{transform:rotateZ(360deg)}
-    }
-
-    /* FX 8: 3D rotating lock icon */
-    .lock-3d{
-      position:absolute;top:50%;left:50%;
-      transform:translate(-50%,-55%);
-      z-index:2;
-      animation:lock-3d-float 4s ease-in-out infinite;
-      filter:drop-shadow(0 0 20px rgba(0,255,136,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));
-    }
-    @keyframes lock-3d-float{
-      0%,100%{transform:translate(-50%,-55%) translateY(0) rotateY(0deg) rotateX(5deg)}
-      25%{transform:translate(-50%,-55%) translateY(-6px) rotateY(10deg) rotateX(8deg)}
-      50%{transform:translate(-50%,-55%) translateY(-8px) rotateY(0deg) rotateX(5deg)}
-      75%{transform:translate(-50%,-55%) translateY(-4px) rotateY(-10deg) rotateX(2deg)}
-    }
-
-    /* FX 9: Pulsing glow halo */
-    .halo{
-      position:absolute;top:50%;left:50%;
-      transform:translate(-50%,-55%);
-      width:70px;height:70px;border-radius:50%;
-      background:radial-gradient(circle,rgba(0,255,136,0.2) 0%,transparent 70%);
-      animation:halo-pulse 2.5s ease-in-out infinite;
-    }
-    @keyframes halo-pulse{
-      0%,100%{transform:translate(-50%,-55%) scale(1);opacity:0.6}
-      50%{transform:translate(-50%,-55%) scale(2.2);opacity:0}
-    }
-
-    /* FX 10: Title with glitch effect */
-    h1{
-      font-family:var(--sans,sans-serif);font-weight:800;font-size:30px;
-      text-align:center;margin-bottom:6px;letter-spacing:-0.5px;line-height:1;
-      position:relative;
-    }
-    h1 span{
-      color:var(--accent);
-      text-shadow:0 0 30px rgba(0,255,136,0.5),0 0 60px rgba(0,255,136,0.2);
-      animation:glitch-text 6s ease-in-out infinite;
-      display:inline-block;
-    }
-    @keyframes glitch-text{
-      0%,92%,100%{transform:translateX(0);text-shadow:0 0 30px rgba(0,255,136,0.5)}
-      93%{transform:translateX(-2px);text-shadow:-2px 0 #ff0066,2px 0 #00ffff}
-      94%{transform:translateX(2px);text-shadow:2px 0 #ff0066,-2px 0 #00ffff}
-      95%{transform:translateX(-1px);text-shadow:-1px 0 rgba(0,255,136,0.8)}
-      96%{transform:translateX(0)}
-    }
-
-    .sub{
-      font-family:var(--mono,monospace);font-size:10px;color:var(--text3);
-      text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-bottom:32px;
-      animation:sub-fade 3s ease-in-out infinite alternate;
-    }
-    @keyframes sub-fade{
-      0%{color:var(--text3);letter-spacing:.18em}
-      100%{color:rgba(0,255,136,0.3);letter-spacing:.22em}
-    }
-
-    /* FX 11: 3D card with perspective tilt */
-    .card{
-      background:
-        linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 50%),
-        var(--surface);
-      border:1px solid var(--border);border-radius:10px;
-      padding:24px 28px;margin-bottom:14px;
-      position:relative;overflow:hidden;
-      transition:border-color .3s,box-shadow .3s,transform .3s;
-      transform-style:preserve-3d;
-      box-shadow:0 4px 24px rgba(0,0,0,0.4),0 1px 0 rgba(255,255,255,0.03) inset;
-    }
-    .card:hover{
-      transform:translateY(-2px) rotateX(1deg);
-      box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 20px rgba(0,255,136,0.04);
-    }
-
-    /* FX 12: Top edge shimmer on focus */
-    .card::before{
-      content:'';position:absolute;top:0;left:-100%;right:-100%;height:1px;
-      background:linear-gradient(90deg,transparent,rgba(0,255,136,0.6),rgba(0,200,255,0.4),transparent);
-      opacity:0;transition:opacity .4s;
-      animation:shimmer-idle 4s ease-in-out infinite;
-    }
-    .card:focus-within::before{opacity:1;animation:shimmer-scan 1.5s linear infinite}
-    @keyframes shimmer-idle{
-      0%,100%{opacity:0}50%{opacity:0.15}
-    }
-    @keyframes shimmer-scan{
-      0%{left:-100%;right:100%}
-      100%{left:100%;right:-100%}
-    }
-
-    /* FX 13: Inner glow on focus */
-    .card:focus-within{
-      border-color:rgba(0,255,136,0.25);
-      box-shadow:0 0 0 1px rgba(0,255,136,0.05),0 0 40px rgba(0,255,136,0.06),0 8px 32px rgba(0,0,0,0.5);
-    }
-
-    /* FX 14: Corner accent marks */
-    .card::after{
-      content:'';position:absolute;bottom:0;right:0;
-      width:40px;height:40px;
-      background:
-        linear-gradient(135deg,transparent 50%,rgba(0,255,136,0.06) 50%);
-      border-radius:0 0 10px 0;
-    }
-
-    .lbl{
-      font-family:var(--mono,monospace);font-size:9px;text-transform:uppercase;
-      letter-spacing:.22em;color:var(--text3);margin-bottom:14px;
-      display:flex;align-items:center;gap:10px;
-    }
-    .lbl::before{content:'//';color:var(--accent);opacity:0.5;font-size:8px}
-    .lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
-
-    /* ── Password ── */
-    .pw-wrap{position:relative}
-    .pw-input{
-      width:100%;background:var(--surface2);
-      border:1px solid var(--border2);border-radius:7px;
-      padding:14px 48px 14px 16px;
-      font-family:var(--mono,monospace);font-size:14px;color:var(--text);
-      outline:none;transition:border-color .25s,box-shadow .25s,background .25s;
-      letter-spacing:.08em;
-    }
-    .pw-input::placeholder{color:var(--text3)}
-    .pw-input:focus{
-      border-color:rgba(0,255,136,0.45);background:var(--surface3);
-      box-shadow:0 0 0 3px rgba(0,255,136,0.06),0 0 24px rgba(0,255,136,0.05);
-    }
-    .pw-toggle{
-      position:absolute;right:13px;top:50%;transform:translateY(-50%);
-      background:none;border:none;cursor:pointer;color:var(--text3);
-      padding:4px;transition:color .2s,transform .2s;
-    }
-    .pw-toggle:hover{color:var(--accent);transform:translateY(-50%) scale(1.1)}
-
-    /* FX 15: Neon glow button with 3D press */
-    .btn{
-      width:100%;padding:16px;
-      background:linear-gradient(135deg,var(--accent) 0%,var(--accent3) 100%);
-      color:#000;border:none;border-radius:8px;
-      font-family:var(--sans,sans-serif);font-weight:700;font-size:13px;
-      letter-spacing:.12em;cursor:pointer;
-      transition:all .2s cubic-bezier(0.4,0,0.2,1);
-      text-transform:uppercase;position:relative;overflow:hidden;margin-top:8px;
-      box-shadow:
-        0 0 30px rgba(0,255,136,0.25),
-        0 4px 0 rgba(0,100,50,0.8),
-        0 6px 20px rgba(0,0,0,0.4);
-      transform:translateY(0);
-    }
-
-    /* FX 16: Liquid fill sweep on hover */
-    .btn::before{
-      content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 50%);
-      transform:translateX(-100%) skewX(-15deg);
-      transition:transform .6s cubic-bezier(0.4,0,0.2,1);
-    }
-    .btn:hover::before{transform:translateX(110%) skewX(-15deg)}
-
-    /* FX 17: Ripple effect layer */
-    .btn::after{
-      content:'';position:absolute;inset:0;
-      background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.15) 0%,transparent 60%);
-      opacity:0;transition:opacity .3s;
-    }
-    .btn:hover::after{opacity:1}
-    .btn:hover{
-      background:linear-gradient(135deg,#1aff99 0%,#00ffcc 100%);
-      box-shadow:0 0 50px rgba(0,255,136,0.5),0 2px 0 rgba(0,100,50,0.8),0 8px 28px rgba(0,0,0,0.4);
-      transform:translateY(-2px);
-    }
-    .btn:active{
-      transform:translateY(2px);
-      box-shadow:0 0 20px rgba(0,255,136,0.2),0 0px 0 rgba(0,100,50,0.8),0 2px 10px rgba(0,0,0,0.4);
-    }
-    .btn:disabled{
-      background:var(--surface3);color:var(--text3);
-      cursor:not-allowed;box-shadow:none;transform:none;
-    }
-    .btn:disabled::before,.btn:disabled::after{display:none}
-
-    /* FX 18: Multi-layer progress bar */
-    .prog-area{
-      display:none;margin-top:16px;padding:20px;
-      background:
-        linear-gradient(135deg,rgba(0,255,136,0.02) 0%,transparent 50%),
-        var(--surface2);
-      border:1px solid var(--border);border-radius:10px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-    .prog-area.active{display:block;animation:slide-up .35s cubic-bezier(0.4,0,0.2,1)}
-    @keyframes slide-up{
-      from{opacity:0;transform:translateY(10px) scale(0.98)}
-      to{opacity:1;transform:translateY(0) scale(1)}
-    }
-    .prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    .prog-status{
-      font-family:var(--mono,monospace);font-size:10px;color:var(--text2);
-      letter-spacing:.06em;
-    }
-    .prog-pct{
-      font-family:var(--mono,monospace);font-size:11px;color:var(--accent);
-      font-weight:700;text-shadow:0 0 12px rgba(0,255,136,0.6);
-      animation:pct-glow 1s ease-in-out infinite alternate;
-    }
-    @keyframes pct-glow{
-      from{text-shadow:0 0 8px rgba(0,255,136,0.4)}
-      to{text-shadow:0 0 20px rgba(0,255,136,0.9),0 0 40px rgba(0,255,136,0.3)}
-    }
-
-    /* FX 19: Segmented 3D progress track */
-    .prog-track{
-      height:8px;background:var(--surface);border-radius:4px;
-      overflow:hidden;position:relative;
-      box-shadow:inset 0 2px 4px rgba(0,0,0,0.5),0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    /* FX 20: Plasma fill with animated shimmer */
-    .prog-fill{
-      height:100%;width:0%;border-radius:4px;
-      background:linear-gradient(90deg,
-        rgba(0,180,80,0.9) 0%,
-        rgba(0,255,136,1) 50%,
-        rgba(0,255,180,0.9) 100%
-      );
-      background-size:200% 100%;
-      transition:width .4s cubic-bezier(0.4,0,0.2,1);
-      box-shadow:0 0 14px rgba(0,255,136,0.8),0 0 4px rgba(0,255,136,1);
-      position:relative;
-      animation:plasma-shift 2s linear infinite;
-    }
-    @keyframes plasma-shift{
-      0%{background-position:0% 50%}
-      100%{background-position:200% 50%}
-    }
-
-    /* FX 21: Bright spark at progress tip */
-    .prog-fill::after{
-      content:'';position:absolute;right:-2px;top:50%;
-      transform:translateY(-50%);
-      width:10px;height:10px;
-      background:white;border-radius:50%;
-      box-shadow:0 0 10px #fff,0 0 20px rgba(0,255,136,1),0 0 30px rgba(0,255,136,0.6);
-      opacity:0.9;
-      animation:spark-pulse 0.6s ease-in-out infinite alternate;
-    }
-    @keyframes spark-pulse{
-      from{transform:translateY(-50%) scale(0.8);opacity:0.7}
-      to{transform:translateY(-50%) scale(1.3);opacity:1}
-    }
-
-    /* FX 22: Segment tick marks on track */
-    .prog-ticks{
-      display:flex;margin-top:6px;gap:0;
-    }
-    .prog-tick{
-      flex:1;height:3px;border-radius:1px;
-      background:var(--surface3);margin:0 1px;
-      transition:background .4s,box-shadow .4s;
-    }
-    .prog-tick.lit{
-      background:rgba(0,255,136,0.5);
-      box-shadow:0 0 4px rgba(0,255,136,0.4);
-    }
-
-    /* FX 23: Error box with shake animation */
-    .err{
-      margin-top:14px;padding:14px 18px;
-      background:
-        linear-gradient(135deg,rgba(255,68,68,0.05) 0%,transparent 50%),
-        rgba(255,68,68,0.04);
-      border:1px solid rgba(255,68,68,.2);border-radius:8px;
-      font-family:var(--mono,monospace);font-size:11px;color:#ff7090;
-      display:none;
-      box-shadow:0 0 20px rgba(255,68,68,0.06);
-    }
-    .err.show{display:block;animation:err-shake .4s cubic-bezier(.36,.07,.19,.97)}
-    @keyframes err-shake{
-      10%,90%{transform:translateX(-2px)}
-      20%,80%{transform:translateX(3px)}
-      30%,50%,70%{transform:translateX(-3px)}
-      40%,60%{transform:translateX(3px)}
-    }
-
-    /* FX 24: Data stream ticker */
-    .data-stream{
-      margin-top:12px;overflow:hidden;height:16px;
-      opacity:0;transition:opacity .3s;
-    }
-    .prog-area.active .data-stream{opacity:1}
-    .data-stream-inner{
-      font-family:var(--mono,monospace);font-size:9px;color:rgba(0,255,136,0.25);
-      letter-spacing:.05em;white-space:nowrap;
-      animation:stream-scroll 8s linear infinite;
-    }
-    @keyframes stream-scroll{
-      0%{transform:translateX(100%)}
-      100%{transform:translateX(-100%)}
-    }
-
-    /* iframe */
-    #output-frame{
-      display:none;position:fixed;inset:0;width:100%;height:100%;
-      border:none;z-index:9999;background:transparent;
-    }
-
-    /* Responsive scaling */
-    @media screen and (max-width:768px){
-      .wrap{transform:scale(2.2);transform-origin:top center;margin-top:60px}
-    }
-    @media screen and (max-width:480px){
-      .wrap{transform:scale(2.6);transform-origin:top center;margin-top:80px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+<title>Decrypting...</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  background:#030308;
+  color:#eeeef5;
+  font-family:'Syne',sans-serif;
+  display:flex;align-items:center;justify-content:center;
+}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.ui{position:relative;z-index:10;width:420px;padding:36px 28px}
+/* ── LOCK SCENE ── */
+.scene{width:100%;display:flex;justify-content:center;margin-bottom:30px;perspective:600px}
+canvas#lock-canvas{display:block}
+/* ── TITLE ── */
+.title{text-align:center;margin-bottom:28px}
+.title h1{font-weight:800;font-size:30px;letter-spacing:-0.5px;line-height:1;margin-bottom:6px}
+.title h1 em{font-style:normal;color:#00ff88}
+.title .sub{font-family:'Space Mono',monospace;font-size:9px;color:#2e2e50;letter-spacing:.2em;text-transform:uppercase}
+/* ── CARD ── */
+.card{
+  background:linear-gradient(135deg,rgba(255,255,255,0.025) 0%,rgba(0,0,0,0) 60%),#0a0a12;
+  border:1px solid #1c1c2e;
+  border-radius:12px;padding:22px 24px;margin-bottom:14px;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:border-color .3s,box-shadow .3s;
+}
+.card:focus-within{border-color:rgba(0,255,136,0.3);box-shadow:0 0 0 1px rgba(0,255,136,0.06),0 8px 48px rgba(0,0,0,0.7),0 0 60px rgba(0,255,136,0.05)}
+.card-shimmer{position:absolute;top:0;left:-200%;width:200%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.8),rgba(100,200,255,0.5),transparent);animation:card-shine 4s ease-in-out infinite}
+@keyframes card-shine{0%,100%{left:-200%;opacity:0}40%{opacity:1}60%{left:200%;opacity:0}}
+.card-corner{position:absolute;bottom:0;right:0;width:50px;height:50px;background:linear-gradient(135deg,transparent 50%,rgba(0,255,136,0.04) 50%);border-radius:0 0 12px 0}
+.lbl{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#2e2e50;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.lbl span{color:rgba(0,255,136,0.4);font-size:8px}
+.lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#1c1c2e,transparent)}
+/* ── INPUT ── */
+.pw-wrap{position:relative}
+.pw-input{
+  width:100%;background:#0d0d18;border:1px solid #1c1c30;border-radius:8px;
+  padding:14px 48px 14px 16px;
+  font-family:'Space Mono',monospace;font-size:14px;color:#eeeef5;
+  outline:none;letter-spacing:.08em;
+  transition:border-color .25s,box-shadow .25s,background .2s;
+}
+.pw-input::placeholder{color:#252540}
+.pw-input:focus{border-color:rgba(0,255,136,0.4);background:#0f0f1e;box-shadow:0 0 0 3px rgba(0,255,136,0.07),0 0 30px rgba(0,255,136,0.04)}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#252540;padding:4px;transition:color .2s,transform .2s}
+.pw-toggle:hover{color:#00ff88;transform:translateY(-50%) scale(1.15)}
+/* ── BUTTON ── */
+.btn{
+  width:100%;padding:16px;border:none;border-radius:10px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:.15em;
+  text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;
+  margin-top:8px;
+  background:linear-gradient(135deg,#00e87a 0%,#00ff99 50%,#00ffcc 100%);
+  color:#000;
+  box-shadow:0 0 40px rgba(0,255,136,0.3),0 4px 0 #00552a,0 8px 24px rgba(0,0,0,0.5);
+  transition:all .15s cubic-bezier(0.4,0,0.2,1);
+  transform:translateY(0);
+}
+.btn-sweep{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.35) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s cubic-bezier(0.4,0,0.2,1)}
+.btn:hover .btn-sweep{transform:translateX(150%)}
+.btn:hover{box-shadow:0 0 60px rgba(0,255,136,0.5),0 4px 0 #00552a,0 10px 30px rgba(0,0,0,0.5);transform:translateY(-2px)}
+.btn:active{transform:translateY(3px);box-shadow:0 0 20px rgba(0,255,136,0.2),0 0px 0 #00552a,0 2px 10px rgba(0,0,0,0.4)}
+.btn:disabled{background:#111120;color:#252540;cursor:not-allowed;box-shadow:none;transform:none}
+.btn:disabled .btn-sweep{display:none}
+/* ── PROGRESS ── */
+.prog{display:none;margin-top:14px}
+.prog.on{display:block;animation:prog-in .4s cubic-bezier(0.4,0,0.2,1)}
+@keyframes prog-in{from{opacity:0;transform:translateY(8px) scale(0.97)}to{opacity:1;transform:none}}
+.prog-box{
+  background:linear-gradient(135deg,rgba(0,255,136,0.025) 0%,transparent 50%),#0a0a12;
+  border:1px solid #1c1c2e;border-radius:12px;padding:20px 22px;
+  box-shadow:0 4px 40px rgba(0,0,0,0.6);
+  position:relative;overflow:hidden;
+}
+.prog-box::before{content:'';position:absolute;top:0;left:-200%;width:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.6),transparent);animation:prog-line 2s linear infinite}
+@keyframes prog-line{0%{left:-50%}100%{left:150%}}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.prog-status{font-family:'Space Mono',monospace;font-size:10px;color:#5a5a80;letter-spacing:.06em}
+.prog-pct{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#00ff88;letter-spacing:.05em}
+/* Segmented track */
+.seg-track{display:flex;gap:3px;margin-bottom:8px}
+.seg{flex:1;height:6px;border-radius:3px;background:#0d0d18;transition:background .3s,box-shadow .3s}
+.seg.lit{background:#00ff88;box-shadow:0 0 8px rgba(0,255,136,0.7),0 0 2px rgba(0,255,136,1)}
+.seg.half{background:#00cc6a;box-shadow:0 0 4px rgba(0,255,136,0.4)}
+/* Main bar */
+.bar-track{height:4px;background:#0d0d18;border-radius:2px;overflow:hidden;position:relative;box-shadow:inset 0 2px 4px rgba(0,0,0,0.4)}
+.bar-fill{height:100%;width:0%;border-radius:2px;position:relative;background:linear-gradient(90deg,#00cc6a,#00ff88,#00ffcc);background-size:200% 100%;transition:width .4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 12px rgba(0,255,136,0.8)}
+.bar-tip{position:absolute;right:-3px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff,0 0 16px #00ff88,0 0 30px rgba(0,255,136,0.6)}
+/* Steps */
+.steps{display:flex;gap:4px;margin-top:10px}
+.step{flex:1;padding:5px 4px;border:1px solid #1c1c2e;border-radius:6px;font-family:'Space Mono',monospace;font-size:8px;color:#252540;text-align:center;letter-spacing:.05em;transition:all .3s;text-transform:uppercase}
+.step.go{color:#00ff88;border-color:rgba(0,255,136,0.35);background:rgba(0,255,136,0.06);box-shadow:0 0 10px rgba(0,255,136,0.08);animation:step-pulse .8s ease-in-out infinite alternate}
+@keyframes step-pulse{from{box-shadow:0 0 6px rgba(0,255,136,0.06)}to{box-shadow:0 0 16px rgba(0,255,136,0.18)}}
+.step.done{color:#00cc6a;border-color:rgba(0,255,136,0.2);background:rgba(0,204,106,0.04)}
+/* Hex stream */
+.hex-row{margin-top:10px;height:14px;overflow:hidden;position:relative}
+.hex-text{font-family:'Space Mono',monospace;font-size:8px;color:rgba(0,255,136,0.18);white-space:nowrap;position:absolute;animation:hex-scroll 12s linear infinite}
+@keyframes hex-scroll{from{transform:translateX(100%)}to{transform:translateX(-300%)}}
+/* ── ERROR ── */
+.err{display:none;margin-top:12px;padding:13px 16px;background:rgba(255,60,80,0.05);border:1px solid rgba(255,60,80,0.2);border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;color:#ff7090;box-shadow:0 0 20px rgba(255,60,80,0.06)}
+.err.on{display:block;animation:err-shake .4s cubic-bezier(.36,.07,.19,.97)}
+@keyframes err-shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+/* ── IFRAME ── */
+#out{display:none;position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999}
+/* Mobile scale */
+@media(max-width:768px){.ui{transform:scale(2.2);transform-origin:top center;margin-top:60px}}
+@media(max-width:480px){.ui{transform:scale(2.6);transform-origin:top center;margin-top:80px}}
+</style>
 </head>
 <body>
 
-<!-- FX background layers -->
-<div class="bg-grid"></div>
-<div class="bg-scan"></div>
-<div class="bg-aurora"></div>
-<div class="particles" id="particles"></div>
+<!-- BG Canvas (particles + nebula + grid) -->
+<canvas id="bg"></canvas>
 
-<iframe id="output-frame"></iframe>
+<!-- 3D lock canvas -->
+<iframe id="out"></iframe>
 
-<div class="wrap" id="main-ui">
-
-  <!-- FX: 3D Icon scene -->
-  <div class="icon-scene">
-    <div class="halo"></div>
-    <div class="orbit-container">
-      <div class="orbit-ring"></div>
-      <div class="orbit-ring"></div>
-      <div class="orbit-ring"></div>
-    </div>
-    <svg class="lock-3d" width="56" height="56" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow-lock">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <linearGradient id="lock-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#00ffaa"/>
-          <stop offset="100%" stop-color="#00cc6a"/>
-        </linearGradient>
-      </defs>
-      <rect x="8" y="18" width="24" height="18" rx="3"
-        fill="url(#lock-grad)" fill-opacity="0.15"
-        stroke="url(#lock-grad)" stroke-width="1.5"
-        filter="url(#glow-lock)"/>
-      <path d="M13 18V13a7 7 0 0114 0v5" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="20" cy="27" r="2.5" fill="#00ffaa"/>
-      <line x1="20" y1="29.5" x2="20" y2="32" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
+<div class="ui" id="main-ui">
+  <!-- 3D Lock Scene -->
+  <div class="scene">
+    <canvas id="lock-canvas" width="200" height="140"></canvas>
   </div>
 
-  <h1>Membuka <span>Kunci</span></h1>
-  <p class="sub">AES-256-CBC · PBKDF2 · HMAC-SHA256</p>
+  <div class="title">
+    <h1>Membuka <em>Kunci</em></h1>
+    <div class="sub">AES-256-CBC &middot; PBKDF2 &middot; HMAC-SHA256</div>
+  </div>
 
   <div class="card">
-    <div class="lbl">passphrase</div>
+    <div class="card-shimmer"></div>
+    <div class="card-corner"></div>
+    <div class="lbl"><span>//</span> passphrase</div>
     <div class="pw-wrap">
-      <input type="password" class="pw-input" id="pw" placeholder="Masukkan password enkripsi..." autocomplete="current-password">
+      <input class="pw-input" type="password" id="pw" placeholder="Masukkan password enkripsi..." autocomplete="current-password">
       <button class="pw-toggle" id="pwBtn" type="button">
         <svg id="eyeIco" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -498,20 +150,33 @@
     </div>
   </div>
 
-  <button class="btn" id="decryptBtn">Decrypt &amp; Render</button>
+  <button class="btn" id="decryptBtn">
+    <span class="btn-sweep"></span>
+    Decrypt &amp; Render
+  </button>
 
-  <div class="prog-area" id="progArea">
-    <div class="prog-header">
-      <span class="prog-status" id="progStatus">Initializing...</span>
-      <span class="prog-pct" id="progPct">0%</span>
-    </div>
-    <div class="prog-track">
-      <div class="prog-fill" id="progFill"></div>
-    </div>
-    <div class="prog-ticks" id="progTicks"></div>
-    <div class="data-stream">
-      <div class="data-stream-inner" id="dataStream">
-        AES-256-CBC :: PBKDF2-SHA512 :: HMAC-SHA256 :: XOR-OBFUSCATION :: CHUNK-ASSEMBLY :: RENDER-ENGINE :: SECURE-CONTEXT ::
+  <div class="prog" id="progArea">
+    <div class="prog-box">
+      <div class="prog-top">
+        <span class="prog-status" id="progStatus">Initializing...</span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="seg-track" id="segTrack"></div>
+      <div class="bar-track">
+        <div class="bar-fill" id="barFill">
+          <div class="bar-tip"></div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s1">Load</div>
+        <div class="step" id="s2">PBKDF2</div>
+        <div class="step" id="s3">HMAC</div>
+        <div class="step" id="s4">AES</div>
+      </div>
+      <div class="hex-row">
+        <div class="hex-text" id="hexText">
+          00 FF 88 3A 2C 9E 47 B1 D0 56 F3 8A 11 CC 7E 29 05 44 BB 92 1F 68 E5 3D 87 C0 2B 5A 4F 19 A3 76 ...
+        </div>
       </div>
     </div>
   </div>
@@ -521,227 +186,352 @@
 
 <script>
 (function(){
-  // Init particles
-  var pc = document.getElementById('particles');
-  for(var i=0;i<25;i++){
-    var p=document.createElement('div');
-    p.className='p';
-    p.style.cssText=[
-      'left:'+Math.random()*100+'%',
-      '--dur:'+(6+Math.random()*10)+'s',
-      '--delay:'+(Math.random()*8)+'s',
-      '--op:'+(0.15+Math.random()*0.4),
-      '--dx:'+(Math.random()*80-40)+'px',
-      'width:'+(1+Math.random()*2)+'px',
-      'height:'+(1+Math.random()*2)+'px',
-    ].join(';');
-    pc.appendChild(p);
-  }
 
-  // Init tick marks
-  var ticks=document.getElementById('progTicks');
-  var TICK=20;
-  for(var t=0;t<TICK;t++){
-    var td=document.createElement('div');
-    td.className='prog-tick';
-    td.id='tick'+t;
-    ticks.appendChild(td);
-  }
-</script>
+/* ════════════════════════════════
+   BG CANVAS  — particles + nebula + grid
+   ════════════════════════════════ */
+var bgC = document.getElementById('bg');
+var bgX = bgC.getContext('2d');
+function rsz(){bgC.width=innerWidth;bgC.height=innerHeight}rsz();
+window.addEventListener('resize',rsz);
 
-<script>
-(function(){
-  var PASSWORD_EMBEDDED = "suka ya sama design webnya? curi aja gapapa kok";
-
-  var pw       = document.getElementById('pw');
-  var pwBtn    = document.getElementById('pwBtn');
-  var eyeIco   = document.getElementById('eyeIco');
-  var decBtn   = document.getElementById('decryptBtn');
-  var progArea = document.getElementById('progArea');
-  var progSt   = document.getElementById('progStatus');
-  var progPct  = document.getElementById('progPct');
-  var progFill = document.getElementById('progFill');
-  var errBox   = document.getElementById('errBox');
-  var frame    = document.getElementById('output-frame');
-  var mainUI   = document.getElementById('main-ui');
-  var TICK_COUNT = 20;
-
-  // If password is embedded, hide the input and auto-decrypt
-  if (PASSWORD_EMBEDDED) {
-    document.querySelector('.card').style.display = 'none';
-    decryptFlow(PASSWORD_EMBEDDED);
-  }
-
-  pwBtn.addEventListener('click', function(){
-    var h = pw.type === 'password';
-    pw.type = h ? 'text' : 'password';
-    eyeIco.innerHTML = h
-      ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
-      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+// Particles
+var pts = [];
+for(var i=0;i<80;i++){
+  pts.push({
+    x:Math.random()*innerWidth,
+    y:Math.random()*innerHeight,
+    r:Math.random()*1.8+0.2,
+    vx:(Math.random()-.5)*.25,
+    vy:-(Math.random()*.5+.1),
+    a:Math.random(),
+    maxA:Math.random()*.55+.1,
+    life:Math.random(),
+    speed:Math.random()*.008+.003,
+    hue:Math.random()<.85?140:180
   });
+}
 
-  decBtn.addEventListener('click', function(){
-    var pass = pw.value.trim();
-    if (!pass) { showErr('Masukkan password terlebih dahulu.'); return; }
-    decryptFlow(pass);
-  });
+// Stars
+var stars = [];
+for(var i=0;i<120;i++){
+  stars.push({x:Math.random()*3000,y:Math.random()*2000,r:Math.random()*.8+.2,a:Math.random()*.6+.1,tw:Math.random()*4+2,tp:Math.random()*Math.PI*2});
+}
 
-  function setP(pct, st){
-    progFill.style.width = pct + '%';
-    progPct.textContent  = pct + '%';
-    progSt.textContent   = st;
-    // update tick marks
-    var lit = Math.floor(pct / 100 * TICK_COUNT);
-    for(var i=0;i<TICK_COUNT;i++){
-      var el=document.getElementById('tick'+i);
-      if(el){ if(i<lit){el.classList.add('lit')}else{el.classList.remove('lit')} }
+// Grid lines
+var GRID=52;
+var gridOff=0;
+
+var t=0;
+function bgLoop(){
+  t+=.012;
+  bgX.clearRect(0,0,bgC.width,bgC.height);
+
+  // Nebula
+  var grd=bgX.createRadialGradient(bgC.width*.5,bgC.height*.3,0,bgC.width*.5,bgC.height*.3,bgC.width*.6);
+  grd.addColorStop(0,'rgba(0,255,136,0.04)');
+  grd.addColorStop(.4,'rgba(0,180,80,0.015)');
+  grd.addColorStop(.7,'rgba(0,100,200,0.008)');
+  grd.addColorStop(1,'transparent');
+  bgX.fillStyle=grd;
+  bgX.fillRect(0,0,bgC.width,bgC.height);
+
+  // Second nebula
+  var ox=Math.sin(t*.3)*80, oy=Math.cos(t*.2)*60;
+  var g2=bgX.createRadialGradient(bgC.width*.3+ox,bgC.height*.7+oy,0,bgC.width*.3+ox,bgC.height*.7+oy,bgC.width*.4);
+  g2.addColorStop(0,'rgba(60,0,180,0.025)');
+  g2.addColorStop(1,'transparent');
+  bgX.fillStyle=g2;
+  bgX.fillRect(0,0,bgC.width,bgC.height);
+
+  // Scrolling grid
+  gridOff=(gridOff+.2)%GRID;
+  bgX.strokeStyle='rgba(0,255,136,0.022)';
+  bgX.lineWidth=1;
+  bgX.beginPath();
+  for(var x=(-GRID+gridOff%GRID);x<bgC.width+GRID;x+=GRID){bgX.moveTo(x,0);bgX.lineTo(x,bgC.height)}
+  for(var y=(-GRID+(gridOff*.7)%GRID);y<bgC.height+GRID;y+=GRID){bgX.moveTo(0,y);bgX.lineTo(bgC.width,y)}
+  bgX.stroke();
+
+  // Scan line
+  var scanY=((t*60)%(bgC.height+200))-100;
+  var sg=bgX.createLinearGradient(0,scanY-60,0,scanY+60);
+  sg.addColorStop(0,'transparent');
+  sg.addColorStop(.5,'rgba(0,255,136,0.06)');
+  sg.addColorStop(1,'transparent');
+  bgX.fillStyle=sg;
+  bgX.fillRect(0,scanY-60,bgC.width,120);
+
+  // Stars (twinkling)
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    var sa=s.a*(0.5+0.5*Math.sin(t*s.tw+s.tp));
+    bgX.beginPath();
+    bgX.arc(s.x%bgC.width,s.y%bgC.height,s.r,0,Math.PI*2);
+    bgX.fillStyle='rgba(200,220,255,'+sa+')';
+    bgX.fill();
+  }
+
+  // Particles
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i];
+    p.life+=p.speed;
+    if(p.life>1){p.life=0;p.x=Math.random()*bgC.width;p.y=bgC.height+10;p.a=0}
+    var lf=p.life;
+    var alpha=lf<.1?lf*10*p.maxA:lf>.85?(1-lf)*6.7*p.maxA:p.maxA;
+    p.x+=p.vx; p.y+=p.vy;
+    bgX.beginPath();
+    bgX.arc(p.x,p.y,p.r,0,Math.PI*2);
+    if(p.hue===140){bgX.fillStyle='rgba(0,255,136,'+alpha+')';}
+    else{bgX.fillStyle='rgba(0,200,255,'+alpha+')';}
+    bgX.fill();
+    // glow
+    if(p.r>1){
+      var pg=bgX.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*5);
+      pg.addColorStop(0,p.hue===140?'rgba(0,255,136,'+(alpha*.3)+')':'rgba(0,200,255,'+(alpha*.3)+')');
+      pg.addColorStop(1,'transparent');
+      bgX.fillStyle=pg;
+      bgX.fillRect(p.x-p.r*5,p.y-p.r*5,p.r*10,p.r*10);
     }
   }
 
-  function showErr(msg){
-    errBox.textContent = '✗ ' + msg;
-    errBox.classList.add('show');
-    decBtn.disabled = false;
+  requestAnimationFrame(bgLoop);
+}
+bgLoop();
+
+/* ════════════════════════════════
+   LOCK CANVAS  — 3D rotating lock
+   ════════════════════════════════ */
+var lc=document.getElementById('lock-canvas');
+var lx=lc.getContext('2d');
+var lw=lc.width,lh=lc.height;
+var lt=0;
+
+// 3D box vertices for lock body
+function project(x,y,z,rx,ry,rz,fov,tx,ty){
+  // rotate X
+  var y1=y*Math.cos(rx)-z*Math.sin(rx), z1=y*Math.sin(rx)+z*Math.cos(rx);
+  // rotate Y
+  var x2=x*Math.cos(ry)+z1*Math.sin(ry), z2=-x*Math.sin(ry)+z1*Math.cos(ry);
+  // rotate Z
+  var x3=x2*Math.cos(rz)-y1*Math.sin(rz), y3=x2*Math.sin(rz)+y1*Math.cos(rz);
+  var scale=fov/(fov+z2);
+  return {x:x3*scale+tx,y:y3*scale+ty,z:z2,s:scale};
+}
+
+function lockLoop(){
+  lt+=.018;
+  lx.clearRect(0,0,lw,lh);
+  var cx=lw/2, cy=lh/2+10;
+  var ry=lt, rx=Math.sin(lt*.4)*.25, rz=Math.sin(lt*.3)*.08;
+
+  // ── Glowing halo rings (flat, billboarded) ──
+  for(var ri=0;ri<3;ri++){
+    var rr=28+ri*14, ralpha=.25-.07*ri;
+    lx.beginPath();
+    lx.ellipse(cx,cy,rr,rr*.38,0,0,Math.PI*2);
+    lx.strokeStyle='rgba(0,255,136,'+ralpha+')';
+    lx.lineWidth=1+ri*.3;
+    lx.stroke();
   }
 
-  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  // ── Orbit dot ──
+  var odot=project(30,0,0,rx+.3,ry*1.2,rz,.6,cx,cy);
+  var og=lx.createRadialGradient(odot.x,odot.y,0,odot.x,odot.y,6);
+  og.addColorStop(0,'rgba(0,255,200,.9)');og.addColorStop(1,'transparent');
+  lx.fillStyle=og;lx.beginPath();lx.arc(odot.x,odot.y,5,0,Math.PI*2);lx.fill();
 
-  async function decryptFlow(pass){
-    decBtn.disabled = true;
-    errBox.classList.remove('show');
-    progArea.classList.add('active');
+  var odot2=project(-28,5,8,rx-.2,ry*.8+1,rz,.6,cx,cy);
+  var og2=lx.createRadialGradient(odot2.x,odot2.y,0,odot2.x,odot2.y,4);
+  og2.addColorStop(0,'rgba(0,200,255,.7)');og2.addColorStop(1,'transparent');
+  lx.fillStyle=og2;lx.beginPath();lx.arc(odot2.x,odot2.y,3.5,0,Math.PI*2);lx.fill();
 
-    try {
-      // Step 1: Fetch encrypted.enc
-      setP(10, 'Loading encrypted.enc...');
-      var resp = await fetch('encrypted.enc');
-      if (!resp.ok) throw new Error('Tidak dapat memuat encrypted.enc (HTTP ' + resp.status + ')');
-      var rawJson = await resp.text();
-      var data = JSON.parse(rawJson);
-      if (!data.salt || !data.iv || !data.ciphertext || !data.hmac) throw new Error('Format encrypted.enc tidak valid');
-      await sleep(150);
+  // ── 3D Lock body (box with faces) ──
+  var bw=22,bh=16,bd=10;
+  // 8 corners of box  [x,y,z]
+  var corners=[
+    [-bw,-bh,-bd],[ bw,-bh,-bd],[ bw, bh,-bd],[-bw, bh,-bd],
+    [-bw,-bh, bd],[ bw,-bh, bd],[ bw, bh, bd],[-bw, bh, bd]
+  ];
+  var p3=corners.map(function(c){return project(c[0],c[1]-2,c[2],rx,ry,rz,400,cx,cy);});
 
-      // Step 2: PBKDF2 key derivation
-      setP(25, 'Deriving key via PBKDF2-SHA512...');
-      await sleep(80);
+  // faces [indices, base color alpha]
+  var faces=[
+    {i:[0,1,2,3],c:'rgba(0,255,136,',a:.08,edge:.35},// front
+    {i:[4,5,6,7],c:'rgba(0,255,136,',a:.04,edge:.18},// back
+    {i:[0,4,7,3],c:'rgba(0,200,100,',a:.07,edge:.28},// left
+    {i:[1,5,6,2],c:'rgba(0,220,120,',a:.09,edge:.32},// right
+    {i:[0,1,5,4],c:'rgba(0,255,180,',a:.14,edge:.4}, // top
+    {i:[3,2,6,7],c:'rgba(0,180,80,', a:.04,edge:.2}, // bottom
+  ];
+  faces.forEach(function(f){
+    lx.beginPath();
+    f.i.forEach(function(vi,k){if(k===0)lx.moveTo(p3[vi].x,p3[vi].y);else lx.lineTo(p3[vi].x,p3[vi].y);});
+    lx.closePath();
+    lx.fillStyle=f.c+f.a+')';lx.fill();
+    lx.strokeStyle=f.c+f.edge+')';lx.lineWidth=.8;lx.stroke();
+  });
 
-      var salt       = CryptoJS.enc.Hex.parse(data.salt);
-      var iv         = CryptoJS.enc.Hex.parse(data.iv);
-      var ciphertext = CryptoJS.enc.Hex.parse(data.ciphertext);
-      var storedHmac = data.hmac;
+  // ── Lock shackle (arch) ──
+  var sh=project(0,-28,0,rx,ry,rz,400,cx,cy);
+  var sl=project(-11,-22,-8,rx,ry,rz,400,cx,cy);
+  var sr=project(11,-22,-8,rx,ry,rz,400,cx,cy);
+  lx.beginPath();
+  lx.moveTo(sl.x,sl.y);
+  lx.quadraticCurveTo(sh.x,sh.y-(sh.s*14),sr.x,sr.y);
+  lx.strokeStyle='rgba(0,255,136,.7)';lx.lineWidth=3*sh.s;
+  lx.lineCap='round';lx.stroke();
+  // glow
+  lx.beginPath();
+  lx.moveTo(sl.x,sl.y);
+  lx.quadraticCurveTo(sh.x,sh.y-(sh.s*14),sr.x,sr.y);
+  lx.strokeStyle='rgba(0,255,136,.15)';lx.lineWidth=8*sh.s;lx.stroke();
 
-      var key = await new Promise(function(resolve){
-        setTimeout(function(){
-          resolve(CryptoJS.PBKDF2(pass, salt, {
-            keySize: 256 / 32,
-            iterations: 100000,
-            hasher: CryptoJS.algo.SHA512
-          }));
-        }, 50);
-      });
+  // ── Keyhole ──
+  var kp=project(0,4,0,rx,ry,rz,400,cx,cy);
+  lx.beginPath();lx.arc(kp.x,kp.y,4*kp.s,0,Math.PI*2);
+  lx.fillStyle='rgba(0,255,136,.9)';lx.fill();
+  var kg=lx.createRadialGradient(kp.x,kp.y,0,kp.x,kp.y,12);
+  kg.addColorStop(0,'rgba(0,255,136,.35)');kg.addColorStop(1,'transparent');
+  lx.fillStyle=kg;lx.beginPath();lx.arc(kp.x,kp.y,12,0,Math.PI*2);lx.fill();
+  // keyhole slot
+  lx.beginPath();lx.moveTo(kp.x,kp.y+4*kp.s);lx.lineTo(kp.x,kp.y+9*kp.s);
+  lx.strokeStyle='rgba(0,255,136,.8)';lx.lineWidth=2*kp.s;lx.lineCap='round';lx.stroke();
 
-      setP(65, 'Key derived');
-      await sleep(80);
+  // ── Reflection streak ──
+  var refl=project(-8,-8,bd,rx,ry,rz,400,cx,cy);
+  lx.beginPath();
+  lx.moveTo(refl.x-5,refl.y+10);lx.lineTo(refl.x+3,refl.y-8);
+  lx.strokeStyle='rgba(200,255,230,.2)';lx.lineWidth=3;lx.stroke();
 
-      // Step 3: Verify HMAC
-      setP(72, 'Verifying HMAC-SHA256 integrity...');
-      await sleep(60);
+  // ── Bottom shadow ──
+  var shadow=lx.createRadialGradient(cx,cy+34,0,cx,cy+34,38);
+  shadow.addColorStop(0,'rgba(0,255,136,.1)');shadow.addColorStop(1,'transparent');
+  lx.fillStyle=shadow;lx.fillRect(cx-38,cy+8,76,50);
 
-      var dataToAuth  = iv.clone().concat(ciphertext);
-      var computedHmac = CryptoJS.HmacSHA256(dataToAuth, key).toString(CryptoJS.enc.Hex);
-      if (computedHmac !== storedHmac) throw new Error('HMAC mismatch — password salah atau file rusak');
+  requestAnimationFrame(lockLoop);
+}
+lockLoop();
 
-      setP(80, 'Integrity verified');
-      await sleep(60);
+/* ════════════════════════════════
+   SEGMENTS
+   ════════════════════════════════ */
+var SEG=16;
+var segTrack=document.getElementById('segTrack');
+for(var i=0;i<SEG;i++){var sd=document.createElement('div');sd.className='seg';sd.id='seg'+i;segTrack.appendChild(sd);}
 
-      // Step 4: AES Decrypt
-      setP(88, 'Decrypting AES-256-CBC...');
-      await sleep(80);
+/* ════════════════════════════════
+   DECRYPT LOGIC
+   ════════════════════════════════ */
+var PASSWORD_EMBEDDED = "mau ambil design web gw ya? wkwk";
+var pw=document.getElementById('pw');
+var pwBtn=document.getElementById('pwBtn');
+var eyeIco=document.getElementById('eyeIco');
+var decBtn=document.getElementById('decryptBtn');
+var progArea=document.getElementById('progArea');
+var progSt=document.getElementById('progStatus');
+var progPct=document.getElementById('progPct');
+var barFill=document.getElementById('barFill');
+var errBox=document.getElementById('errBox');
+var frame=document.getElementById('out');
+var mainUI=document.getElementById('main-ui');
 
-      var decrypted = CryptoJS.AES.decrypt(
-        { ciphertext: ciphertext },
-        key,
-        { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
-      );
+if(PASSWORD_EMBEDDED){document.querySelector('.card').style.display='none';decryptFlow(PASSWORD_EMBEDDED);}
 
-      var html = decrypted.toString(CryptoJS.enc.Utf8);
-      if (!html) throw new Error('Dekripsi gagal — password salah atau data korup');
+pwBtn.addEventListener('click',function(){
+  var h=pw.type==='password';
+  pw.type=h?'text':'password';
+  eyeIco.innerHTML=h?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+});
 
-      setP(100, 'Done — rendering page...');
-      await sleep(200);
+decBtn.addEventListener('click',function(){
+  var pass=pw.value.trim();
+  if(!pass){showErr('Masukkan password terlebih dahulu.');return;}
+  decryptFlow(pass);
+});
 
-      // === LAYER 1: Patch base URL + viewport ===
-      var baseUrl = window.location.href.replace(/\/[^/]*$/, '/');
-      var htmlPatched = html
-        .replace(/<head([^>]*)>/i, '<head$1><base href="' + baseUrl + '">')
-        .replace(
-          /<meta\s+name=["']viewport["'][^>]*>/i,
-          '<meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">'
-        );
-
-      // === LAYER 2: XOR obfuscate source sebelum masuk ke iframe ===
-      // Ini menyebabkan source yang terlihat di DevTools adalah garbled XOR bytes,
-      // bukan plain HTML. Key di-derive dari timestamp + random agar beda tiap session.
-      var xorKey = [];
-      var _ks = (Date.now() ^ 0xDEAD) + Math.floor(Math.random() * 0xFFFF);
-      for (var _ki = 0; _ki < 64; _ki++) {
-        _ks = (_ks * 1664525 + 1013904223) & 0xFFFFFFFF;
-        xorKey.push(_ks & 0xFF);
-      }
-      var enc8 = new TextEncoder().encode(htmlPatched);
-      var xorBuf = new Uint8Array(enc8.length);
-      for (var _xi = 0; _xi < enc8.length; _xi++) {
-        xorBuf[_xi] = enc8[_xi] ^ xorKey[_xi % xorKey.length];
-      }
-
-      // === LAYER 3: Split jadi N chunks acak ===
-      // Source tidak terlihat utuh di DevTools — tiap chunk hanya potongan XOR bytes
-      var CHUNK_COUNT = 7 + Math.floor(Math.random() * 5); // 7–11 chunks
-      var chunks = [];
-      var chunkSize = Math.ceil(xorBuf.length / CHUNK_COUNT);
-      for (var _ci = 0; _ci < CHUNK_COUNT; _ci++) {
-        chunks.push(Array.from(xorBuf.slice(_ci * chunkSize, (_ci + 1) * chunkSize)));
-      }
-
-      // === LAYER 4: Render via srcdoc + inline assembler script ===
-      // Tidak ada blob URL → tidak muncul sebagai file di Sources tab.
-      // Assembler script di srcdoc me-reassemble chunks + XOR decode di iframe context.
-      var keyJson   = JSON.stringify(xorKey);
-      var chunksJson = JSON.stringify(chunks);
-
-      var assemblerScript = [
-        '(function(){',
-        'var k=' + keyJson + ';',
-        'var ch=' + chunksJson + ';',
-        'var out=[];',
-        'for(var i=0;i<ch.length;i++){',
-        '  for(var j=0;j<ch[i].length;j++){',
-        '    out.push(ch[i][j]^k[(i*ch[0].length+j)%k.length]);',
-        '  }',
-        '}',
-        'var decoded=new TextDecoder().decode(new Uint8Array(out));',
-        'document.open();document.write(decoded);document.close();',
-        '})();'
-      ].join('\n');
-
-      var srcdocHtml = [
-        '<!DOCTYPE html><html><head>',
-        '<meta name="viewport" content="width=1280,initial-scale=0.35,minimum-scale=0.1,maximum-scale=5.0,user-scalable=yes">',
-        '</head><body>',
-        '<script>' + assemblerScript + '<\/script>',
-        '</body></html>'
-      ].join('');
-
-      mainUI.style.display = 'none';
-      frame.style.display  = 'block';
-      frame.srcdoc = srcdocHtml;
-
-    } catch(err) {
-      setP(0, '');
-      progArea.classList.remove('active');
-      showErr(err.message);
-    }
+function setP(pct,st){
+  barFill.style.width=pct+'%';
+  progPct.textContent=pct+'%';
+  progSt.textContent=st;
+  var lit=Math.floor(pct/100*SEG);
+  for(var i=0;i<SEG;i++){
+    var el=document.getElementById('seg'+i);
+    if(el){el.className=i<lit?'seg lit':i===lit?'seg half':'seg'}
   }
+}
+
+function stepOn(id){document.getElementById(id).className='step go'}
+function stepDone(id){document.getElementById(id).className='step done'}
+function showErr(msg){errBox.textContent='✗ '+msg;errBox.className='err on';decBtn.disabled=false}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+async function decryptFlow(pass){
+  decBtn.disabled=true;
+  errBox.className='err';
+  progArea.className='prog on';
+  try{
+    stepOn('s1');setP(8,'Loading encrypted.enc...');
+    var resp=await fetch('encrypted.enc');
+    if(!resp.ok)throw new Error('Tidak dapat memuat encrypted.enc (HTTP '+resp.status+')');
+    var raw=await resp.text();
+    var data=JSON.parse(raw);
+    if(!data.salt||!data.iv||!data.ciphertext||!data.hmac)throw new Error('Format encrypted.enc tidak valid');
+    await sleep(120);stepDone('s1');
+
+    stepOn('s2');setP(22,'Deriving key via PBKDF2-SHA512...');await sleep(80);
+    var salt=CryptoJS.enc.Hex.parse(data.salt);
+    var iv=CryptoJS.enc.Hex.parse(data.iv);
+    var ciphertext=CryptoJS.enc.Hex.parse(data.ciphertext);
+    var storedHmac=data.hmac;
+    var key=await new Promise(function(resolve){
+      setTimeout(function(){
+        resolve(CryptoJS.PBKDF2(pass,salt,{keySize:256/32,iterations:100000,hasher:CryptoJS.algo.SHA512}));
+      },50);
+    });
+    setP(64,'Key derived');await sleep(80);stepDone('s2');
+
+    stepOn('s3');setP(72,'Verifying HMAC-SHA256...');await sleep(60);
+    var dataToAuth=iv.clone().concat(ciphertext);
+    var computedHmac=CryptoJS.HmacSHA256(dataToAuth,key).toString(CryptoJS.enc.Hex);
+    if(computedHmac!==storedHmac)throw new Error('HMAC mismatch — password salah atau file rusak');
+    setP(80,'Integrity verified');await sleep(60);stepDone('s3');
+
+    stepOn('s4');setP(88,'Decrypting AES-256-CBC...');await sleep(80);
+    var decrypted=CryptoJS.AES.decrypt({ciphertext:ciphertext},key,{iv:iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7});
+    var html=decrypted.toString(CryptoJS.enc.Utf8);
+    if(!html)throw new Error('Dekripsi gagal — password salah atau data korup');
+    setP(100,'Done — rendering...');await sleep(200);stepDone('s4');
+
+    var baseUrl=window.location.href.replace(/\/[^/]*$/,'/');
+    var htmlPatched=html
+      .replace(/<head([^>]*)>/i,'<head$1><base href="'+baseUrl+'">')
+      .replace(/<meta\s+name=["']viewport["'][^>]*>/i,'<meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">');
+
+    var xorKey=[];
+    var _ks=(Date.now()^0xDEAD)+Math.floor(Math.random()*0xFFFF);
+    for(var _ki=0;_ki<64;_ki++){_ks=(_ks*1664525+1013904223)&0xFFFFFFFF;xorKey.push(_ks&0xFF);}
+    var enc8=new TextEncoder().encode(htmlPatched);
+    var xorBuf=new Uint8Array(enc8.length);
+    for(var _xi=0;_xi<enc8.length;_xi++){xorBuf[_xi]=enc8[_xi]^xorKey[_xi%xorKey.length];}
+    var CHUNK_COUNT=7+Math.floor(Math.random()*5);
+    var chunks=[];
+    var chunkSize=Math.ceil(xorBuf.length/CHUNK_COUNT);
+    for(var _ci=0;_ci<CHUNK_COUNT;_ci++){chunks.push(Array.from(xorBuf.slice(_ci*chunkSize,(_ci+1)*chunkSize)));}
+    var keyJson=JSON.stringify(xorKey);
+    var chunksJson=JSON.stringify(chunks);
+    var assemblerScript=['(function(){','var k='+keyJson+';','var ch='+chunksJson+';','var out=[];','for(var i=0;i<ch.length;i++){','  for(var j=0;j<ch[i].length;j++){','    out.push(ch[i][j]^k[(i*ch[0].length+j)%k.length]);','  }','}','var decoded=new TextDecoder().decode(new Uint8Array(out));','document.open();document.write(decoded);document.close();','})();'].join('\n');
+    var srcdocHtml=['<!DOCTYPE html><html><head>','<meta name="viewport" content="width=1280,initial-scale=0.35,minimum-scale=0.1,maximum-scale=5.0,user-scalable=yes">','</head><body>','<script>'+assemblerScript+'<\/script>','</body></html>'].join('');
+
+    mainUI.style.display='none';
+    frame.style.display='block';
+    frame.srcdoc=srcdocHtml;
+  }catch(err){
+    setP(0,'');
+    progArea.className='prog';
+    showErr(err.message);
+  }
+}
 })();
 </script>
 </body>
